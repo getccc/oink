@@ -29,6 +29,19 @@
   );
 }
 
+// Declared in both directions on purpose. An SVG loaded through <img> resolves
+// `prefers-color-scheme` against the embedding document's *used* color scheme,
+// so leaving light implicit made the logo and the featured placeholder follow
+// the operating system whenever the reader had overridden the site's theme.
+:root,
+[data-bs-theme='light'] {
+  color-scheme: light;
+}
+
+[data-bs-theme='dark'] {
+  color-scheme: dark;
+}
+
 :root,
 [data-bs-theme='light'] {
   --td-shell-primary: var(--bs-link-color);
