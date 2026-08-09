@@ -44,7 +44,7 @@ ui_carousel_previous: 上一張卡片
 ui_carousel_next: 下一張卡片
 
 # Used in sentences such as "Posted in News"
-ui_in: 於
+ui_in: 發布於
 
 # Used in sentences such as "All Tags"
 ui_all: 所有

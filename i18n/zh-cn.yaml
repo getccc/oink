@@ -53,7 +53,7 @@ ui_carousel_next: 下一张卡片
 ui_asciinema_timer: 播放时间
 
 # Used in sentences such as "Posted in News"
-ui_in: 在
+ui_in: 发布于
 
 # Used in sentences such as "All Tags"
 ui_all: 全部
