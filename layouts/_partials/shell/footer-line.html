@@ -1,10 +1,23 @@
+{{- /* Accepts a page, or a dict {page, nested}. `nested: true` renders a <div>
+       instead of a <footer>: a page must not carry two contentinfo landmarks,
+       and the landing page already wraps this row in its own <footer>. */ -}}
+{{- $p := . -}}
+{{- $nested := false -}}
+{{- if reflect.IsMap . -}}
+  {{- $p = .page -}}
+  {{- $nested = .nested | default false -}}
+{{- end -}}
+{{- with $p -}}
 {{- $copyright := .Site.Params.copyright | default dict -}}
 {{- $author := $copyright.authors | default .Site.Title -}}
 {{- $authorURL := $copyright.url | default "" -}}
 {{- $from := $copyright.from_year | default now.Year -}}
 {{- $to := $copyright.to_year | default now.Year -}}
 {{- if eq (printf "%v" $to) "present" }}{{ $to = now.Year }}{{ end -}}
-<footer class="td-shell-footline d-print-none">
+{{- /* Composed rather than branched: splitting an element across the arms of a
+       conditional leaves Go's HTML template parser with unbalanced tags. */ -}}
+{{- $tag := cond $nested "div" "footer" -}}
+{{ printf `<%s class="td-shell-footline d-print-none">` $tag | safeHTML }}
   <div class="td-shell-footline__copy">
     &copy; {{ $from }}{{ if ne (printf "%v" $from) (printf "%v" $to) }}&ndash;{{ $to }}{{ end }}
     {{- if $authorURL }} <a href="{{ $authorURL }}">{{ $author | plainify }}</a>{{ else }} <span>{{ $author | markdownify }}</span>{{ end -}}
@@ -17,4 +30,5 @@
   <div class="td-shell-footline__lang">
     {{ partial "language-selector.html" (dict "page" . "class" "td-shell-language-selector" "mode" "list") }}
   </div>
-</footer>
+{{ printf "</%s>" $tag | safeHTML }}
+{{- end -}}
