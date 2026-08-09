@@ -1,0 +1,2 @@
+{{- $surface := or .IsHome (partial "shell/chrome-enabled.html" .) -}}
+{{- return and $surface .Site.Params.offlineSearch -}}

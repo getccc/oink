@@ -1,0 +1,41 @@
+<!doctype html>
+<html itemscope itemtype="http://schema.org/WebPage"
+    dir="{{ .Site.Language.Direction | default "ltr" }}"
+    lang="{{ partial "language-tag.html" . }}"
+    class="no-js"
+    {{- $darkMode := partialCached "dark-mode-config.html" "dark-mode-global" -}}
+    {{- if $darkMode.enable }} data-theme-init{{ end }}>
+  <head>
+    {{ partial "head.html" . }}
+  </head>
+  {{ $sidebarMin := .Param "ui.sidebar_width_min" | default 220 -}}
+  {{ $sidebarMax := .Param "ui.sidebar_width_max" | default 480 -}}
+  {{ $navWrap := eq (.Param "ui.sidebar_item_overflow") "wrap" -}}
+  {{ $hasSidebar := partial "shell/sidebar-enabled.html" . -}}
+  {{ $pageWidth := .Param "page_width" | default "normal" -}}
+  <body class="td-{{ .Kind }} td-blog td-shell-chrome{{ with .Page.Params.body_class }} {{ . }}{{ end }}">
+    {{ partial "skip-link.html" . }}
+    {{ partial "shell/subnav.html" . }}
+    <div class="container-fluid td-outer">
+      <div class="td-main td-shell-layout td-shell-layout--w-{{ $pageWidth }} td-shell-layout--no-toc{{ if not $hasSidebar }} td-shell-layout--no-sidebar{{ end }}{{ if $navWrap }} td-shell-layout--nav-wrap{{ end }}"
+           style="--td-shell-sidebar-min: {{ $sidebarMin }}px; --td-shell-sidebar-max: {{ $sidebarMax }}px;">
+        {{ if $hasSidebar -}}
+        <aside id="td-shell-sidebar" class="td-shell-sidebar d-print-none">
+          {{ partial "shell/sidebar-panel.html" . }}
+        </aside>
+        <div class="td-shell-drawer-backdrop d-md-none d-print-none" data-td-shell-drawer-close></div>
+        {{ partial "shell/floating-pill.html" . }}
+        {{- end }}
+        <main id="td-main-content" class="td-shell-main" role="main" tabindex="-1">
+          <article class="td-shell-article">
+            {{ if not (.Param "ui.breadcrumb_disable") }}{{ partial "breadcrumb.html" . }}{{ end }}
+            {{ block "main" . }}{{ end }}
+          </article>
+        </main>
+        {{ partial "shell/toc-aside.html" (dict "page" . "hasToc" false) }}
+      </div>
+      {{ partial "shell/footer-line.html" . }}
+    </div>
+    {{ partial "scripts.html" . }}
+  </body>
+</html>

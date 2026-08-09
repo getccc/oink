@@ -1,0 +1,16 @@
+{{- $current := "" -}}
+{{- if eq .Kind "term" }}{{ $current = .Title }}{{ end -}}
+{{- $plural := .Data.Plural | default "tags" -}}
+{{- $terms := index .Site.Taxonomies $plural -}}
+<div class="td-shell-tags-filter" aria-label="{{ partial "taxonomy-label.html" (dict "page" . "key" $plural) }}">
+  <a class="td-shell-tag{{ if not $current }} is-active{{ end }}" href="{{ relLangURL "blog/" }}">
+    <span>{{ T "ui_all" }}</span>
+  </a>
+  {{- with $terms }}
+    {{- range .ByCount }}
+  <a class="td-shell-tag{{ if eq .Page.Title $current }} is-active{{ end }}" href="{{ .Page.RelPermalink }}">
+    <span>{{ .Page.LinkTitle }}</span><span class="td-shell-tag__count">{{ .Count }}</span>
+  </a>
+    {{- end }}
+  {{- end }}
+</div>

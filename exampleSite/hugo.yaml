@@ -1,0 +1,17 @@
+baseURL: https://example.org/
+title: OINK Landing Example
+theme: oink
+defaultContentLanguage: en
+disableKinds: [RSS, sitemap, taxonomy, term]
+
+params:
+  description: A complete example of OINK's composable landing page.
+  offlineSearch: false
+  ui:
+    feedback:
+      enable: false
+
+languages:
+  en:
+    label: English
+    weight: 1

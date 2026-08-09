@@ -1,0 +1,14 @@
+{{- /* 侧栏收起时左上角的浮动控件：展开按钮 + 搜索按钮。
+       默认 display:none，仅 html[data-td-shell-sidebar=collapsed] 且 ≥md 时由 CSS 显示。 */ -}}
+<div class="td-shell-float d-print-none">
+  <button type="button" class="td-shell-iconbtn" data-td-shell-sidebar-toggle
+    title="{{ T "ui_sidebar_expand" }}" aria-label="{{ T "ui_sidebar_expand" }}">
+    {{- partialCached "shell/icon.html" "panel-left" "panel-left" -}}
+  </button>
+  {{- if partial "shell/search-enabled.html" . }}
+  <button type="button" class="td-shell-iconbtn" data-td-shell-search-open
+    aria-label="{{ T "ui_search" }}" aria-controls="td-shell-search" aria-expanded="false">
+    {{- partialCached "shell/icon.html" "search" "search" -}}
+  </button>
+  {{- end }}
+</div>

@@ -1,0 +1,20 @@
+{{- $copyright := .Site.Params.copyright | default dict -}}
+{{- $author := $copyright.authors | default .Site.Title -}}
+{{- $authorURL := $copyright.url | default "" -}}
+{{- $from := $copyright.from_year | default now.Year -}}
+{{- $to := $copyright.to_year | default now.Year -}}
+{{- if eq (printf "%v" $to) "present" }}{{ $to = now.Year }}{{ end -}}
+<footer class="td-shell-footline d-print-none">
+  <div class="td-shell-footline__copy">
+    &copy; {{ $from }}{{ if ne (printf "%v" $from) (printf "%v" $to) }}&ndash;{{ $to }}{{ end }}
+    {{- if $authorURL }} <a href="{{ $authorURL }}">{{ $author | plainify }}</a>{{ else }} <span>{{ $author | markdownify }}</span>{{ end -}}
+  </div>
+  {{ with .Site.Params.footer_icp -}}
+  <div class="td-shell-footline__icp">
+    <a href="{{ $.Site.Params.footer_icp_url | default "https://beian.miit.gov.cn/" }}" target="_blank" rel="noopener">{{ . }}</a>
+  </div>
+  {{- end }}
+  <div class="td-shell-footline__lang">
+    {{ partial "language-selector.html" (dict "page" . "class" "td-shell-language-selector" "mode" "list") }}
+  </div>
+</footer>

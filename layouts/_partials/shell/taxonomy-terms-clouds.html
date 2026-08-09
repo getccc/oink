@@ -1,0 +1,49 @@
+{{- /* Scope every taxonomy cloud to the current top-level content root. A docs
+       page therefore counts only docs descendants; blog pages count only blog
+       descendants. Taxonomy term pages inherit their configured type. */ -}}
+{{- $root := .FirstSection -}}
+{{- with .Site.GetPage (printf "/%s" .Type) -}}
+  {{- if .IsSection }}{{ $root = . }}{{ end -}}
+{{- end -}}
+{{- $global := or (not $root) (eq $root .Site.Home) -}}
+{{- range $plural, $taxonomy := .Site.Taxonomies -}}
+  {{- $items := slice -}}
+  {{- range $taxonomy.ByCount -}}
+    {{- $count := 0 -}}
+    {{- range .Pages -}}
+      {{- if or $global (eq . $root) (.IsDescendant $root) -}}
+        {{- $count = add $count 1 -}}
+      {{- end -}}
+    {{- end -}}
+    {{- if gt $count 0 -}}
+      {{- $items = $items | append (dict "count" $count "page" .Page) -}}
+    {{- end -}}
+  {{- end -}}
+  {{- if gt (len $items) 0 -}}
+    {{- $title := partial "taxonomy-label.html" (dict "page" $ "key" $plural) -}}
+    {{- $id := printf "td-shell-taxonomy-%s-%s" $plural ($root.RelPermalink | default "all" | anchorize) -}}
+<div class="td-shell-tags-cloud" data-taxonomy="{{ $plural }}" data-taxonomy-root="{{ $root.RelPermalink | default "/" }}">
+  <button type="button" class="td-shell-tree__row td-shell-tags-cloud__head" data-td-shell-tree-toggle
+    aria-expanded="true" aria-controls="{{ $id }}-children"
+    aria-label="{{ T "ui_sidebar_collapse_section" }}: {{ $title }}"
+    data-label-expand="{{ T "ui_sidebar_expand_section" }}: {{ $title }}"
+    data-label-collapse="{{ T "ui_sidebar_collapse_section" }}: {{ $title }}">
+    <span class="td-shell-tags-cloud__title">{{ $title }}</span>
+    <span class="td-shell-tree__chevron" aria-hidden="true">
+      {{- partialCached "shell/icon.html" "chevron-down" "chevron-down" -}}
+    </span>
+  </button>
+  <div id="{{ $id }}-children" class="td-shell-tree__children is-open">
+    <div class="td-shell-tree__children-inner">
+      <div class="td-shell-tags-cloud__chips">
+        {{- range sort $items "count" "desc" }}
+        <a class="td-shell-tag" href="{{ .page.RelPermalink }}">
+          <span>{{ .page.LinkTitle }}</span><span class="td-shell-tag__count">{{ .count }}</span>
+        </a>
+        {{- end }}
+      </div>
+    </div>
+  </div>
+</div>
+  {{- end -}}
+{{- end -}}

@@ -1,0 +1,20 @@
+{{- if partial "shell/chrome-enabled.html" . -}}
+<script>
+  (function () {
+    var html = document.documentElement;
+    html.setAttribute('data-td-shell-no-anim', '');
+    try {
+      if (localStorage.getItem('td-shell-sidebar-collapsed') === '1'
+          && window.matchMedia('(min-width: 768px)').matches) {
+        html.setAttribute('data-td-shell-sidebar', 'collapsed');
+      }
+      var width = parseInt(localStorage.getItem('td-shell-sidebar-w'), 10);
+      if (width > 0) html.style.setProperty('--td-shell-sidebar-w', width + 'px');
+      if (localStorage.getItem('td-shell-toc-collapsed') === '1'
+          && window.matchMedia('(min-width: 1200px)').matches) {
+        html.setAttribute('data-td-shell-toc', 'collapsed');
+      }
+    } catch (_) {}
+  })();
+</script>
+{{- end -}}

@@ -1,0 +1,31 @@
+{{- $home := partial "home-data.html" . -}}
+{{- $config := partial "shell/config.html" . -}}
+{{- if .IsHome -}}
+  {{- with $home.footer -}}
+<footer class="td-site-footer d-print-none">
+  <div class="td-site-footer__container">
+    <div class="td-site-footer__grid">
+      <div class="td-site-footer__brand">
+        <a class="td-site-footer__logo" href="{{ $.Site.Home.RelPermalink }}">
+          <img src="{{ .brand.logo | default $config.logoURL | relURL }}" alt="" width="28" height="28">
+          <span>{{ .brand.name | default $config.brandName }}</span>
+        </a>
+        {{- with .brand.tagline }}<div class="td-site-footer__tagline">{{ . | markdownify }}</div>{{ end }}
+        {{- with .brand.slogan }}<div class="td-site-footer__slogan">{{ . | markdownify }}</div>{{ end }}
+      </div>
+      {{- range .columns }}
+      <nav class="td-site-footer__column" aria-label="{{ .title }}">
+        <h2>{{ .title }}</h2>
+        <ul>
+          {{- range .links }}
+          <li><a href="{{ .url | relLangURL }}"{{ if .external }} target="_blank" rel="noopener noreferrer"{{ end }}>{{ .label }}</a></li>
+          {{- end }}
+        </ul>
+      </nav>
+      {{- end }}
+    </div>
+  </div>
+</footer>
+  {{- end -}}
+{{- end -}}
+{{ partial "shell/footer-line.html" . }}

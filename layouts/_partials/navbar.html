@@ -1,0 +1,121 @@
+{{- $config := partial "shell/config.html" . -}}
+{{- $baseURL := urls.Parse .Site.BaseURL -}}
+{{- $page := . -}}
+{{- $darkMode := partialCached "dark-mode-config.html" "dark-mode-global" -}}
+{{- $targets := partial "language-targets.html" . -}}
+{{- $localSearch := partial "shell/search-enabled.html" . -}}
+<header class="landing-header d-print-none" data-header>
+  <div class="landing-container">
+    <nav class="landing-nav" aria-label="{{ T "ui_main_nav" }}">
+      <a href="{{ .Site.Home.RelPermalink }}" class="nav-brand" aria-label="{{ $config.brandName }} — {{ T "ui_home" }}">
+        <img src="{{ $config.logoURL }}" alt="" class="nav-logo" width="22" height="22">
+        <span class="nav-title">{{ $config.brandName }}</span>
+      </a>
+
+      <div class="nav-links">
+        {{- range .Site.Menus.main -}}
+          {{- if ne .Identifier "github" -}}
+            {{- $target := urls.Parse .URL -}}
+            {{- $external := and $target.Host (ne $baseURL.Host $target.Host) -}}
+            {{- $active := or ($page.IsMenuCurrent "main" .) ($page.HasMenuCurrent "main" .) -}}
+            {{- if and (eq .Identifier "docs") (eq $page.Type "docs") -}}
+              {{- $active = true -}}
+            {{- else if and (eq .Identifier "blog") (eq $page.Type "blog") -}}
+              {{- $active = true -}}
+            {{- end -}}
+            {{- $href := .URL -}}
+            {{- if not $external }}{{ $href = .URL | relLangURL }}{{ end -}}
+            {{- with .Page -}}
+              {{- $active = or $active ($page.IsDescendant .) -}}
+              {{- $href = .RelPermalink -}}
+            {{- end }}
+        <a class="nav-link{{ if $active }} active{{ end }}" href="{{ $href }}"{{ if $external }} target="_blank" rel="noopener noreferrer"{{ end }}>
+          {{- with .Pre }}{{ . }}{{ end -}}
+          <span>{{ .Name }}</span>
+        </a>
+          {{- end -}}
+        {{- end }}
+        {{- if .Site.Params.versions }}
+        <div class="landing-version-selector">
+          {{ partial "navbar-version-selector.html" (dict "page" .) }}
+        </div>
+        {{- end }}
+        {{- if $localSearch }}
+        <button type="button" class="nav-util nav-search" data-td-shell-search-open
+          title="{{ T "ui_search" }}" aria-label="{{ T "ui_search" }}"
+          aria-controls="td-shell-search" aria-expanded="false">
+          {{- partialCached "shell/icon.html" "search" "navbar-search" -}}
+        </button>
+        {{- end }}
+        {{- if gt (len $targets) 1 }}
+          {{ partial "language-selector.html" (dict "page" . "class" "nav-util landing-language-selector" "icon" "shell") }}
+        {{- end }}
+        {{- if $darkMode.showMenu }}
+        <button type="button" class="nav-util" data-td-theme-toggle
+          title="{{ T "ui_theme_toggle" }}" aria-label="{{ T "ui_theme_toggle" }}">
+          {{- partialCached "shell/icon.html" "moon" "moon" -}}
+          {{- partialCached "shell/icon.html" "sun" "sun" -}}
+        </button>
+        {{- end }}
+        {{- with $config.projectRepo }}
+        <a href="{{ . }}" class="nav-github" target="_blank" rel="noopener noreferrer" title="GitHub" aria-label="GitHub">
+          {{- partialCached "shell/icon.html" "github" "github" -}}
+        </a>
+        {{- end }}
+      </div>
+
+      <button class="mobile-menu-toggle" type="button" aria-label="{{ T "ui_drawer_open" }}"
+        aria-controls="mobile-site-menu" aria-expanded="false" data-menu-toggle>
+        <span></span><span></span><span></span>
+      </button>
+    </nav>
+  </div>
+</header>
+
+<div class="mobile-menu d-print-none" id="mobile-site-menu" data-mobile-menu>
+  {{- range .Site.Menus.main -}}
+    {{- if ne .Identifier "github" -}}
+      {{- $target := urls.Parse .URL -}}
+      {{- $external := and $target.Host (ne $baseURL.Host $target.Host) -}}
+      {{- $active := or ($page.IsMenuCurrent "main" .) ($page.HasMenuCurrent "main" .) -}}
+      {{- if and (eq .Identifier "docs") (eq $page.Type "docs") -}}
+        {{- $active = true -}}
+      {{- else if and (eq .Identifier "blog") (eq $page.Type "blog") -}}
+        {{- $active = true -}}
+      {{- end -}}
+      {{- $href := .URL -}}
+      {{- if not $external }}{{ $href = .URL | relLangURL }}{{ end -}}
+      {{- with .Page -}}
+        {{- $active = or $active ($page.IsDescendant .) -}}
+        {{- $href = .RelPermalink -}}
+      {{- end }}
+  <a class="mobile-menu-link{{ if $active }} active{{ end }}" href="{{ $href }}"{{ if $external }} target="_blank" rel="noopener noreferrer"{{ end }}>
+    {{- with .Pre }}{{ . }}{{ end -}}
+    <span>{{ .Name }}</span>
+  </a>
+    {{- end -}}
+  {{- end }}
+  {{- if $localSearch }}
+  <button type="button" class="mobile-menu-link mobile-menu-link--btn" data-td-shell-search-open
+    data-mobile-menu-dismiss aria-controls="td-shell-search" aria-expanded="false">
+    {{- partialCached "shell/icon.html" "search" "mobile-search" -}}
+    <span>{{ T "ui_search" }}</span>
+  </button>
+  {{- end }}
+  {{- if gt (len $targets) 1 }}
+    {{ partial "language-selector.html" (dict "page" . "class" "mobile-menu-languages" "mode" "list") }}
+  {{- end }}
+  {{- if $darkMode.showMenu }}
+  <button type="button" class="mobile-menu-link mobile-menu-link--btn" data-td-theme-toggle>
+    {{- partialCached "shell/icon.html" "moon" "mobile-moon" -}}
+    {{- partialCached "shell/icon.html" "sun" "mobile-sun" -}}
+    <span>{{ T "ui_theme_toggle" }}</span>
+  </button>
+  {{- end }}
+  {{- with $config.projectRepo }}
+  <a href="{{ . }}" class="mobile-menu-link" target="_blank" rel="noopener noreferrer">
+    <i class="fa-brands fa-github" aria-hidden="true"></i>
+    <span>GitHub</span>
+  </a>
+  {{- end }}
+</div>

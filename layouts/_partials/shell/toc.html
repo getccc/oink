@@ -1,0 +1,7 @@
+{{- /* 「本页目录」正文体（标题与控制行在 shell/toc-aside.html）。
+       轨道段 / 主色路径 / 滑动圆点由 td-shell-docs.js 的 initToc() 构建。 */ -}}
+<div class="td-shell-toc__inner" data-proofer-ignore>
+  <div class="td-shell-toc__body" id="td-shell-toc-body">
+    {{ .TableOfContents | safeHTML }}
+  </div>
+</div>

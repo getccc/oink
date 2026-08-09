@@ -1,0 +1,108 @@
+# Alert labels
+caution: Caution
+important: Important
+note: Note
+tip: Tip
+warning: Warning
+
+# UI strings. Buttons and similar.
+ui_pager_prev: Previous
+ui_pager_next: Next
+ui_read_more: Read more
+ui_search: Search this site…
+ui_search_empty: No results found
+ui_search_loading: Loading search index…
+ui_search_results: '{count} results found'
+ui_search_nav: Navigate
+ui_search_open: Open
+ui_search_close: Close
+ui_sidebar_nav: Section navigation
+ui_main_nav: Main navigation
+ui_home: Home
+ui_sidebar_expand: Expand sidebar
+ui_sidebar_collapse: Collapse sidebar
+ui_drawer_open: Open navigation
+ui_drawer_close: Close navigation
+ui_root_menu_label: Choose section
+ui_tags_title: Tags
+ui_tag_title: Tag
+ui_categories_title: Categories
+ui_category_title: Category
+ui_theme_toggle: Toggle color theme
+ui_toc_hide: Hide table of contents
+ui_toc_show: Show table of contents
+ui_language_select: Choose language
+ui_language_switch: Switch language
+ui_details: Details
+ui_skip_to_content: Skip to content
+ui_page_actions: Page actions
+ui_copy_markdown: Copy as Markdown
+ui_copy_success: Markdown copied
+ui_copy_error: Could not copy Markdown
+ui_print_page: Print this page
+ui_sidebar_expand_section: Expand section
+ui_sidebar_collapse_section: Collapse section
+ui_doc_carousel: Document carousel
+ui_carousel_previous: Previous card
+ui_carousel_next: Next card
+ui_asciinema_timer: Playback time
+
+# Used in sentences such as "Posted in News"
+ui_in: in
+
+# Used in sentences such as "All Tags"
+ui_all: all
+
+# Footer text
+footer_all_rights_reserved: All Rights Reserved
+footer_privacy_policy: Privacy Policy
+
+# Post (blog, article, etc.)
+post_byline_by: By
+post_created: Created
+post_last_mod: Last modified
+post_upstream_attribution: Upstream source and attribution
+post_downstream_modified:
+  This page includes downstream modifications by {{ .Site.Title }}.
+post_edit_this: Edit this page
+post_view_markdown: View Markdown
+post_view_this: View page source
+post_create_child_page: Create child page
+post_create_issue: Create documentation issue
+post_create_project_issue: Create project issue
+post_posts_in: Posts in
+post_reading_time: minute read
+post_less_than_a_minute_read: less than a minute
+
+# Print support
+print_printable_section: This is the multi-page printable view of this section.
+print_click_to_print: Click here to print
+print_show_regular: Return to the regular view of this page
+print_entire_section: Print entire section
+
+# Community
+community_join: Join the {{ .Site.Title }} community
+community_introduce: >-
+  {{ .Site.Title }} is an open source project that anyone in the community can
+  use, improve, and enjoy. We'd love you to join us! Here's a few ways to find
+  out what's happening and get involved.
+community_learn: Learn and Connect
+community_using: >-
+  Using or want to use {{ .Site.Title }}? Find out more here:
+community_develop: Develop and Contribute
+community_contribute: >-
+  If you want to get more involved by contributing to {{ .Site.Title }}, join us
+  here:
+community_how_to: You can find out how to contribute to {{ .Site.Title }} in our
+community_guideline: >-
+  Contribution Guidelines
+
+# Feedback
+feedback_title: Feedback
+feedback_question: Was this page helpful?
+feedback_positive: Yes
+feedback_negative: No
+
+# Table of contents
+toc_on_this_page: On this page
+toc_top_of_page: Top of page

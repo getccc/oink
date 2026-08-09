@@ -1,0 +1,47 @@
+{{- $sidebarCacheLimit := .Site.Params.ui.sidebar_cache_limit | default 2000 -}}
+{{- $cacheSidebar := ge (len .Site.Pages) $sidebarCacheLimit -}}
+{{- $sidebarRoot := cond .Site.Params.ui.sidebar_root_enabled .Site.Home .FirstSection -}}
+{{- $navRoot := $sidebarRoot -}}
+
+{{- if .Site.Params.ui.sidebar_root_enabled -}}
+  {{- if and .IsSection (eq .Params.sidebar_root_for "self") -}}
+    {{- $sidebarRoot = . -}}
+  {{- else -}}
+    {{- range .Ancestors -}}
+      {{- if not .IsSection }}{{ continue }}{{ end -}}
+      {{- $rootFor := .Params.sidebar_root_for -}}
+      {{- if not $rootFor }}{{ continue }}{{ end -}}
+      {{- if not (in (slice "self" "children") $rootFor) -}}
+        {{- warnf "%s: sidebar_root_for should be 'self' or 'children', got %q" .Path $rootFor -}}
+        {{- continue -}}
+      {{- end -}}
+      {{- $sidebarRoot = . -}}
+      {{- break -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+
+{{- if and (eq .Type "blog") (eq $sidebarRoot .Site.Home) -}}
+  {{- with .Site.GetPage "/blog" }}{{ $sidebarRoot = . }}{{ end -}}
+{{- end -}}
+
+{{- if and (eq .Type "docs") (eq $sidebarRoot .Site.Home) -}}
+  {{- with .Site.GetPage "/docs" }}{{ $sidebarRoot = . }}{{ end -}}
+{{- end -}}
+
+{{- $args := dict
+  "context" .
+  "cacheSidebar" $cacheSidebar
+  "sidebarRoot" $sidebarRoot
+  "sidebarRootID" $sidebarRoot.RelPermalink
+-}}
+{{- $docsNav := index hugo.Data "docs_nav" | default dict -}}
+{{- $tree := "shell/sidebar-tree.html" -}}
+{{- if and (eq .Type "docs") (isset $docsNav "sections") -}}
+  {{- $tree = "shell/docs-sidebar-tree.html" -}}
+{{- end -}}
+{{- if $cacheSidebar -}}
+  {{- partialCached $tree $args $sidebarRoot.RelPermalink -}}
+{{- else -}}
+  {{- partial $tree $args -}}
+{{- end -}}

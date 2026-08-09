@@ -1,0 +1,104 @@
+{{- $p := . -}}
+{{- $enabled := true -}}
+{{- with $p.Site.Params.ui.page_context_menu -}}
+  {{- if reflect.IsMap . -}}
+    {{- if isset . "enable" }}{{ $enabled = .enable }}{{ end -}}
+  {{- else -}}
+    {{- $enabled = . -}}
+  {{- end -}}
+{{- end -}}
+{{- if isset $p.Params "context_menu" }}{{ $enabled = $p.Params.context_menu }}{{ end -}}
+
+{{- if and $enabled $p.File -}}
+  {{- $markdownURL := "" -}}
+  {{- with $p.AlternativeOutputFormats.Get "markdown" }}{{ $markdownURL = .RelPermalink }}{{ end -}}
+  {{- $editURL := "" -}}
+  {{- $issueURL := "" -}}
+  {{- $ghRepo := $p.Param "github_repo" -}}
+  {{- $ghURL := $p.Param "github_url" -}}
+  {{- if $ghURL -}}
+    {{- $editURL = $ghURL -}}
+  {{- else if $ghRepo -}}
+    {{- $path := strings.TrimPrefix (add hugo.WorkingDir "/") $p.File.Filename -}}
+    {{- $ghSubdir := $p.Param "github_subdir" | default "" -}}
+    {{- $ghBranch := $p.Param "github_branch" | default "main" -}}
+    {{- $ghsBase := $p.Param "path_base_for_github_subdir" -}}
+    {{- $ghsRename := "" -}}
+    {{- if reflect.IsMap $ghsBase -}}
+      {{- $ghsRename = $ghsBase.to -}}
+      {{- $ghsBase = $ghsBase.from -}}
+    {{- end -}}
+    {{- with $ghsBase }}{{ $path = replaceRE . $ghsRename $path }}{{ end -}}
+    {{- $repoPath := printf "%s/%s/%s" $ghBranch $ghSubdir $path | replaceRE "//+" "/" -}}
+    {{- $editURL = printf "%s/edit/%s" $ghRepo $repoPath -}}
+    {{- $issueURL = printf "%s/issues/new?%s" $ghRepo (querify "title" $p.Title) -}}
+  {{- end -}}
+  {{- $customLinks := slice -}}
+  {{- with $p.Site.Params.ui.page_context_menu.links }}{{ $customLinks = . }}{{ end -}}
+  {{- $menuID := printf "td-page-context-%s" ($p.RelPermalink | anchorize | default "page") -}}
+
+<div class="td-page-context d-print-none" data-td-page-context
+  data-t-copied="{{ T "ui_copy_success" }}" data-t-copy-error="{{ T "ui_copy_error" }}">
+  <div class="td-page-context__controls">
+    {{- with $markdownURL }}
+    <button type="button" class="td-page-context__copy" data-td-page-copy data-url="{{ . }}">
+      <span class="td-page-context__copy-icon">{{ partialCached "shell/icon.html" "copy" "copy" }}</span>
+      <span class="td-page-context__success-icon">{{ partialCached "shell/icon.html" "check" "check" }}</span>
+      <span data-td-page-copy-label>{{ T "ui_copy_markdown" }}</span>
+    </button>
+    {{- end }}
+    <button type="button" class="td-page-context__toggle" data-td-page-context-toggle
+      aria-label="{{ T "ui_page_actions" }}" aria-haspopup="menu" aria-expanded="false"
+      aria-controls="{{ $menuID }}">
+      {{ partialCached "shell/icon.html" "chevron-down" "chevron-down" }}
+    </button>
+  </div>
+  <ul id="{{ $menuID }}" class="td-page-context__menu" role="menu" hidden>
+    {{- with $markdownURL }}
+    <li role="none">
+      <button type="button" role="menuitem" data-td-page-copy data-url="{{ . }}">
+        {{ partialCached "shell/icon.html" "copy" "copy" }}<span>{{ T "ui_copy_markdown" }}</span>
+      </button>
+    </li>
+    <li role="none">
+      <a role="menuitem" href="{{ . }}" target="_blank" rel="noopener">
+        {{ partialCached "shell/icon.html" "markdown" "markdown" }}<span>{{ T "post_view_markdown" }}</span>
+      </a>
+    </li>
+    {{- end }}
+    {{- with $editURL }}
+    <li role="none">
+      <a role="menuitem" href="{{ . }}" target="_blank" rel="noopener">
+        {{ partialCached "shell/icon.html" "pencil" "pencil" }}<span>{{ T "post_edit_this" }}</span>
+      </a>
+    </li>
+    {{- end }}
+    {{- with $issueURL }}
+    <li role="none">
+      <a role="menuitem" href="{{ . | safeURL }}" target="_blank" rel="noopener">
+        {{ partialCached "shell/icon.html" "circle-help" "circle-help" }}<span>{{ T "post_create_issue" }}</span>
+      </a>
+    </li>
+    {{- end }}
+    <li role="none">
+      <button type="button" role="menuitem" data-td-page-print>
+        {{ partialCached "shell/icon.html" "printer" "printer" }}<span>{{ T "ui_print_page" }}</span>
+      </button>
+    </li>
+    {{- with $customLinks }}
+    <li class="td-page-context__separator" role="separator"></li>
+      {{- range . -}}
+        {{- $url := partial "url-template.html" (dict "template" .url "values" (dict
+          "url" $p.Permalink "title" $p.Title "markdown_url" $markdownURL)) -}}
+    <li role="none">
+      <a role="menuitem" href="{{ $url | safeURL }}" target="_blank" rel="noopener noreferrer">
+        {{- with .icon }}<i class="{{ . }}" aria-hidden="true"></i>{{ end -}}
+        <span>{{ .name }}</span>
+      </a>
+    </li>
+      {{- end }}
+    {{- end }}
+  </ul>
+  <span class="visually-hidden" role="status" aria-live="polite" aria-atomic="true" data-td-page-context-status></span>
+</div>
+{{- end -}}

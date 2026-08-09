@@ -1,0 +1,58 @@
+{{- $config := partial "shell/config.html" . -}}
+{{- $hasAlgolia := and .Site.Params.search (isset .Site.Params.search "algolia") -}}
+{{- $hasOnlineSearch := or .Site.Params.gcs_engine_id $hasAlgolia -}}
+<div class="td-shell-sidebar__panel">
+  <div class="td-shell-sidebar__header">
+    <div class="td-shell-sidebar__brand-row">
+      <a class="td-shell-sidebar__brand" href="{{ .Site.Home.RelPermalink }}" aria-label="{{ $config.brandName }} home">
+        <img src="{{ $config.logoURL }}" alt="" width="20" height="20">
+        <span class="td-shell-wordmark">{{ $config.brandName }}</span>
+      </a>
+      <button type="button" class="td-shell-iconbtn td-shell-sidebar__collapse" data-td-shell-sidebar-toggle
+        title="{{ T "ui_sidebar_collapse" }}" aria-label="{{ T "ui_sidebar_collapse" }}">
+        {{- partialCached "shell/icon.html" "panel-left" "panel-left" -}}
+      </button>
+    </div>
+    <div class="td-shell-sidebar__header-row">
+      {{- if partial "shell/search-enabled.html" . }}
+      <button type="button" class="td-shell-search-btn" data-td-shell-search-open
+        aria-controls="td-shell-search" aria-expanded="false">
+        {{ partialCached "shell/icon.html" "search" "search" }}
+        <span class="td-shell-search-btn__label">{{ T "ui_search" }}</span>
+        <span class="td-shell-search-btn__keys" aria-hidden="true"><kbd data-td-shell-meta-key>⌘</kbd><kbd>K</kbd></span>
+      </button>
+      {{- else if $hasOnlineSearch }}
+        {{ partial "search-input.html" . }}
+      {{- else }}
+      <span class="td-shell-sidebar__header-spacer"></span>
+      {{- end }}
+      <button type="button" class="td-shell-iconbtn td-shell-sidebar__close" data-td-shell-drawer-close
+        aria-label="{{ T "ui_drawer_close" }}" aria-controls="td-shell-sidebar">{{ partialCached "shell/icon.html" "x" "x" }}</button>
+    </div>
+    {{ partial "shell/root-menu.html" . }}
+    <div class="td-shell-sidebar__mobile-utils d-xl-none">
+      {{ partial "language-selector.html" (dict "page" . "class" "td-shell-language-selector" "mode" "list") }}
+      {{- $darkMode := partialCached "dark-mode-config.html" "dark-mode-global" -}}
+      {{- if $darkMode.showMenu }}
+      <button type="button" class="td-shell-iconbtn td-shell-quick-theme" data-td-theme-toggle
+        title="{{ T "ui_theme_toggle" }}" aria-label="{{ T "ui_theme_toggle" }}">
+        {{- partialCached "shell/icon.html" "moon" "moon" -}}
+        {{- partialCached "shell/icon.html" "sun" "sun" -}}
+      </button>
+      {{- end }}
+      {{- with $config.projectRepo }}
+      <a class="td-shell-iconbtn" href="{{ . }}" target="_blank" rel="noopener noreferrer"
+        title="GitHub" aria-label="GitHub">{{ partialCached "shell/icon.html" "github" "github" }}</a>
+      {{- end }}
+    </div>
+  </div>
+  <div class="td-shell-sidebar__viewport" data-td-shell-sidebar-scroll>
+    {{ partial "shell/sidebar.html" . }}
+  </div>
+  {{ if .Site.Params.versions -}}
+  <div class="td-shell-sidebar__version">
+    {{ partial "navbar-version-selector.html" (dict "page" . "dropup" true) }}
+  </div>
+  {{ end -}}
+  <div class="td-shell-sidebar__resizer" data-td-shell-resizer aria-hidden="true"></div>
+</div>

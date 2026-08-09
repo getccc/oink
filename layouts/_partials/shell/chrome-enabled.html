@@ -1,0 +1,7 @@
+{{- $format := partial "outputformat.html" . -}}
+{{- $type := .Type | default "" -}}
+{{- $kind := .Kind | default "" -}}
+{{- return and (ne $format "print") (or
+  (in (slice "docs" "blog" "swagger") $type)
+  (in (slice "taxonomy" "term") $kind)
+) -}}

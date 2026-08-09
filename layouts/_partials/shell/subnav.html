@@ -1,0 +1,19 @@
+{{- $config := partial "shell/config.html" . -}}
+<header class="td-shell-subnav d-md-none d-print-none">
+  <a class="td-shell-subnav__brand" href="{{ .Site.Home.RelPermalink }}" aria-label="{{ $config.brandName }} home">
+    <img src="{{ $config.logoURL }}" alt="" width="20" height="20">
+    <span class="td-shell-wordmark">{{ $config.brandName }}</span>
+  </a>
+  <span class="td-shell-subnav__spacer"></span>
+  {{- if partial "shell/search-enabled.html" . }}
+  <button type="button" class="td-shell-iconbtn td-shell-subnav__btn" data-td-shell-search-open
+    aria-label="{{ T "ui_search" }}" aria-controls="td-shell-search" aria-expanded="false">{{ partialCached "shell/icon.html" "search" "search" }}</button>
+  {{- end }}
+  {{- if partial "shell/sidebar-enabled.html" . }}
+  <button type="button" class="td-shell-iconbtn td-shell-subnav__btn" data-td-shell-drawer-open
+    title="{{ T "ui_drawer_open" }}" aria-label="{{ T "ui_drawer_open" }}"
+    aria-controls="td-shell-sidebar" aria-expanded="false">
+    {{- partialCached "shell/icon.html" "panel-left" "panel-left" -}}
+  </button>
+  {{- end }}
+</header>

@@ -1,0 +1,2 @@
+{{- $bodyClass := .Params.body_class | default "" -}}
+{{- return not (or (.Param "ui.no_left_sidebar") (in $bodyClass "td-no-left-sidebar")) -}}

@@ -1,0 +1,627 @@
+// ============================================================
+// shell/sidebar —— 侧栏面板内部：头部搜索钮 / 导航树 / 底部操作区
+// ============================================================
+
+/* ----------------------------------------------------------------- 头部 */
+
+// 固定头部纵列：品牌行 + 搜索行 + 根下拉（fumadocs v16 header stack 同构）。
+.td-shell-sidebar__header {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 16px 16px 8px;
+}
+
+// 品牌行（v16 logo row）：logo+wordmark 左、收起钮右上。抽屉态（<md）隐藏
+//（subnav 已展示品牌）。
+.td-shell-sidebar__brand-row {
+  display: none;
+
+  @include media-breakpoint-up(md) {
+    display: flex;
+    align-items: flex-start;
+  }
+}
+
+.td-shell-sidebar__brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  margin-inline-end: auto;
+  font-size: 15px;
+  font-weight: 500;
+
+  &:hover {
+    text-decoration: none;
+  }
+
+  img {
+    display: block;
+    width: 20px;
+    height: 20px;
+  }
+}
+
+.td-shell-sidebar__header-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  > .td-search,
+  > .td-shell-sidebar__header-spacer {
+    flex: 1 1 auto;
+    min-width: 0;
+  }
+
+  .DocSearch-Button {
+    width: 100%;
+    margin: 0;
+  }
+}
+
+.td-shell-sidebar__version {
+  flex: 0 0 auto;
+  padding: 10px 16px 16px;
+
+  .td-version-menu {
+    width: 100%;
+  }
+
+  .td-version-menu__title {
+    width: 100%;
+    border: 1px solid var(--bs-border-color);
+    background: var(--td-shell-field);
+    color: var(--bs-body-color);
+  }
+
+  .dropdown-menu {
+    width: 100%;
+    max-height: 26rem;
+    overflow-y: auto;
+  }
+}
+
+.td-shell-sidebar__mobile-utils {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding-top: 10px;
+  border-top: 1px solid var(--bs-border-color);
+
+  .td-language-selector {
+    flex: 1 1 auto;
+    min-width: 0;
+  }
+
+  .td-language-selector--list {
+    width: 100%;
+    justify-content: flex-start;
+  }
+}
+
+.td-shell-search-btn {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 6px 6px 8px;
+  border: 1px solid var(--bs-border-color);
+  border-radius: 10px;
+  background: var(--td-shell-field);
+  color: var(--bs-tertiary-color); // 占位文案更灰一档
+  font-size: 14px;
+  line-height: 20px;
+  text-align: start;
+  transition:
+    background-color 150ms ease,
+    color 150ms ease;
+
+  .td-shell-icon {
+    width: 16px;
+    height: 16px;
+    flex-shrink: 0;
+  }
+
+  &:hover {
+    background: var(--td-shell-accent);
+    color: var(--bs-body-color);
+  }
+
+  &__label {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  &__keys {
+    margin-inline-start: auto;
+    display: inline-flex;
+    gap: 2px;
+
+    // 触屏设备上快捷键徽章没有意义。
+    @media (hover: none) and (pointer: coarse) {
+      display: none;
+    }
+
+    kbd {
+      font-family: inherit;
+      font-size: 12px;
+      line-height: 18px;
+      padding: 0 6px;
+      border: 1px solid var(--bs-border-color);
+      border-radius: 7px;
+      background: var(--bs-body-bg);
+      color: var(--td-shell-muted-fg);
+    }
+  }
+}
+
+// 抽屉关闭钮：仅移动端显示（复合选择器压过 .td-shell-iconbtn 的 display）。
+.td-shell-iconbtn.td-shell-sidebar__close {
+  display: none;
+
+  @include media-breakpoint-down(md) {
+    display: inline-flex;
+  }
+}
+
+/* ------------------------------------------------------------- 滚动视口 */
+
+.td-shell-sidebar__viewport {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: 8px 16px 16px;
+  mask-image: linear-gradient(
+    to bottom,
+    transparent,
+    #000 12px,
+    #000 calc(100% - 12px),
+    transparent
+  );
+  -webkit-mask-image: linear-gradient(
+    to bottom,
+    transparent,
+    #000 12px,
+    #000 calc(100% - 12px),
+    transparent
+  );
+  scrollbar-width: thin;
+  scrollbar-color: transparent transparent;
+
+  &:hover {
+    scrollbar-color: var(--bs-border-color) transparent;
+  }
+
+  &::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    border-radius: 999px;
+    background: transparent;
+  }
+
+  &:hover::-webkit-scrollbar-thumb {
+    background: var(--bs-border-color);
+  }
+}
+
+/* --------------------------------------------------------------- 导航树 */
+
+.td-shell-tree {
+  ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  // 顶级小节之间留一丝呼吸感。
+  .ul-1 > li + li {
+    margin-top: 2px;
+  }
+}
+
+.td-shell-tree__item--hidden {
+  display: none;
+}
+
+.td-shell-tree__row {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 8px;
+  padding-inline-start: var(--td-shell-indent, 8px);
+  border-radius: 10px;
+  color: var(--td-shell-muted-fg);
+  transition: background-color 150ms ease;
+
+  @include media-breakpoint-up(md) {
+    padding-block: 6px;
+  }
+
+  // fumadocs 手感：hover 入场瞬时、出场 150ms 淡出。
+  &:hover {
+    background: var(--td-shell-accent);
+    transition: none;
+
+    > .td-shell-tree__link {
+      color: var(--bs-body-color);
+    }
+  }
+
+  &.td-shell-active {
+    background: var(--td-shell-primary-dim);
+    transition: none;
+
+    > .td-shell-tree__link,
+    &:hover > .td-shell-tree__link {
+      color: var(--td-shell-primary);
+    }
+  }
+}
+
+.td-shell-tree__link {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: inherit;
+  font-weight: 400;
+
+  &:hover,
+  &:focus {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  > i {
+    flex-shrink: 0;
+    width: 1.15em;
+    text-align: center;
+    font-size: 0.95em;
+    color: var(--bs-tertiary-color);
+  }
+
+  // 默认溢出策略：单行省略号（params.ui.sidebar_item_overflow: ellipsis）。
+  > span {
+    min-width: 0;
+    flex: 1 1 auto;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+}
+
+// wrap 模式（params.ui.sidebar_item_overflow: wrap，经 cascade 可按栏目覆盖）。
+.td-shell-layout--nav-wrap .td-shell-tree__link > span {
+  white-space: normal;
+  overflow: visible;
+  text-overflow: clip;
+  overflow-wrap: anywhere;
+}
+
+// 顶级小节行：字重与颜色略强，构成分组层级。
+.td-shell-tree .ul-1 > li > .td-shell-tree__row > .td-shell-tree__link {
+  font-weight: 500;
+  color: var(--bs-body-color);
+}
+
+.td-shell-tree .ul-1 > li > .td-shell-tree__row {
+  color: var(--bs-body-color);
+}
+
+// 活跃行内的图标随主色。
+.td-shell-tree__row.td-shell-active .td-shell-tree__link > i {
+  color: inherit;
+}
+
+/* 折叠机制：语义化 button + aria-expanded + grid-rows 高度动画 */
+
+.td-shell-tree__chevron {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  margin: 0;
+  margin-inline-start: auto;
+  border: 0;
+  border-radius: 7px;
+  background: transparent;
+  color: var(--td-shell-muted-fg);
+  cursor: pointer;
+
+  .td-shell-icon {
+    width: 16px;
+    height: 16px;
+    transform: rotate(-90deg);
+    transition: transform 150ms ease;
+  }
+
+  &:hover {
+    color: var(--bs-body-color);
+  }
+}
+
+.td-shell-tree__chevron[aria-expanded='true'] .td-shell-icon,
+[data-td-shell-tree-toggle][aria-expanded='true']
+  > .td-shell-tree__chevron
+  .td-shell-icon {
+  transform: rotate(0deg);
+}
+
+.td-shell-tree__children {
+  display: grid;
+  grid-template-rows: 0fr;
+  opacity: 0;
+  // visibility 在收起动画结束后才切换，保证折叠内容不可命中 / 不可键盘聚焦。
+  visibility: hidden;
+  transition:
+    grid-template-rows 150ms var(--td-shell-ease-collapsible),
+    opacity 150ms ease,
+    visibility 0s linear 150ms;
+
+  &--static {
+    grid-template-rows: 1fr;
+    opacity: 1;
+    visibility: visible;
+    transition: none;
+  }
+}
+
+.td-shell-tree__children.is-open {
+  grid-template-rows: 1fr;
+  opacity: 1;
+  visibility: visible;
+  transition:
+    grid-template-rows 150ms var(--td-shell-ease-collapsible),
+    opacity 150ms ease,
+    visibility 0s;
+}
+
+.td-shell-tree__children-inner {
+  overflow: hidden;
+  min-height: 0;
+}
+
+/* 缩进（行自身 padding）与嵌套竖轨（挂在 ul-2 容器上，x=10px） */
+
+.td-shell-tree .ul-2 > li > .td-shell-tree__row {
+  --td-shell-indent: 24px;
+}
+.td-shell-tree .ul-3 > li > .td-shell-tree__row {
+  --td-shell-indent: 36px;
+}
+.td-shell-tree .ul-4 > li > .td-shell-tree__row {
+  --td-shell-indent: 48px;
+}
+.td-shell-tree .ul-5 > li > .td-shell-tree__row {
+  --td-shell-indent: 60px;
+}
+
+.td-shell-tree .ul-2 {
+  position: relative;
+
+  &::before {
+    content: '';
+    position: absolute;
+    inset-block: 4px;
+    inset-inline-start: 10px;
+    width: 1px;
+    background: var(--td-shell-rail);
+  }
+}
+
+// 活跃行在同一 x 处覆画一段主色轨。
+.td-shell-tree .ul-2 .td-shell-tree__row.td-shell-active::before {
+  content: '';
+  position: absolute;
+  inset-block: 6px;
+  inset-inline-start: 10px;
+  width: 1px;
+  background: var(--td-shell-primary);
+  z-index: 2;
+}
+
+/* blog 树根：渲染成小节标题样貌的链接行 */
+
+.td-shell-tree__row--root {
+  margin-bottom: 4px;
+
+  > .td-shell-tree__link {
+    font-weight: 600;
+    color: var(--bs-body-color);
+  }
+}
+
+/* ----------------------------------------------------------------- 底部 */
+
+/* ghost 图标钮（浮控等通用） */
+
+.td-shell-iconbtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--td-shell-muted-fg);
+  transition:
+    background-color 100ms ease,
+    color 100ms ease;
+
+  .td-shell-icon {
+    width: 18px;
+    height: 18px;
+  }
+
+  &:hover,
+  &:focus-visible {
+    background: var(--td-shell-accent);
+    color: var(--bs-body-color);
+    text-decoration: none;
+  }
+}
+
+/* 根节点下拉（v16 SidebarTabsDropdown）：搜索行下方，切换 docs 根 / self 根 section */
+
+.td-shell-root {
+  position: relative;
+}
+
+.td-shell-root__trigger {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  gap: 8px;
+  padding: 8px;
+  border: 1px solid var(--bs-border-color);
+  border-radius: 8px;
+  background: var(--td-shell-field);
+  color: var(--bs-body-color);
+  font-size: 14px;
+  text-align: start;
+  transition:
+    background-color 150ms ease,
+    color 150ms ease;
+
+  &:hover,
+  &[aria-expanded='true'] {
+    background: var(--td-shell-accent);
+  }
+
+  > .td-shell-icon--chevrons-up-down {
+    width: 16px;
+    height: 16px;
+    flex-shrink: 0;
+    margin-inline-start: auto;
+    color: var(--td-shell-muted-fg);
+  }
+}
+
+.td-shell-root__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+  color: var(--td-shell-primary);
+
+  i {
+    font-size: 15px;
+  }
+
+  &:empty {
+    display: none;
+  }
+}
+
+.td-shell-root__title {
+  min-width: 0;
+  font-weight: 500;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.td-shell-root__pop {
+  position: absolute;
+  top: calc(100% + 4px);
+  inset-inline: 0;
+  z-index: 70;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 200px;
+  padding: 4px;
+  border: 1px solid var(--bs-border-color);
+  border-radius: 12px;
+  background: color-mix(in srgb, var(--td-shell-popover) 60%, transparent);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  box-shadow: var(--td-shell-shadow-lg);
+  transform-origin: top;
+  opacity: 0;
+  transform: scale(0.9);
+  transition:
+    opacity 100ms ease,
+    transform 100ms ease;
+
+  &.is-open {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.td-shell-root__item {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 6px;
+  border-radius: 8px;
+  color: var(--bs-body-color);
+
+  &:hover {
+    background: var(--td-shell-accent);
+    color: var(--bs-body-color);
+    text-decoration: none;
+  }
+
+  .td-shell-root__icon {
+    margin-top: 1px;
+  }
+}
+
+.td-shell-root__meta {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.td-shell-root__item-title {
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1.1;
+}
+
+.td-shell-root__item-desc {
+  font-size: 13px;
+  line-height: 1.35;
+  color: var(--td-shell-muted-fg);
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+// 非活跃条目的对勾保留占位（invisible），保证行宽一致（v16 同款）。
+.td-shell-root__check {
+  display: inline-flex;
+  flex-shrink: 0;
+  margin-inline-start: auto;
+  padding-top: 3px;
+  color: var(--td-shell-primary);
+
+  .td-shell-icon {
+    width: 14px;
+    height: 14px;
+  }
+
+  &.is-hidden {
+    visibility: hidden;
+  }
+}

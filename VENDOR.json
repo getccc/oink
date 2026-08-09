@@ -1,0 +1,291 @@
+{
+  "schema": 1,
+  "generated": "2026-08-08",
+  "hash": "sha256",
+  "dependencies": [
+    {
+      "name": "bootstrap",
+      "version": "5.3.8",
+      "source": "https://registry.npmjs.org/bootstrap/-/bootstrap-5.3.8.tgz",
+      "license": "MIT",
+      "licenseFiles": ["assets/third_party/bootstrap/LICENSE"],
+      "artifacts": [
+        {"path": "assets/third_party/bootstrap/scss/bootstrap.scss", "sha256": "1d0ce002e4cc698d712589fbf9eaf02a0690284526d71ca4d78afe417204ab0d"},
+        {"path": "assets/third_party/bootstrap/dist/css/bootstrap.rtl.min.css", "sha256": "b9048c83571ab73da54395b6b307219f9eb9c5447f4f8edb17a069eb0f19465a"},
+        {"path": "assets/third_party/bootstrap/dist/js/bootstrap.bundle.js", "sha256": "69566344cf5722be51acbc90fdb26c24eb01cc1c153f738b16b2fa87ccd3b510"}
+      ]
+    },
+    {
+      "name": "@popperjs/core",
+      "version": "2.11.8",
+      "source": "https://registry.npmjs.org/@popperjs/core/-/core-2.11.8.tgz",
+      "license": "MIT",
+      "licenseFiles": ["assets/third_party/bootstrap/LICENSE.popper"],
+      "artifacts": [
+        {"path": "assets/third_party/bootstrap/dist/js/bootstrap.bundle.js", "sha256": "69566344cf5722be51acbc90fdb26c24eb01cc1c153f738b16b2fa87ccd3b510"}
+      ]
+    },
+    {
+      "name": "@fortawesome/fontawesome-free",
+      "version": "6.7.2",
+      "source": "https://registry.npmjs.org/@fortawesome/fontawesome-free/-/fontawesome-free-6.7.2.tgz",
+      "license": "CC-BY-4.0 AND OFL-1.1 AND MIT",
+      "licenseFiles": ["assets/third_party/Font-Awesome/LICENSE.txt"],
+      "artifacts": [
+        {"path": "assets/third_party/Font-Awesome/scss/fontawesome.scss", "sha256": "3e751a5d7f3cb0bac9f5efc5b03072fc915632fc8ed1d3cf7a9e1a749ee8df72"},
+        {"path": "static/webfonts/fa-solid-900.woff2", "sha256": "aa75998623a391e61c6901794ace832e3ecdd288b56d608f21bea0411acc0b8e"}
+      ]
+    },
+    {
+      "name": "@fontsource-variable/open-sans",
+      "version": "5.3.0",
+      "source": "https://registry.npmjs.org/@fontsource-variable/open-sans/-/open-sans-5.3.0.tgz",
+      "license": "OFL-1.1",
+      "licenseFiles": ["assets/third_party/open-sans/LICENSE"],
+      "artifacts": [
+        {"path": "assets/third_party/open-sans/_normal.scss", "sha256": "4c5cb06dcb4ce897bb9af24e41e29a10dab1098652fb94c9a275b19f8ebf3b5b"},
+        {"path": "assets/third_party/open-sans/_italic.scss", "sha256": "748d13e2b46f24dbde68abfc4e393458213f7a15bdb799504194babd8c3536d7"},
+        {"path": "static/webfonts/open-sans/open-sans-latin-wght-normal.woff2", "sha256": "d8e4fe0452aa2076429a9bb5d8757d00a994dd95986cf950e9a1a371b9a072a0"}
+      ]
+    },
+    {
+      "name": "@fontsource/chakra-petch",
+      "version": "5.3.0",
+      "source": "https://registry.npmjs.org/@fontsource/chakra-petch/-/chakra-petch-5.3.0.tgz",
+      "license": "OFL-1.1",
+      "licenseFiles": ["assets/third_party/chakra-petch/LICENSE"],
+      "artifacts": [
+        {"path": "static/webfonts/brand/chakra-petch-latin-700-normal.woff2", "sha256": "ce5095dc1cb200aaa939e38067a0677018d10e9f26ec38cdcf1557ac524fc775"}
+      ]
+    },
+    {
+      "name": "@fontsource/ibm-plex-mono",
+      "version": "5.3.0",
+      "source": "https://registry.npmjs.org/@fontsource/ibm-plex-mono/-/ibm-plex-mono-5.3.0.tgz",
+      "license": "OFL-1.1",
+      "licenseFiles": ["assets/third_party/ibm-plex-mono/LICENSE"],
+      "artifacts": [
+        {"path": "static/webfonts/brand/ibm-plex-mono-latin-400-normal.woff2", "sha256": "08949f728dc52d528e69b1667d15c89a5686a4ee9a296ff90983985f99c380f7"},
+        {"path": "static/webfonts/brand/ibm-plex-mono-latin-400-italic.woff2", "sha256": "0840095faae86403735a8c04014b72cb29e7923646b222b360b7e8252932e4e3"},
+        {"path": "static/webfonts/brand/ibm-plex-mono-latin-600-normal.woff2", "sha256": "0d1f0b8d0722224e32e9f28261bdc86c79115be73444ae5eceb73976a1bcdf83"}
+      ]
+    },
+    {
+      "name": "jquery",
+      "version": "3.7.1",
+      "source": "https://registry.npmjs.org/jquery/-/jquery-3.7.1.tgz",
+      "license": "MIT",
+      "licenseFiles": ["assets/third_party/jquery/LICENSE.txt"],
+      "artifacts": [
+        {"path": "assets/js/third_party/jquery.min.js", "sha256": "fc9a93dd241f6b045cbff0481cf4e1901becd0e12fb45166a8f17f95823f0b1a"}
+      ]
+    },
+    {
+      "name": "lunr",
+      "version": "2.3.9",
+      "source": "https://registry.npmjs.org/lunr/-/lunr-2.3.9.tgz",
+      "license": "MIT",
+      "licenseFiles": ["assets/third_party/lunr/LICENSE"],
+      "artifacts": [
+        {"path": "assets/js/third_party/lunr.min.js", "sha256": "0c50d9002b85780a842afffb567bb54ede402dae7c6dc5997a018614d8044fc8"}
+      ]
+    },
+    {
+      "name": "@docsearch/js",
+      "version": "3.8.2",
+      "source": "https://registry.npmjs.org/@docsearch/js/-/js-3.8.2.tgz",
+      "license": "MIT",
+      "licenseFiles": ["assets/third_party/docsearch/LICENSE"],
+      "artifacts": [
+        {"path": "assets/third_party/docsearch/docsearch.js", "sha256": "ed71fadbc0429b95af9495b7122202cb9f799d1ed18a07ff0f00894b67be2870"},
+        {"path": "assets/third_party/docsearch/docsearch.css", "sha256": "98c7a047cfb0182b3dacada083966530f8928a98da4b60b325d1a8297be641fd"}
+      ]
+    },
+    {
+      "name": "mermaid",
+      "version": "11.14.0",
+      "source": "https://registry.npmjs.org/mermaid/-/mermaid-11.14.0.tgz",
+      "license": "MIT",
+      "licenseFiles": ["assets/third_party/mermaid/LICENSE"],
+      "artifacts": [
+        {"path": "assets/third_party/mermaid/mermaid.min.js", "sha256": "217b66ef4279c33c141b4afe22effad10a91c02558dc70917be2c0981e78ed87"}
+      ]
+    },
+    {
+      "name": "katex",
+      "version": "0.16.21",
+      "source": "https://registry.npmjs.org/katex/-/katex-0.16.21.tgz",
+      "license": "MIT",
+      "licenseFiles": ["assets/third_party/katex/LICENSE"],
+      "artifacts": [
+        {"path": "assets/third_party/katex/katex.min.js", "sha256": "863811e2baa0849c77bc92d26d44f4d0a4843c2a8ab52c462017dea57316e4d8"},
+        {"path": "assets/third_party/katex/katex.min.css", "sha256": "f787891b550d554c214aa8902f39ac46df2dbd48fdec500a2040a5dce1e8ab58"}
+      ]
+    },
+    {
+      "name": "markmap-autoloader",
+      "version": "0.18.12",
+      "source": "https://registry.npmjs.org/markmap-autoloader/-/markmap-autoloader-0.18.12.tgz",
+      "license": "MIT",
+      "licenseFiles": ["assets/third_party/markmap/LICENSE.markmap-autoloader"],
+      "artifacts": [
+        {"path": "assets/third_party/markmap/markmap-autoloader.js", "sha256": "1d30f5cf1ce30811ab3ca84c46e66e885c2945c52757cfc6efd226d108239370"}
+      ]
+    },
+    {
+      "name": "markmap-lib",
+      "version": "0.18.12",
+      "source": "https://registry.npmjs.org/markmap-lib/-/markmap-lib-0.18.12.tgz",
+      "license": "MIT",
+      "licenseFiles": ["assets/third_party/markmap/LICENSE.markmap-lib"],
+      "artifacts": [
+        {"path": "assets/third_party/markmap/markmap-lib.js", "sha256": "edfe321a3fe46e9c0f0af8370145aee180975f243f2242f0f8181ac4273e08e1"}
+      ]
+    },
+    {
+      "name": "markmap-view",
+      "version": "0.18.12",
+      "source": "https://registry.npmjs.org/markmap-view/-/markmap-view-0.18.12.tgz",
+      "license": "MIT",
+      "licenseFiles": ["assets/third_party/markmap/LICENSE.markmap-view"],
+      "artifacts": [
+        {"path": "assets/third_party/markmap/markmap-view.js", "sha256": "861eb6d20af18aaa300878d46d695722a73625c58b40f49236af027f18b74e07"}
+      ]
+    },
+    {
+      "name": "markmap-toolbar",
+      "version": "0.18.12",
+      "source": "https://registry.npmjs.org/markmap-toolbar/-/markmap-toolbar-0.18.12.tgz",
+      "license": "MIT",
+      "licenseFiles": ["assets/third_party/markmap/LICENSE.markmap-toolbar"],
+      "artifacts": [
+        {"path": "assets/third_party/markmap/markmap-toolbar.js", "sha256": "a83674f528d003ca88673cdad55a703fbbfe1782305da2bfeda1149a4ff9e16c"},
+        {"path": "assets/third_party/markmap/markmap-toolbar.css", "sha256": "a30fcf8f1d2659fc4deec0950c7d7a4c0be97975f75230eca0440ecabec931d9"}
+      ]
+    },
+    {
+      "name": "d3",
+      "version": "7.9.0",
+      "source": "https://registry.npmjs.org/d3/-/d3-7.9.0.tgz",
+      "license": "ISC",
+      "licenseFiles": ["assets/third_party/markmap/LICENSE.d3"],
+      "artifacts": [
+        {"path": "assets/third_party/markmap/d3.min.js", "sha256": "f2094bbf6141b359722c4fe454eb6c4b0f0e42cc10cc7af921fc158fceb86539"}
+      ]
+    },
+    {
+      "name": "highlight.js",
+      "version": "11.11.1",
+      "source": "https://registry.npmjs.org/highlight.js/-/highlight.js-11.11.1.tgz",
+      "license": "BSD-3-Clause",
+      "licenseFiles": ["assets/third_party/markmap/LICENSE.highlightjs"],
+      "artifacts": [
+        {"path": "assets/third_party/markmap/highlightjs/highlight.min.js", "sha256": "c4a399dd6f488bc97a3546e3476747b3e714c99c57b9473154c6fb8d259b9381"}
+      ]
+    },
+    {
+      "name": "webfontloader",
+      "version": "1.6.28",
+      "source": "https://registry.npmjs.org/webfontloader/-/webfontloader-1.6.28.tgz",
+      "license": "Apache-2.0",
+      "licenseFiles": ["assets/third_party/markmap/LICENSE.webfontloader"],
+      "artifacts": [
+        {"path": "assets/third_party/markmap/webfontloader.js", "sha256": "e0ee294b5487df566aad23b603fd902535634cfa957be8e7620396515afb1047"}
+      ]
+    },
+    {
+      "name": "swagger-ui-dist",
+      "version": "5.21.0",
+      "source": "https://registry.npmjs.org/swagger-ui-dist/-/swagger-ui-dist-5.21.0.tgz",
+      "license": "Apache-2.0",
+      "licenseFiles": ["assets/third_party/swagger-ui/LICENSE", "assets/third_party/swagger-ui/NOTICE"],
+      "artifacts": [
+        {"path": "assets/third_party/swagger-ui/swagger-ui-bundle.js", "sha256": "f557db538d8969dc0f35d6b441b3c7cc0be845d9dc0fcfbf66ea67053ae8933b"},
+        {"path": "assets/third_party/swagger-ui/swagger-ui-standalone-preset.js", "sha256": "8710b6d90ece7113dd467500fa14ed33b5848b68b8695ad075f8d5c6c9af3b01"},
+        {"path": "assets/third_party/swagger-ui/swagger-ui.css", "sha256": "29e7a850fea3b1a1e641bff2ff9b3302f8c0063d435971246b592e189b808989"}
+      ]
+    },
+    {
+      "name": "redoc",
+      "version": "2.5.3",
+      "source": "https://registry.npmjs.org/redoc/-/redoc-2.5.3.tgz",
+      "license": "MIT",
+      "licenseFiles": ["assets/third_party/redoc/LICENSE", "assets/third_party/redoc/redoc.standalone.js.LICENSE.txt"],
+      "artifacts": [
+        {"path": "assets/third_party/redoc/redoc.standalone.js", "sha256": "0dcd970abc8cce6097eb87d044ca0c36a4ad4c8eb3d05d977fc24c32237144c0"}
+      ]
+    },
+    {
+      "name": "asciinema-player",
+      "version": "3.13.5",
+      "source": "https://registry.npmjs.org/asciinema-player/-/asciinema-player-3.13.5.tgz",
+      "license": "Apache-2.0",
+      "licenseFiles": ["assets/third_party/asciinema/LICENSE"],
+      "artifacts": [
+        {"path": "assets/third_party/asciinema/asciinema-player.min.js", "sha256": "d420c6099cb59d17057f2ef338d9ef93947dff3e2172074dd1c10f36ce487860"},
+        {"path": "assets/third_party/asciinema/asciinema-player.css", "sha256": "1cf72b3e854f91ad64ff9ea7cfb5041ba87381c578b3681be174a5f04bab1d08"}
+      ]
+    },
+    {
+      "name": "echarts",
+      "version": "6.0.0",
+      "source": "https://registry.npmjs.org/echarts/-/echarts-6.0.0.tgz",
+      "license": "Apache-2.0",
+      "licenseFiles": ["assets/third_party/echarts/LICENSE"],
+      "artifacts": [
+        {"path": "assets/third_party/echarts/echarts.min.js", "sha256": "baa8dfe7e1d9336b98e8986ba7e20ea15e7cdbea1ef42a59d59478632fa45a1d"}
+      ]
+    },
+    {
+      "name": "@antv/infographic",
+      "version": "0.2.7",
+      "source": "https://registry.npmjs.org/@antv/infographic/-/infographic-0.2.7.tgz",
+      "license": "MIT",
+      "licenseFiles": ["assets/third_party/infographic/LICENSE"],
+      "artifacts": [
+        {"path": "assets/third_party/infographic/infographic.min.js", "sha256": "a57e22512fdfb116b781341dbc1c6460211dafe8b9be542594813d90a140de9f"}
+      ]
+    },
+    {
+      "name": "pako",
+      "version": "2.1.0",
+      "source": "https://registry.npmjs.org/pako/-/pako-2.1.0.tgz",
+      "license": "MIT AND Zlib",
+      "licenseFiles": ["assets/third_party/pako/LICENSE"],
+      "artifacts": [
+        {"path": "assets/third_party/pako/pako_deflate.min.js", "sha256": "9429785d1e7f805d46640c4155957fd0f286144dec05cea09f6f2eaa646adb21"}
+      ]
+    },
+    {
+      "name": "external-svg-loader",
+      "version": "1.3.4",
+      "source": "https://registry.npmjs.org/external-svg-loader/-/external-svg-loader-1.3.4.tgz",
+      "license": "MIT",
+      "licenseFiles": ["assets/third_party/external-svg-loader/LICENSE"],
+      "artifacts": [
+        {"path": "assets/third_party/external-svg-loader/svg-loader.min.js", "sha256": "a4e778a36e725d5549bf31467bb80d7cf5ff13db213629211c3bbd2327f31ed5"}
+      ]
+    },
+    {
+      "name": "idb-keyval",
+      "version": "3.2.0",
+      "source": "https://registry.npmjs.org/idb-keyval/-/idb-keyval-3.2.0.tgz",
+      "license": "Apache-2.0",
+      "licenseFiles": ["assets/third_party/external-svg-loader/LICENSE.idb-keyval"],
+      "artifacts": [
+        {"path": "assets/third_party/external-svg-loader/svg-loader.min.js", "sha256": "a4e778a36e725d5549bf31467bb80d7cf5ff13db213629211c3bbd2327f31ed5"}
+      ]
+    },
+    {
+      "name": "prismjs",
+      "version": "1.28.0",
+      "source": "https://registry.npmjs.org/prismjs/-/prismjs-1.28.0.tgz",
+      "license": "MIT",
+      "licenseFiles": ["assets/third_party/prism/LICENSE"],
+      "artifacts": [
+        {"path": "static/js/prism.js", "sha256": "1a3d9aa675c7fa71d43340f94c445d0f602c15b1af23c2b1709bb9e686bb4578"},
+        {"path": "static/css/prism.css", "sha256": "2614cb234c8d8f03c4bd863f78314ffb7a8e535efaa166a240a08b88d0a7109f"}
+      ]
+    }
+  ]
+}

@@ -1,0 +1,28 @@
+{{- $file := .Get 0 -}}
+{{- $url := "" -}}
+{{- $otheroptions := .Get 1 -}}
+{{- .Page.Store.Set "hasRedoc" true -}}
+
+{{- if hasPrefix $file "http" -}}
+  {{- $url = $file -}}
+{{- else if fileExists (print .Page.File.Dir $file) -}}
+  {{- $url = print .Page.Site.BaseURL .Page.File.Dir $file -}}
+{{- else -}}
+  {{- $url = print .Page.Site.BaseURL $file -}}
+{{- end -}}
+
+<style>
+  .td-redoc input { height: 64px; }
+  .td-redoc span[type="put"], .td-redoc span[type="get"],
+  .td-redoc span[type="delete"], .td-redoc span[type="post"],
+  .td-redoc span[type="options"], .td-redoc span[type="patch"],
+  .td-redoc span[type="basic"], .td-redoc span[type="link"],
+  .td-redoc span[type="head"] { border-radius: 4px; }
+  .td-redoc h2 { margin-top: 0; }
+  .td-redoc img[alt="redocly logo"] { display: none; }
+  .td-redoc a[href="https://redocly.com/redoc/"] { display: none; }
+</style>
+<div id="redoc-container" class="td-redoc">
+  <redoc spec-url="{{ $url }}" hide-hostname="true" hide-logo="true"
+    suppress-warnings="true" lazy-rendering native-scrollbars {{ $otheroptions }}></redoc>
+</div>

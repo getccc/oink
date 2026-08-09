@@ -1,0 +1,9 @@
+.DS_Store
+.hugo_build.lock
+public/
+resources/
+.idea/
+.codex/
+.cursor/
+.claude/
+tmp/

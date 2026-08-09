@@ -1,0 +1,56 @@
+{{- $page := .page -}}
+{{- $data := .data -}}
+{{- $id := .id -}}
+<section id="{{ $id }}" class="oink-section oink-capabilities{{ with $data.class }} {{ . }}{{ end }}"{{ with $data.title }} aria-labelledby="{{ $id }}-title"{{ end }}>
+  <div class="landing-container">
+    {{- partial "home/heading.html" (dict "page" $page "data" $data "id" $id) }}
+    {{- range $index, $module := $data.items }}
+    {{- $url := $module.url | default $module.href }}
+    <article class="oink-module{{ if eq (mod $index 2) 1 }} oink-module--reverse{{ end }}">
+      <div class="oink-module__copy">
+        {{- with $module.ref }}<p class="oink-module__ref">{{ partial "home/markdown.html" (dict "page" $page "value" .) }}</p>{{ end }}
+        <h3>
+          {{- if $url }}<a href="{{ $url | relLangURL }}"{{ if $module.external }} target="_blank" rel="noopener noreferrer"{{ end }}>{{ end -}}
+          {{- partial "home/markdown.html" (dict "page" $page "value" ($module.title | default $module.name)) -}}
+          {{- if $url }}</a>{{ end -}}
+        </h3>
+        {{- with $module.motto }}<p class="oink-module__motto">◇ {{ partial "home/markdown.html" (dict "page" $page "value" .) }}</p>{{ end }}
+        {{- with $module.bullets }}
+        <ul>{{ range . }}<li>{{ partial "home/markdown.html" (dict "page" $page "value" .) }}</li>{{ end }}</ul>
+        {{- end }}
+        {{- with $module.value }}<p class="oink-module__value">{{ partial "home/markdown.html" (dict "page" $page "value" .) }}</p>{{ end }}
+      </div>
+
+      {{- with $module.visual }}
+        {{- if eq .type "code" }}
+      <div class="oink-codeplate" aria-label="{{ .aria_label | default .title }}">
+        <div class="oink-codeplate__head"><span><i></i><i></i><i></i></span><b>{{ .title }}</b></div>
+        <pre><code>{{- range .lines }}<span class="{{ .class }}">{{ .prefix }}</span>{{ .text }}
+{{ end -}}</code></pre>
+      </div>
+        {{- else if eq .type "shell" }}
+      <div class="oink-shell-demo" aria-hidden="true">
+        <aside>
+          <span class="oink-shell-demo__brand"><i></i> {{ .brand }}</span>
+          <span class="oink-shell-demo__search">{{ .search }} <kbd>{{ .shortcut }}</kbd></span>
+          <b><i class="{{ .section_icon }}"></i> {{ .section }} <em>⌃</em></b>
+          <ul>{{ range .items }}<li{{ if .active }} class="active"{{ end }}>{{ .label }}</li>{{ end }}</ul>
+        </aside>
+        <main>
+          <small>{{ .eyebrow }}</small>
+          <strong>{{ range .title_lines }}{{ . }}<br>{{ end }}</strong>
+          {{- range .rules }}<span style="--w: {{ . }}"></span>{{ end }}
+        </main>
+      </div>
+        {{- else if eq .type "components" }}
+      <div class="oink-component-board" aria-hidden="true">
+        {{- range .items }}
+        <span><i class="{{ .icon }}"></i><b>{{ .title }}</b><small>{{ .detail }}</small></span>
+        {{- end }}
+      </div>
+        {{- end }}
+      {{- end }}
+    </article>
+    {{- end }}
+  </div>
+</section>

@@ -1,0 +1,13 @@
+{{ define "main" -}}
+<div class="td-content td-shell-blog-index">
+  <h1>{{ partial "taxonomy-label.html" (dict "page" . "key" .Data.Singular) }}: {{ .Title }}</h1>
+  {{ with .Content }}<div class="td-shell-term-summary">{{ . }}</div>{{ end }}
+</div>
+<div class="td-blog-posts">
+  <ul class="td-blog-posts-list">
+    {{- range .Pages.ByDate.Reverse }}
+      {{- partial "shell/blog-row.html" . -}}
+    {{- end }}
+  </ul>
+</div>
+{{ end -}}

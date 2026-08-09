@@ -1,0 +1,74 @@
+// Hydrate the active path of a cached sidebar without fetching page fragments.
+(function () {
+  'use strict';
+
+  function pathOf(url) {
+    try {
+      var path = new URL(url, window.location.href).pathname;
+      return path.endsWith('/') ? path : path + '/';
+    } catch (_) {
+      return '';
+    }
+  }
+
+  function init() {
+    var menu = document.getElementById('td-sidebar-menu');
+    if (!menu || !menu.classList.contains('d-none')) return;
+
+    var canonical = document.querySelector('link[rel="canonical"]');
+    var current = pathOf(canonical ? canonical.href : window.location.href);
+    var active = null;
+    var ancestor = null;
+
+    menu.querySelectorAll('a[href]').forEach(function (link) {
+      var path = pathOf(link.href);
+      if (path === current) active = link;
+      if (
+        path &&
+        current.startsWith(path) &&
+        (!ancestor || path.length > pathOf(ancestor.href).length)
+      ) {
+        ancestor = link;
+      }
+    });
+
+    var anchor = active || ancestor;
+    if (active) {
+      active.classList.add('active');
+      active.setAttribute('aria-current', 'page');
+      var row = active.closest('.td-shell-tree__row');
+      if (row) row.classList.add('td-shell-active');
+      var label = active.querySelector('span');
+      if (label) label.classList.add('td-sidebar-nav-active-item');
+    }
+
+    for (
+      var item = anchor && anchor.closest('li');
+      item;
+      item = item.parentElement && item.parentElement.closest('li')
+    ) {
+      item.classList.add('active-path');
+      var toggle = item.querySelector(
+        ':scope > .td-shell-tree__row [data-td-shell-tree-toggle]',
+      );
+      if (toggle) {
+        toggle.setAttribute('aria-expanded', 'true');
+        if (toggle.dataset.labelCollapse) {
+          toggle.setAttribute('aria-label', toggle.dataset.labelCollapse);
+        }
+        var target = document.getElementById(
+          toggle.getAttribute('aria-controls'),
+        );
+        if (target) target.classList.add('is-open');
+      }
+    }
+
+    menu.classList.remove('d-none');
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    init();
+  }
+})();

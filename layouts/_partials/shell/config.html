@@ -1,0 +1,14 @@
+{{- $name := .Site.Title -}}
+{{- $logoPath := .Site.Params.logo | default "icons/logo.svg" -}}
+{{- $logoURL := $logoPath | relURL -}}
+{{- with resources.Get $logoPath -}}
+  {{- $logoURL = .RelPermalink -}}
+{{- end -}}
+{{- $projectRepo := .Site.Params.github_project_repo | default .Site.Params.github_repo -}}
+{{- $quickLinks := .Site.Params.ui.quick_links | default (slice "docs" "blog") -}}
+{{- return dict
+  "brandName" $name
+  "logoURL" $logoURL
+  "projectRepo" $projectRepo
+  "quickLinks" $quickLinks
+-}}

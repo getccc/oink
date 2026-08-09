@@ -1,0 +1,26 @@
+{{ define "main" -}}
+{{- $home := partial "home-data.html" . -}}
+{{- $sections := slice -}}
+
+{{- if isset $home "sections" -}}
+  {{- $sections = $home.sections -}}
+{{- else -}}
+  {{- /* Preserve the pre-sections landing page for existing sites. */ -}}
+  {{- range slice "hero" "metrics" "capabilities" "principles" "cta" -}}
+    {{- if isset $home . -}}
+      {{- $sections = $sections | append . -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+
+<div class="oink-landing">
+  {{- range $index, $section := $sections -}}
+    {{- partial "home/section.html" (dict
+      "page" $
+      "home" $home
+      "entry" $section
+      "index" $index
+    ) -}}
+  {{- end -}}
+</div>
+{{- end }}

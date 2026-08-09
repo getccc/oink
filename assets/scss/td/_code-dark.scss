@@ -1,0 +1,85 @@
+@if $enable-dark-mode {
+  [data-bs-theme='light'] {
+    @import 'chroma/light';
+
+    // The generated Friendly palette contains several colors below 4.5:1 on
+    // OINK's light code canvas. Keep the token roles, but meet WCAG AA.
+    .chroma {
+      .ln,
+      .lnt,
+      .go,
+      .w {
+        color: #6b6b6b;
+      }
+
+      .nc,
+      .nn {
+        color: #08759f;
+      }
+
+      .no {
+        color: #226b8a;
+      }
+
+      .ni {
+        color: #b23d24;
+      }
+
+      .nv,
+      .vc,
+      .vg,
+      .vi,
+      .vm {
+        color: #8a3ca5;
+      }
+
+      .si {
+        color: #386d9c;
+      }
+
+      .sx,
+      .gp {
+        color: #a44a00;
+      }
+
+      .m,
+      .mb,
+      .mf,
+      .mh,
+      .mi,
+      .il,
+      .mo {
+        color: #18794e;
+      }
+
+      .c,
+      .ch,
+      .cm,
+      .c1,
+      .cs {
+        color: #326f7d;
+      }
+
+      .gr {
+        color: #c52222;
+      }
+
+      .gi {
+        color: #087a08;
+      }
+    }
+  }
+
+  [data-bs-theme='dark'] {
+    @import 'chroma/dark';
+
+    .chroma {
+      background-color: var(--td-pre-bg);
+
+      // Color tuning for the `native` Chroma style:
+      .go {
+        color: #cccccc95;
+      }
+    }
+  }
+}

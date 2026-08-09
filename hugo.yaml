@@ -1,0 +1,68 @@
+# Oink theme config
+#
+# cSpell:ignore docsy fortawesome fontawesome github permalinkable twbs webfonts
+
+params:
+  offlineSearchIndex: content
+  offlineSearchMaxResults: 10
+  time_format_blog: Monday, January 02, 2006
+  time_format_default: January 2, 2006
+  rss_sections: [blog]
+  page_width: normal
+  ui:
+    feedback:
+      enable: false
+    sidebar_menu_compact: true
+    sidebar_menu_foldable: true
+    sidebar_menu_truncate: 2000
+    sidebar_root_enabled: true
+    sidebar_root_menu: true
+    sidebar_width_min: 220
+    sidebar_width_max: 480
+    sidebar_item_overflow: ellipsis
+    page_context_menu:
+      enable: true
+      # Optional external actions, including AI tools. URLs may use the
+      # placeholders {url}, {title}, and {markdown_url}. No links are enabled
+      # by default, so page content is never sent to a third party implicitly.
+      links: []
+    ul_show: 2
+    scrollSpy:
+      disable: true
+
+outputFormats:
+  LLMS:
+    baseName: llms
+    isPlainText: true
+    mediaType: text/plain
+    notAlternative: true
+  print:
+    baseName: index
+    # FIXME: leave isHTML unset (i.e. false) until we get a Hugo fix for
+    # https://github.com/gohugoio/hugo/issues/14381
+    # isHTML: true
+    mediaType: text/html
+    path: _print
+    permalinkable: false
+
+# Needed fo KaTeX, possibly useful for others. see
+# https://github.com/google/docsy/pull/2465
+mediaTypes:
+  font/woff:
+    suffixes: [woff]
+  font/woff2:
+    suffixes: [woff2]
+
+module:
+  hugoVersion:
+    extended: true
+    min: 0.160.1
+  mounts:
+    - source: assets
+      target: assets
+    - source: i18n
+      target: i18n
+    - source: layouts
+      target: layouts
+    - source: static
+      target: static

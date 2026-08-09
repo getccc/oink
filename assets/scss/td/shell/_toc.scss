@@ -1,0 +1,317 @@
+// ============================================================
+// shell/toc —— 右侧「本页目录」：灰轨 + 1px 主色 thumb 竖条
+// Active path geometry is calculated by docs-shell.js.
+// ============================================================
+
+// 占位列（面板本体 fixed，右侧滚到底不随文档移动；整栏可隐藏）。
+.td-shell-toc {
+  display: none;
+
+  @include media-breakpoint-up(xl) {
+    display: block;
+    flex: 0 0 286px;
+    width: 286px;
+    transition:
+      width 150ms ease,
+      flex-basis 150ms ease;
+  }
+}
+
+.td-shell-toc__panel {
+  display: none;
+
+  @include media-breakpoint-up(xl) {
+    position: fixed;
+    inset-block: 0;
+    inset-inline-end: 0;
+    width: 286px;
+    z-index: 20;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    padding: 16px 20px 12px 8px;
+    transition:
+      transform 200ms ease,
+      opacity 150ms ease;
+  }
+}
+
+// 整栏隐藏（html[data-td-shell-toc=collapsed]）：列宽归零、面板右滑出。
+@include media-breakpoint-up(xl) {
+  [data-td-shell-toc='collapsed'] .td-shell-toc {
+    width: 0;
+    flex-basis: 0;
+  }
+
+  [data-td-shell-toc='collapsed'] .td-shell-toc__panel {
+    transform: translateX(100%);
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  [dir='rtl'][data-td-shell-toc='collapsed'] .td-shell-toc__panel {
+    transform: translateX(-100%);
+  }
+}
+
+// 右上恢复浮钮（仅 collapsed + ≥xl 显示）。
+.td-shell-toc-float {
+  display: none;
+  position: fixed;
+  top: 16px;
+  inset-inline-end: 16px;
+  z-index: 40;
+  padding: 2px;
+  border-radius: 12px;
+  border: 1px solid var(--bs-border-color);
+  background: var(--td-shell-card);
+  box-shadow: var(--td-shell-shadow-lg);
+}
+
+@include media-breakpoint-up(xl) {
+  [data-td-shell-toc='collapsed'] .td-shell-toc-float {
+    display: flex;
+    animation: td-shell-fade 300ms ease both;
+  }
+}
+
+/* controls 行：整栏隐藏开关 + 内容快捷入口 / 语言 + 亮暗 + GitHub */
+
+.td-shell-toc__actions {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  flex-shrink: 0;
+}
+
+.td-shell-toc__title-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 5px;
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--td-shell-muted-fg);
+  transition:
+    background-color 100ms ease,
+    color 100ms ease;
+
+  .td-shell-icon {
+    width: 16px;
+    height: 16px;
+  }
+
+  &:hover {
+    background: var(--td-shell-accent);
+    color: var(--bs-body-color);
+  }
+}
+
+.td-shell-toc__title {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+  margin: 10px 0 0;
+  padding-inline-start: 4px;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 20px;
+  color: var(--td-shell-muted-fg);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+
+  .td-shell-icon {
+    flex: 0 0 auto;
+    width: 16px;
+    height: 16px;
+  }
+}
+
+.td-shell-toc__actions-spacer {
+  flex: 1 1 auto;
+}
+
+// 小号 ghost 钮（actions 行专用，紧凑排布容纳五枚）。
+.td-shell-iconbtn.td-shell-iconbtn--sm {
+  padding: 4px;
+  border-radius: 6px;
+
+  .td-shell-icon {
+    width: 16px;
+    height: 16px;
+  }
+
+  // FA 图标（Docs/Blog 快捷钮，与左侧导航同款）尺寸对齐 lucide。
+  i {
+    display: inline-block;
+    width: 16px;
+    font-size: 14px;
+    line-height: 16px;
+    text-align: center;
+  }
+}
+
+.td-shell-toc__inner {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.td-shell-toc__body {
+  position: relative;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 12px 0;
+  margin-inline-start: 1px;
+  scrollbar-width: none;
+  mask-image: linear-gradient(
+    to bottom,
+    transparent,
+    #000 16px,
+    #000 calc(100% - 16px),
+    transparent
+  );
+  -webkit-mask-image: linear-gradient(
+    to bottom,
+    transparent,
+    #000 16px,
+    #000 calc(100% - 16px),
+    transparent
+  );
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+/* v16「normal」变体：每条目一段 SVG 轨道 + 主色路径 clip-path 高亮 + 滑动圆点。
+   缩进（20/32/44px）由 docs-shell.js 以内联 padding-inline-start 写入。 */
+
+.td-shell-toc__body #TableOfContents {
+  ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  a {
+    position: relative;
+    z-index: 0; // 让 z-index:-1 的轨道 SVG 垫在文字之下
+    display: block;
+    padding: 6px 0;
+    font-size: 14px;
+    line-height: 20px;
+    color: var(--td-shell-muted-fg);
+    overflow-wrap: anywhere;
+    transition: color 150ms ease;
+
+    &:hover {
+      color: var(--bs-body-color);
+      text-decoration: none;
+    }
+
+    &.active {
+      color: var(--td-shell-primary);
+    }
+  }
+
+  > ul > li:first-child > a {
+    padding-top: 0;
+  }
+
+  > ul > li:last-child > a:only-child {
+    padding-bottom: 0;
+  }
+}
+
+// 每条目的灰色轨道段（line + 深度变化的贝塞尔连接线）。
+.td-shell-toc__rail {
+  position: absolute;
+  inset-inline-start: 0;
+  top: -6px;
+  height: calc(100% + 6px);
+  z-index: -1;
+  overflow: visible;
+
+  line,
+  path {
+    stroke: var(--td-shell-rail);
+    stroke-width: 1;
+    fill: none;
+  }
+
+  // 下一条目深度不同：本段提前 6px 结束，给连接曲线让位。
+  &--cut {
+    height: 100%;
+  }
+}
+
+// 活跃高亮：整列主色路径按 --td-shell-track-top/bottom 裁剪，150ms 平滑伸缩。
+.td-shell-toc__active {
+  position: absolute;
+  top: 0;
+  inset-inline-start: 0;
+  z-index: 1;
+  pointer-events: none;
+
+  svg {
+    display: block;
+    overflow: visible;
+    clip-path: polygon(
+      0 var(--td-shell-track-top, 0px),
+      100% var(--td-shell-track-top, 0px),
+      100% var(--td-shell-track-bottom, 0px),
+      0 var(--td-shell-track-bottom, 0px)
+    );
+    transition: clip-path 150ms ease;
+  }
+
+  path {
+    stroke: var(--td-shell-primary);
+    stroke-width: 1;
+    fill: none;
+  }
+}
+
+// 沿路径滑动的 4px 圆点（CSS motion path）。
+.td-shell-toc__dot {
+  position: absolute;
+  top: 0;
+  inset-inline-start: 0;
+  width: 4px;
+  height: 4px;
+  border-radius: 999px;
+  background: var(--td-shell-primary);
+  offset-distance: var(--td-shell-dot-d, 0px);
+  opacity: var(--td-shell-dot-o, 0);
+  transition:
+    offset-distance 150ms ease,
+    opacity 150ms ease;
+}
+
+/* TOC 下方的页面元链接（编辑 / 查看源码 / 提 issue …） */
+
+.td-shell-toc .td-page-meta {
+  margin: 16px 0 0 !important;
+  padding: 12px 0 0 !important;
+  border-top: 1px solid var(--bs-border-color);
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+
+  a {
+    display: block;
+    padding: 3px 0;
+    font-size: 13px;
+    font-weight: 400;
+    color: var(--td-shell-muted-fg);
+
+    &:hover {
+      color: var(--bs-body-color);
+      text-decoration: none;
+    }
+  }
+}

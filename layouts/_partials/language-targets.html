@@ -1,0 +1,21 @@
+{{- $pages := dict -}}
+{{- range .AllTranslations -}}
+  {{- $pages = merge $pages (dict .Language.Lang .) -}}
+{{- end -}}
+{{- $targets := slice -}}
+{{- range hugo.Sites -}}
+  {{- $page := .Home -}}
+  {{- with index $pages .Language.Lang -}}
+    {{- $page = . -}}
+  {{- end -}}
+  {{- $tag := .Language.Locale | default .Language.Lang | replaceRE "_" "-" -}}
+  {{- $targets = $targets | append (dict
+    "active" (eq .Language.Lang $.Language.Lang)
+    "code" $tag
+    "direction" (.Language.Direction | default "ltr")
+    "label" (.Language.Label | default .Language.Lang)
+    "locale" (replace $tag "-" "_")
+    "url" $page.Permalink
+  ) -}}
+{{- end -}}
+{{- return $targets -}}

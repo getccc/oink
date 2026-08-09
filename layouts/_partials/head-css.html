@@ -1,0 +1,31 @@
+{{ $scssMain := "scss/main.scss" -}}
+{{ $css := resources.Get $scssMain
+      | toCSS (dict "enableSourceMap" (not hugo.IsProduction)) -}}
+
+{{ if hugo.IsProduction -}}
+  {{ $css = $css | minify | fingerprint -}}
+  <link rel="preload" href="{{ $css.RelPermalink }}" as="style" integrity="{{ $css.Data.Integrity }}" crossorigin="anonymous">
+{{ end -}}
+
+{{ with $css -}}
+  <link href="{{ .RelPermalink }}" rel="stylesheet"
+  {{- with .Data.Integrity }} integrity="{{ . }}" crossorigin="anonymous"{{ end -}}
+  >
+{{ else -}}
+  {{ errorf "Resource not found or error building CSS: %s" $scssMain -}}
+{{ end -}}
+
+{{/* Bootstrap publishes its RTL transform as a release artifact. Keep that
+consumer-side artifact local instead of invoking PostCSS/rtlcss during a Hugo
+build. Theme styles use logical properties and remain in the main bundle. */ -}}
+{{ if eq .Site.Language.Direction "rtl" -}}
+  {{ $rtl := resources.Get "third_party/bootstrap/dist/css/bootstrap.rtl.min.css" -}}
+  {{ if hugo.IsProduction -}}
+    {{ $rtl = $rtl | fingerprint -}}
+  {{ end -}}
+  <link href="{{ $rtl.RelPermalink }}" rel="stylesheet"
+  {{- with $rtl.Data.Integrity }} integrity="{{ . }}" crossorigin="anonymous"{{ end -}}
+  >
+{{ end -}}
+
+{{- /**/ -}}

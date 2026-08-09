@@ -1,0 +1,8 @@
+{{- $targets := partial "language-targets.html" . -}}
+<link rel="canonical" href="{{ .Permalink }}">
+{{- range $targets }}
+<link rel="alternate" hreflang="{{ .code }}" href="{{ .url }}">
+{{- end }}
+{{- range where $targets "active" false }}
+<meta property="og:locale:alternate" content="{{ .locale }}">
+{{- end }}

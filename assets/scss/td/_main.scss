@@ -1,0 +1,63 @@
+// cSpell:ignore fontawesome pageinfo
+
+@import '../../third_party/bootstrap/scss/functions';
+
+@import 'variables_forward';
+@import '../variables_project';
+@import 'variables';
+@import 'support/mixins';
+
+@import '../../third_party/bootstrap/scss/bootstrap';
+@import 'support/bootstrap_vers_test';
+
+@import '../../third_party/Font-Awesome/scss/fontawesome';
+@import '../../third_party/Font-Awesome/scss/solid';
+@import '../../third_party/Font-Awesome/scss/brands';
+
+@import '../variables_project_after_bs';
+
+@import 'support/utilities';
+@import 'blog';
+@import 'boxes';
+@import 'code';
+@import 'colors';
+@import 'footer';
+@import 'nav';
+@import 'table';
+@import 'sidebar-tree';
+@import 'sidebar-toc';
+@import 'breadcrumb';
+@import 'alerts';
+@import 'content';
+@import 'search';
+@import 'language-selector';
+@import 'version-selector';
+@import 'main-container';
+@import 'blocks/blocks';
+@import 'section-index';
+@import 'pageinfo';
+@import 'taxonomy';
+@import 'drawio';
+@import 'scroll';
+@import 'shortcodes';
+@import 'content-components';
+@import 'swagger';
+@import 'support/rtl';
+@import 'shell/tokens';
+@import 'shell/layout';
+@import 'shell/sidebar';
+@import 'shell/toc';
+@import 'shell/search';
+@import 'shell/blog';
+@import 'shell/page-context';
+
+@import '../../third_party/open-sans/normal';
+@import '../../third_party/open-sans/italic';
+@import 'brand';
+@import 'site-navbar';
+@import 'landing';
+@import 'theme-toggle';
+@import 'accessibility';
+@import 'print';
+
+@import '../styles_project';
