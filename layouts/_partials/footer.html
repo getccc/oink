@@ -9,7 +9,10 @@
   {{- with $home.footer }}
   <div class="td-site-footer">
     <div class="td-site-footer__container">
-      <div class="td-site-footer__grid">
+      {{/* The track count follows the data. `auto-fit` derived it from the
+           available width instead, which left empty tracks stacked on the end
+           of the row whenever the viewport allowed more columns than exist. */ -}}
+      <div class="td-site-footer__grid" style="--td-footer-cols: {{ len .columns | default 1 }}">
         <div class="td-site-footer__brand">
           <a class="td-site-footer__logo" href="{{ $.Site.Home.RelPermalink }}">
             <img src="{{ .brand.logo | default $config.logoURL | relURL }}" alt="" width="28" height="28">

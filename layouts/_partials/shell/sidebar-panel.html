@@ -30,12 +30,23 @@
         aria-label="{{ T "ui_drawer_close" }}" aria-controls="td-shell-sidebar">{{ partialCached "shell/icon.html" "x" "x" }}</button>
     </div>
     {{ partial "shell/root-menu.html" . }}
-    {{/* Visibility is driven from _sidebar.scss, not `d-xl-none`: these
-         controls must also come back when the TOC rail (their ≥xl home) is
-         collapsed. */ -}}
-    <div class="td-shell-sidebar__mobile-utils">
-      {{ partial "language-selector.html" (dict "page" . "class" "td-shell-language-selector" "mode" "list") }}
-      {{- $darkMode := partialCached "dark-mode-config.html" "dark-mode-global" -}}
+  </div>
+  <div class="td-shell-sidebar__viewport" data-td-shell-sidebar-scroll>
+    {{ partial "shell/sidebar.html" . }}
+  </div>
+  {{/* Footer row: the version selector, then the global utilities. They live
+       here rather than under the brand so they stay in the same place whether
+       the sidebar is a column or a drawer, and so they are still reachable
+       once the TOC rail (their other home) drops out below xl. */ -}}
+  {{- $darkMode := partialCached "dark-mode-config.html" "dark-mode-global" -}}
+  <div class="td-shell-sidebar__footer">
+    {{ if .Site.Params.versions -}}
+    <div class="td-shell-sidebar__version">
+      {{ partial "navbar-version-selector.html" (dict "page" . "dropup" true) }}
+    </div>
+    {{ end -}}
+    <div class="td-shell-sidebar__utils">
+      {{ partial "language-selector.html" (dict "page" . "class" "td-shell-language-selector" "icon" "shell") }}
       {{- if $darkMode.showMenu }}
       <button type="button" class="td-shell-iconbtn td-shell-quick-theme" data-td-theme-toggle
         title="{{ T "ui_theme_toggle" }}" aria-label="{{ T "ui_theme_toggle" }}">
@@ -49,13 +60,5 @@
       {{- end }}
     </div>
   </div>
-  <div class="td-shell-sidebar__viewport" data-td-shell-sidebar-scroll>
-    {{ partial "shell/sidebar.html" . }}
-  </div>
-  {{ if .Site.Params.versions -}}
-  <div class="td-shell-sidebar__version">
-    {{ partial "navbar-version-selector.html" (dict "page" . "dropup" true) }}
-  </div>
-  {{ end -}}
   <div class="td-shell-sidebar__resizer" data-td-shell-resizer aria-hidden="true"></div>
 </div>

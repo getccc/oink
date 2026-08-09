@@ -30,7 +30,7 @@
               {{- $href = .RelPermalink -}}
             {{- end }}
         <a class="nav-link{{ if $active }} active{{ end }}" href="{{ $href }}"{{ if $external }} target="_blank" rel="noopener noreferrer"{{ end }}>
-          {{- with .Pre }}{{ . }}{{ end -}}
+          <i class="{{ partial "menu-icon.html" . }}" aria-hidden="true"></i>
           <span>{{ .Name }}</span>
         </a>
           {{- end -}}
@@ -116,7 +116,7 @@
     <a class="mobile-menu-link" href="{{ $next.url }}" lang="{{ $next.code }}" hreflang="{{ $next.code }}"
       title="{{ T "ui_language_switch" }}: {{ $next.label }}">
       {{- partialCached "shell/icon.html" "languages" "languages" -}}
-      <span>{{ T "ui_language_switch" }}</span>
+      <span>{{ T "ui_language" }}</span>
     </a>
     <div class="mobile-menu-options" role="group" aria-label="{{ T "ui_language_select" }}">
       {{- range $targets }}
@@ -135,7 +135,7 @@
     <button type="button" class="mobile-menu-link" data-td-theme-toggle>
       {{- partialCached "shell/icon.html" "moon" "moon" -}}
       {{- partialCached "shell/icon.html" "sun" "sun" -}}
-      <span>{{ T "ui_theme_toggle" }}</span>
+      <span>{{ T "ui_theme" }}</span>
     </button>
     <div class="mobile-menu-options" role="group" aria-label="{{ T "ui_theme_toggle" }}">
       <button type="button" class="mobile-menu-chip mobile-menu-chip--icon" data-bs-theme-value="auto"

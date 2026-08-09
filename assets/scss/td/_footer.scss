@@ -82,7 +82,9 @@
 
   &__grid {
     display: grid;
-    grid-template-columns: minmax(240px, 2.2fr) repeat(4, minmax(120px, 1fr));
+    grid-template-columns:
+      minmax(240px, 2.2fr)
+      repeat(var(--td-footer-cols, 4), minmax(120px, 1fr));
     gap: 2rem 1.5rem;
   }
 
@@ -172,15 +174,22 @@
   }
 
   @include media-breakpoint-down(lg) {
-    // The brand block takes the full row, and the link columns then pack to
-    // whatever fits. A fixed two-column rule left them hugging the start of a
-    // wide row with the remainder empty.
+    // The brand block takes the full row; the link columns share the next one
+    // evenly. One track per column, never more — a spare track would sit empty
+    // at the end and read as a wide right margin.
     &__grid {
-      grid-template-columns: repeat(auto-fit, minmax(9.5rem, 1fr));
+      grid-template-columns: repeat(var(--td-footer-cols, 4), minmax(0, 1fr));
     }
 
     &__brand {
       grid-column: 1 / -1;
+    }
+  }
+
+  // Below ~700px four columns leave no room for a link to stay on one line.
+  @media (max-width: 700px) {
+    &__grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
     }
   }
 

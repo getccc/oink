@@ -29,6 +29,8 @@ ui_tag_title: Tag
 ui_categories_title: Categories
 ui_category_title: Category
 ui_theme_toggle: Toggle color theme
+ui_language: Language
+ui_theme: Theme
 ui_theme_auto: Follow system
 ui_theme_light: Light
 ui_theme_dark: Dark

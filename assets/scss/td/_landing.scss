@@ -1602,8 +1602,10 @@
       font-size: clamp(1.82rem, 8.4vw, 2.45rem);
     }
 
-    &__actions .oink-button {
-      width: 100%;
+    // The hero buttons keep their intrinsic width and wrap instead: stretched
+    // edge to edge they read as banners rather than calls to action.
+    &__actions {
+      flex-wrap: wrap;
     }
   }
 

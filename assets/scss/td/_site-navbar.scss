@@ -64,6 +64,9 @@
   }
 
   .nav-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
     padding: 6px 10px;
     border-radius: 8px;
     color: var(--bs-secondary-color);
@@ -175,7 +178,10 @@
 // The toggle is the same ghost icon button as the rest of the header; the
 // glyph swaps between menu and close.
 
-.mobile-menu-toggle {
+// The toggle borrows .nav-util for its looks, so every rule below is compound
+// with it: `.landing-header .nav-util` would otherwise win on specificity and
+// the button would show at full width with both glyphs stacked.
+.landing-header .mobile-menu-toggle.nav-util {
   display: none;
 
   .td-shell-icon--x {
@@ -348,8 +354,12 @@
     display: none;
   }
 
-  .mobile-menu-toggle {
-    display: flex;
+  .landing-header .mobile-menu-toggle.nav-util {
+    display: inline-flex;
+  }
+
+  .landing-header .nav-link i {
+    display: none;
   }
 
   .landing-container {

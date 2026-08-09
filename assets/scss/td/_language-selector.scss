@@ -142,3 +142,36 @@ a.td-language-selector__item:focus-visible {
   inset-block: auto calc(100% + 0.35rem);
   transform-origin: bottom right;
 }
+
+// Sidebar footer row: icon-only trigger sized like the neighbouring icon
+// buttons, with the list opening upward since the row sits on the bottom edge.
+.td-shell-sidebar__utils .td-language-selector--menu {
+  padding: 0;
+
+  > .td-language-selector__trigger {
+    min-width: 28px;
+    min-height: 28px;
+    padding: 6px;
+    border-radius: 8px;
+    color: var(--td-shell-muted-fg);
+
+    > span {
+      display: none;
+    }
+
+    .td-shell-icon {
+      width: 16px;
+      height: 16px;
+    }
+
+    &:hover {
+      background: var(--td-shell-accent);
+      color: var(--bs-body-color);
+    }
+  }
+
+  > ul {
+    inset-block: auto calc(100% + 0.35rem);
+    transform-origin: bottom right;
+  }
+}
