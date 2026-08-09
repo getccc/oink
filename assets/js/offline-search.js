@@ -5,6 +5,9 @@
 
   $(document).ready(function () {
     const $searchInput = $('.td-search input');
+    if ($searchInput.length === 0) {
+      return;
+    }
 
     //
     // Register handler

@@ -9,6 +9,17 @@ params:
   time_format_default: January 2, 2006
   rss_sections: [blog]
   page_width: normal
+  comments:
+    enable: false
+    type: giscus
+    giscus:
+      mapping: pathname
+      strict: 0
+      reactionsEnabled: 1
+      emitMetadata: 0
+      inputPosition: top
+      theme: auto
+      loading: lazy
   ui:
     feedback:
       enable: false

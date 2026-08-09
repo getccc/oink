@@ -83,6 +83,47 @@ See the [complete landing configuration](exampleSite/data/home/en.yaml) for
 every section type and field shape. Existing sites without `sections` keep the
 legacy Hero → Metrics → Capabilities → Principles → CTA order.
 
+## GitHub Discussions comments
+
+OINK can add [giscus](https://giscus.app/) comments to content pages. Enable
+GitHub Discussions and install the giscus app for the repository that will
+store comments, then copy its repository and category IDs into `hugo.yaml`:
+
+```yaml
+params:
+  comments:
+    enable: true
+    type: giscus
+    giscus:
+      repo: owner/repository
+      repoId: repository-id
+      category: Announcements
+      categoryId: category-id
+      mapping: pathname
+      strict: 0
+      reactionsEnabled: 1
+      emitMetadata: 0
+      inputPosition: top
+      theme: auto
+      loading: lazy
+```
+
+Set `comments: true` or `comments: false` in page front matter to override the
+site-wide switch. An explicit `comments: false` also suppresses legacy Disqus
+on that page. When giscus is active, OINK suppresses Disqus automatically so
+only one comment system is rendered. Invalid or incomplete giscus configuration
+produces a Hugo warning and skips giscus instead of failing the site build.
+
+By default, the giscus interface follows the page language and OINK's
+light/dark theme. Unsupported giscus locales fall back to English; set
+`params.comments.giscus.lang` to override the locale. `theme` can be `auto`, a
+built-in giscus theme, or a custom theme URL. `ariaLabel` and `errorMessage` can
+override the comments region label and its load-failure message.
+
+The external giscus script and its local initializer are loaded only on pages
+where comments are active. Sites with a strict Content Security Policy must
+allow `https://giscus.app` in `script-src` and `frame-src`.
+
 ## Git submodule
 
 Oink can also be installed as a conventional Hugo theme:

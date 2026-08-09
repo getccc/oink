@@ -3,6 +3,7 @@
 {{ $localSearch := partial "shell/search-enabled.html" . -}}
 {{ $hasMarkmap := and .Site.Params.markmap.enable (.Page.Store.Get "hasMarkmap") -}}
 {{ $hasPlantuml := and .Site.Params.plantuml.enable (.Page.Store.Get "hasPlantuml") -}}
+{{ $hasGiscus := .Page.Store.Get "hasGiscus" | default false -}}
 
 {{ if $hasMarkmap -}}
 {{ range resources.Match "third_party/katex/fonts/*" -}}
@@ -169,16 +170,19 @@ window.markmap = {
 {{ if $darkMode.enable -}}
   {{ $jsArray = $jsArray | append (resources.Get "js/dark-mode.js") -}}
 {{ end -}}
+{{ if $hasGiscus -}}
+  {{ $jsArray = $jsArray | append (resources.Get "js/giscus.js") -}}
+{{ end -}}
 
 {{ if not (.Param "ui.scrollSpy.disable") -}}
   {{ $jsScrollSpyPatch := resources.Get "js/scrollspy-patch.js" -}}
   {{ $jsArray = $jsArray | append $jsScrollSpyPatch -}}
 {{ end -}}
 
-{{ $bundleKey := printf "%v-%v-%v-%v-%v-%v-%v-%v-%v-%v-%v"
+{{ $bundleKey := printf "%v-%v-%v-%v-%v-%v-%v-%v-%v-%v-%v-%v"
   $shell $localSearch .Site.Params.offlineSearch $hasMarkmap
   $hasPlantuml .Site.Params.drawio.enable
-  $hasAsciinema $hasEcharts $hasInfographic $hasDocCarousel
+  $hasAsciinema $hasEcharts $hasInfographic $hasDocCarousel $hasGiscus
   (not (.Param "ui.scrollSpy.disable")) | md5 -}}
 {{ $js := $jsArray | resources.Concat (printf "js/main-%s.js" $bundleKey) -}}
 {{ if hugo.IsProduction -}}
