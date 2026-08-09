@@ -9,10 +9,10 @@
   {{- with $home.footer }}
   <div class="td-site-footer">
     <div class="td-site-footer__container">
-      {{/* The track count follows the data. `auto-fit` derived it from the
-           available width instead, which left empty tracks stacked on the end
-           of the row whenever the viewport allowed more columns than exist. */ -}}
-      <div class="td-site-footer__grid" style="--td-footer-cols: {{ len .columns | default 1 }}">
+      {{/* The brand sits outside the column grid. Spanning every track, its
+           long tagline set the tracks' max-content size, which stopped the
+           columns from being sized to their own links. */ -}}
+      <div class="td-site-footer__inner">
         <div class="td-site-footer__brand">
           <a class="td-site-footer__logo" href="{{ $.Site.Home.RelPermalink }}">
             <img src="{{ .brand.logo | default $config.logoURL | relURL }}" alt="" width="28" height="28">
@@ -21,16 +21,20 @@
           {{- with .brand.tagline }}<div class="td-site-footer__tagline">{{ . | markdownify }}</div>{{ end }}
           {{- with .brand.slogan }}<div class="td-site-footer__slogan">{{ . | markdownify }}</div>{{ end }}
         </div>
-        {{- range .columns }}
-        <nav class="td-site-footer__column" aria-label="{{ .title }}">
-          <h2>{{ .title }}</h2>
-          <ul>
-            {{- range .links }}
-            <li><a href="{{ .url | relLangURL }}"{{ if .external }} target="_blank" rel="noopener noreferrer"{{ end }}>{{ .label }}</a></li>
-            {{- end }}
-          </ul>
-        </nav>
-        {{- end }}
+        {{/* The track count follows the data, not the viewport: `auto-fit` left
+             empty tracks parked on the end of the row. */ -}}
+        <div class="td-site-footer__grid" style="--td-footer-cols: {{ len .columns | default 1 }}">
+          {{- range .columns }}
+          <nav class="td-site-footer__column" aria-label="{{ .title }}">
+            <h2>{{ .title }}</h2>
+            <ul>
+              {{- range .links }}
+              <li><a href="{{ .url | relLangURL }}"{{ if .external }} target="_blank" rel="noopener noreferrer"{{ end }}>{{ .label }}</a></li>
+              {{- end }}
+            </ul>
+          </nav>
+          {{- end }}
+        </div>
       </div>
     </div>
   </div>

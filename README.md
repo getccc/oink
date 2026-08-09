@@ -47,6 +47,31 @@ Markdown** entries; without it, those entries are omitted. `print` backs
 **Print entire section** and publishes under `/_print/`. Leaving `outputs`
 unset is supported — the affected controls simply do not render.
 
+## Blog featured images
+
+A post's list entry looks for an image in this order:
+
+1. `images` in the post's front matter — the first entry.
+2. A page resource whose name matches `**featured*`.
+3. `default_featured_image`, read from the post (so a section `cascade` applies)
+   and then from each ancestor section, nearest first, and finally from site
+   params.
+4. The theme's placeholder, `assets/icons/featured-placeholder.svg`.
+
+So a section can give all of its posts one image:
+
+```yaml
+# content/blog/_index.md
+---
+title: Blog
+default_featured_image: /images/blog-card.png
+---
+```
+
+Any post that sets its own image still wins. Set
+`default_featured_image: false` on a section — or in site params — to stop at
+step 2 and render no image at all.
+
 ## Syntax highlighting
 
 Code blocks are highlighted with Chroma class names so they follow the theme's

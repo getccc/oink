@@ -17,20 +17,8 @@
         {{- partial "reading-time.html" . -}}
       {{- end }}
     </header>
-    {{- $featuredImage := "" -}}
+    {{- $featuredImage := partial "featured-image-src.html" . -}}
     {{- $pageTitle := .Title -}}
-    {{- with .Params.images -}}
-      {{- $featuredImage = index . 0 -}}
-    {{- else -}}
-      {{- with (.Resources.ByType "image").GetMatch "**featured*" -}}
-        {{- $featuredImage = .RelPermalink -}}
-      {{- end -}}
-    {{- end -}}
-    {{- if not $featuredImage -}}
-      {{- with .CurrentSection.Params.default_featured_image -}}
-        {{- $featuredImage = . -}}
-      {{- end -}}
-    {{- end -}}
     {{- $summary := "" -}}
     {{- if $isExternal -}}
       {{- $summary = .Description | default .Params.summary | plainify | htmlUnescape -}}

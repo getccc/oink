@@ -40,7 +40,7 @@ ui_language_select: 选择语言
 ui_language_switch: 切换语言
 ui_details: 详情
 ui_skip_to_content: 跳转到主要内容
-ui_page_actions: 页面操作
+ui_page_actions: 操作
 ui_copy_markdown: 复制 Markdown
 ui_copy_success: 已复制 Markdown
 ui_copy_error: 无法复制 Markdown

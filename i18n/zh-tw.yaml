@@ -33,6 +33,7 @@ ui_theme: 主題顏色
 ui_theme_auto: 跟隨系統
 ui_theme_light: 亮色
 ui_theme_dark: 暗色
+ui_page_actions: 操作
 ui_toc_hide: 隱藏目錄
 ui_toc_show: 顯示目錄
 ui_language_select: 選擇語言

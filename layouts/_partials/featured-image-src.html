@@ -1,0 +1,62 @@
+{{- /* Resolve a page's featured image, returning a URL or "".
+
+Order:
+  1. `images` in front matter — the first entry.
+  2. A page resource matching `**featured*`.
+  3. `default_featured_image`, taken from the page (so a section `cascade`
+     works) and then from each ancestor, nearest first.
+  4. The theme's placeholder.
+
+Set `default_featured_image: false` on a section, or in site params, to stop at
+step 2 and render nothing.
+
+Input: a page. Returns: a string. */ -}}
+{{- $src := "" -}}
+
+{{- with .Params.images -}}
+  {{- $src = index . 0 -}}
+{{- else -}}
+  {{- with (.Resources.ByType "image").GetMatch "**featured*" -}}
+    {{- $src = .RelPermalink -}}
+  {{- end -}}
+{{- end -}}
+
+{{- if not $src -}}
+  {{- $default := "" -}}
+  {{- $disabled := false -}}
+  {{- $sources := slice . -}}
+  {{- range .Ancestors }}{{ $sources = $sources | append . }}{{ end -}}
+  {{- /* isset, not `with`: an explicit `false` is exactly the value that opts
+         out, and `with` would skip it as empty. */ -}}
+  {{- range $sources -}}
+    {{- if and (not $default) (not $disabled) (isset .Params "default_featured_image") -}}
+      {{- $value := printf "%v" (index .Params "default_featured_image") -}}
+      {{- if or (eq $value "false") (eq $value "") -}}
+        {{- $disabled = true -}}
+      {{- else -}}
+        {{- $default = $value -}}
+      {{- end -}}
+    {{- end -}}
+  {{- end -}}
+  {{- if and (not $default) (not $disabled) (isset .Site.Params "default_featured_image") -}}
+    {{- $value := printf "%v" (index .Site.Params "default_featured_image") -}}
+    {{- if or (eq $value "false") (eq $value "") }}{{ $disabled = true }}{{ else }}{{ $default = $value }}{{ end -}}
+  {{- end -}}
+  {{- if and (not $default) (not $disabled) -}}
+    {{- with resources.Get "icons/featured-placeholder.svg" -}}
+      {{- $default = .RelPermalink -}}
+    {{- end -}}
+  {{- end -}}
+  {{- $src = $default -}}
+{{- end -}}
+
+{{- /* A project-supplied path may be site-relative; a resolved resource or an
+       absolute URL must be left alone. */ -}}
+{{- if and $src (not (hasPrefix $src "http")) (not (hasPrefix $src "/")) -}}
+  {{- with resources.Get $src -}}
+    {{- $src = .RelPermalink -}}
+  {{- else -}}
+    {{- $src = $src | relURL -}}
+  {{- end -}}
+{{- end -}}
+{{- return $src -}}
