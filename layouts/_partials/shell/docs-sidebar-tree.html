@@ -11,7 +11,7 @@
 {{ with .Site.LanguagePrefix -}}
   {{ $currentURL = strings.TrimPrefix . $currentURL -}}
 {{ end -}}
-{{ $activeURLs := index hugo.Data.docs_nav.active_path_by_url $currentURL | default (slice) -}}
+{{ $activeURLs := index site.Data.docs_nav.active_path_by_url $currentURL | default (slice) -}}
 
 <div id="td-sidebar-menu" class="td-shell-tree-wrap{{ if $shouldDelayActive }} d-none{{ end }}">
   <nav class="td-shell-tree" id="td-section-nav" aria-label="{{ T "ui_sidebar_nav" }}"
@@ -19,7 +19,7 @@
     {{/* 根下拉开启时，树中不再重复渲染 docs 根（Documentation）首项。 */ -}}
     {{ $rootMenuOn := and .Site.Params.ui.sidebar_root_menu
         (gt (len (where .Site.Pages "Params.sidebar_root_for" "self")) 0) -}}
-    {{ with hugo.Data.docs_nav.sections -}}
+    {{ with site.Data.docs_nav.sections -}}
     <ul class="td-shell-tree__list ul-1">
       {{ range . -}}
         {{ if and $rootMenuOn (eq .url "/docs/") }}{{ continue }}{{ end -}}

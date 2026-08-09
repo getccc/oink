@@ -60,12 +60,34 @@
   }
 
   // 摘要与特色图。
+  figure {
+    // The inline width is a maximum, not a floor: at the md breakpoint the
+    // content column is only ~485px wide, and a rigid 250px thumbnail plus the
+    // summary's min-content width overflowed the page.
+    max-width: 40%;
+  }
+
   figure img {
+    width: 100%;
+    height: auto;
     border-radius: 10px;
     border: 1px solid var(--bs-border-color);
   }
 
   &__body {
+    // Bootstrap's .flex-grow-1 leaves min-width at auto, so the summary
+    // refused to shrink below its longest word run.
+    .flex-grow-1 {
+      min-width: 0;
+    }
+
+    // A summary is machine-extracted prose: it can contain a URL or a long
+    // identifier that has no break opportunity, which pushed the row past the
+    // viewport once the column got narrow.
+    p {
+      overflow-wrap: anywhere;
+    }
+
     .flex-grow-1 > p:first-child,
     .d-md-none > p:first-child {
       font-size: 15px;

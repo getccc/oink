@@ -95,7 +95,7 @@ window.markmap = {
   {{ $jsSearch = resources.Get "js/offline-search.js" -}}
 {{ end -}}
 
-{{ $jsArray := slice $jsBs $jsBase $jsSidebarNav -}}
+{{ $jsArray := slice $jsBs $jsBase $jsSidebarNav (resources.Get "js/authored-a11y.js") -}}
 {{ if $hasPlantuml -}}
   {{ $jsArray = $jsArray | append $jsPako -}}
   {{ if .Site.Params.plantuml.svg }}{{ $jsArray = $jsArray | append $jsSvgLoader }}{{ end -}}

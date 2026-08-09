@@ -7,12 +7,14 @@
   {{ range where $pages ".Params.no_print" "!=" true }}
     {{ $sid := printf "%s%d" $psid $subSection }}
     {{ $subSection = add $subSection 1 }}
-	{{ partial "print/toc-li.html" (dict "sid" $sid "Page" .) }}
-    {{ if .IsSection }}
-    <ul>
+    <li>
+      {{- partial "print/toc-li.html" (dict "sid" $sid "Page" .) -}}
+      {{ if .IsSection }}
+      <ul>
         {{ template "recurse-toc" (dict "section" . "psid" (printf "%s." $sid)) }}
-    </ul>
-    {{ end }}
+      </ul>
+      {{ end }}
+    </li>
   {{ end }}
 {{ end }}
 

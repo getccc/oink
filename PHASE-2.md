@@ -183,11 +183,10 @@ monkey-patches `bootstrap.ScrollSpy.prototype`.
 dialog opens. Move the `<script>` out of `head.html` and have
 `docs-shell.js#initSearch#ensureIndex` inject it before building the index.
 
-#### A6. Stop prefetching page Markdown
+#### A6. Stop prefetching page Markdown — **done**
 
-`docs-shell.js#initPageContext` issues a `fetch()` for the current page's `.md`
-during page load, for a copy button most readers never press. Move it to first
-hover or first click, keeping the existing in-memory cache.
+The fetch now runs on first hover or focus of the copy control rather than on
+page load, keeping the in-memory cache.
 
 ---
 
@@ -290,15 +289,11 @@ removes the `display: block` hack that `.table-responsive` was compensating
 for. Note the same `table code` over-reach that phase 1 worked around in
 `_chroma.scss` — fix it at the source while here.
 
-#### C3. Theme toggle cannot return to "auto"
+#### C3. Theme toggle cannot return to "auto" — **done**
 
-`dark-mode.js:107` flips light↔dark and always writes `localStorage`. The only
-control that could write `auto` was `theme-toggler.html`, which is unreachable.
-Once a reader clicks the toggle they never follow the system again.
-
-**Approach.** Three-state cycle (light → dark → auto) with the icon reflecting
-state, or a small popover with three choices. Needs an `auto` icon and one new
-i18n string.
+The mobile menu now carries explicit auto / light / dark controls beside the
+toggle, and `dark-mode.js` reflects the stored *preference* so "auto" stays
+selected when the system flips.
 
 ---
 
@@ -408,8 +403,12 @@ they emit nothing that matches.
 
 ## 3. Suggested rounds
 
+**Done since this plan was written** (v0.1.0): `A6` (Markdown is fetched on
+intent, not on load), `B3`, `C1`, `C3`, plus the mobile menu, footer, logo and
+featured-image work that came out of design review.
+
 **Round 2** — independent, verifiable, no design decisions required:
-`A1`, `A3`, `A5`, `A6`, `C2`, `C3`, `D4`, `E1`, `E2`.
+`A1`, `A3`, `A5`, `C2`, `D4`, `E1`, `E2`.
 
 **Round 3** — needs design or build-chain work: `A2`, `A4`, `D1`, `D3`.
 
