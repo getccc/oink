@@ -98,7 +98,6 @@
   // prettier-ignore-end
 
   // Apply the patched method
-  ScrollSpy.prototype._initializeTargetsAndObservables = patchedInitializeTargetsAndObservables;
-
-  console.log('[Oink] ScrollSpy patch applied successfully');
+  ScrollSpy.prototype._initializeTargetsAndObservables =
+    patchedInitializeTargetsAndObservables;
 })();

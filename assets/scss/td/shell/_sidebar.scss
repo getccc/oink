@@ -97,6 +97,19 @@
     width: 100%;
     justify-content: flex-start;
   }
+
+  // At ≥xl these controls live in the TOC rail instead. That rail can be
+  // collapsed, though, so bring them back rather than leaving the reader with
+  // no theme toggle and no repository link.
+  @include media-breakpoint-up(xl) {
+    display: none;
+  }
+}
+
+@include media-breakpoint-up(xl) {
+  [data-td-shell-toc='collapsed'] .td-shell-sidebar__mobile-utils {
+    display: flex;
+  }
 }
 
 .td-shell-search-btn {

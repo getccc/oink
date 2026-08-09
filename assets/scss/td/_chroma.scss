@@ -1,0 +1,157 @@
+// Class-based syntax highlighting (Chroma).
+//
+// Requires `markup.highlight.noClasses: false`, which the theme sets in its
+// own hugo.yaml. The generated palettes live in `chroma/`; this file layers
+// the theme's canvas tokens and WCAG AA corrections on top of them.
+//
+// The light palette is emitted at the root rather than under
+// `[data-bs-theme='light']`: that attribute only exists once dark mode is
+// enabled, and code has to stay readable on sites that leave it off.
+
+@import 'chroma/light';
+
+.chroma {
+  // Defer the code canvas to the theme token so `.chroma` matches the
+  // surrounding `.highlight` chrome instead of the palette's own grey.
+  background-color: var(--td-pre-bg);
+}
+
+// Chroma's `lineNumbersInTable` layout nests a second `.chroma` inside the
+// wrapper and puts one <pre> per table cell. Without this, the padding and
+// canvas that `_code.scss` gives every `.highlight pre` are applied twice and
+// the gutter drifts off the code's baseline grid.
+.td-content .highlight {
+  > div.chroma {
+    overflow-x: auto;
+    padding: 1rem;
+    // `.highlight` already paints the code canvas; a second opaque layer here
+    // would read as a panel inside a panel.
+    background: transparent;
+  }
+
+  .lntable {
+    // `_brand.scss` turns content tables into scrollable blocks; the highlight
+    // gutter is layout, not content, and has to stay a real table.
+    display: table;
+    width: 100%;
+    margin: 0;
+    border: 0;
+    background: transparent;
+
+    .lntd {
+      padding: 0;
+      border: 0;
+      background: transparent;
+      // Bootstrap paints table row state with a full-bleed inset shadow rather
+      // than a background; transparent alone does not clear it.
+      box-shadow: none;
+
+      // Collapse the gutter column onto its content.
+      &:first-child {
+        width: 1%;
+      }
+    }
+
+    pre.chroma {
+      padding: 0;
+      border: 0;
+      background: transparent;
+      box-shadow: none;
+    }
+
+    // The inline-code rules in `_code.scss` and `_brand.scss` match on
+    // `table code`, which also catches the gutter layout and pushes the code
+    // column off the line numbers. Highlighted code is not inline code.
+    code {
+      padding: 0;
+      margin: 0;
+      border: 0;
+      border-radius: 0;
+      font-size: inherit;
+      background: transparent;
+    }
+  }
+}
+
+// The generated Friendly palette contains several colors below 4.5:1 on
+// OINK's light code canvas. Keep the token roles, but meet WCAG AA.
+.chroma {
+  .ln,
+  .lnt,
+  .go,
+  .w {
+    color: #6b6b6b;
+  }
+
+  .nc,
+  .nn {
+    color: #08759f;
+  }
+
+  .no {
+    color: #226b8a;
+  }
+
+  .ni {
+    color: #b23d24;
+  }
+
+  .nv,
+  .vc,
+  .vg,
+  .vi,
+  .vm {
+    color: #8a3ca5;
+  }
+
+  .si {
+    color: #386d9c;
+  }
+
+  .sx,
+  .gp {
+    color: #a44a00;
+  }
+
+  .m,
+  .mb,
+  .mf,
+  .mh,
+  .mi,
+  .il,
+  .mo {
+    color: #18794e;
+  }
+
+  .c,
+  .ch,
+  .cm,
+  .c1,
+  .cs {
+    color: #326f7d;
+  }
+
+  .gr {
+    color: #c52222;
+  }
+
+  .gi {
+    color: #087a08;
+  }
+}
+
+@if $enable-dark-mode {
+  [data-bs-theme='dark'] {
+    @import 'chroma/dark';
+
+    .chroma {
+      color: inherit;
+      background-color: var(--td-pre-bg);
+
+      // Color tuning for the `native` Chroma style:
+      .go {
+        color: #cccccc95;
+      }
+    }
+  }
+}

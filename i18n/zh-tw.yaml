@@ -94,3 +94,9 @@ feedback_negative: 沒幫助
 # Table of contents
 toc_on_this_page: 本頁目錄
 toc_top_of_page: 回到頂部
+
+# Error pages
+error_404_title: 頁面不存在
+error_404_body: >-
+  抱歉，該頁面不存在。可以從首頁重新開始。
+error_404_home: 返回首頁

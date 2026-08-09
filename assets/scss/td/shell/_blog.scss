@@ -5,7 +5,7 @@
 /* ------------------------------------------------- 列表页（上游版式） */
 
 // 年份分组标签：小号大写 muted（替代上游的 h2 大标题观感）。
-.td-shell-chrome .td-blog-posts > .h2 {
+.td-shell-chrome .td-blog-posts > h2 {
   margin: 2.25rem 0 0.25rem;
   font-size: 12px;
   font-weight: 600;
@@ -32,7 +32,8 @@
     }
   }
 
-  h5 {
+  // 标题标签是 h2/h3（保持 heading 层级），视觉走 Bootstrap 的 .h5。
+  .h5 {
     font-size: 17px;
     font-weight: 600;
     line-height: 1.45;

@@ -13,7 +13,7 @@
   "examples" "fa-solid fa-flask"
   "community" "fa-solid fa-people-group"
 -}}
-<aside class="td-shell-toc d-print-none">
+<aside class="td-shell-toc d-print-none" aria-label="{{ T "toc_on_this_page" }}">
   <div class="td-shell-toc__panel">
     <div class="td-shell-toc__actions">
       <button type="button" class="td-shell-toc__title-btn" data-td-shell-right-toggle
@@ -35,7 +35,7 @@
           {{- $target := urls.Parse .URL -}}
           {{- $external := and $target.Host (ne $baseURL.Host $target.Host) -}}
           {{- $label := .Name -}}
-          {{- with $description }}{{ $label = printf "%s：%s" $label . }}{{ end -}}
+          {{- with $description }}{{ $label = printf "%s: %s" $label . }}{{ end -}}
       <a class="td-shell-iconbtn td-shell-iconbtn--sm" href="{{ $href }}"
         title="{{ $label }}" aria-label="{{ $label }}"{{ if $external }} target="_blank" rel="noopener"{{ end }}>
         <i class="{{ $icon }}" aria-hidden="true"></i>

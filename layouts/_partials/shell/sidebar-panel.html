@@ -30,7 +30,10 @@
         aria-label="{{ T "ui_drawer_close" }}" aria-controls="td-shell-sidebar">{{ partialCached "shell/icon.html" "x" "x" }}</button>
     </div>
     {{ partial "shell/root-menu.html" . }}
-    <div class="td-shell-sidebar__mobile-utils d-xl-none">
+    {{/* Visibility is driven from _sidebar.scss, not `d-xl-none`: these
+         controls must also come back when the TOC rail (their ≥xl home) is
+         collapsed. */ -}}
+    <div class="td-shell-sidebar__mobile-utils">
       {{ partial "language-selector.html" (dict "page" . "class" "td-shell-language-selector" "mode" "list") }}
       {{- $darkMode := partialCached "dark-mode-config.html" "dark-mode-global" -}}
       {{- if $darkMode.showMenu }}

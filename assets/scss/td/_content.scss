@@ -129,3 +129,25 @@
     visibility: visible;
   }
 }
+
+// "Was this page helpful?" widget. Previously an inline <style> block emitted
+// with the markup, which a strict Content Security Policy would drop.
+.td-feedback {
+  .feedback--answer {
+    display: inline-block;
+  }
+
+  .feedback--answer-no {
+    // Logical, not `margin-left`: the buttons swap sides under RTL.
+    margin-inline-start: 1em;
+  }
+
+  .feedback--response {
+    display: none;
+    margin-top: 1em;
+  }
+
+  .feedback--response__visible {
+    display: block;
+  }
+}

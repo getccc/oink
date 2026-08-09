@@ -2,10 +2,10 @@
 {{- $isExternal := isset .Params "manuallink" -}}
 <li class="td-blog-posts-list__item">
   <div class="td-blog-posts-list__body">
-    <h5 class="mt-0 mb-1">
+    <h2 class="h5 mt-0 mb-1">
       <a href="{{ $manualLink }}"{{ if $isExternal }} target="_blank" rel="noopener"{{ end }}>{{ .Title }}</a>
       {{ if $isExternal }}<i class="fa-solid fa-arrow-up-right-from-square fa-xs text-muted" aria-hidden="true"></i>{{ end }}
-    </h5>
+    </h2>
     {{- if not .Date.IsZero }}
     <p class="mb-2 mb-md-3"><small class="text-body-secondary">
       {{- .Date.Format (.Param "time_format_blog") }} {{ T "ui_in" }} {{ .CurrentSection.LinkTitle -}}

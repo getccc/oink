@@ -2,7 +2,6 @@
 <html itemscope itemtype="http://schema.org/WebPage"
     dir="{{ .Site.Language.Direction | default "ltr" }}"
     lang="{{ partial "language-tag.html" . }}"
-    class="no-js"
     {{- $darkMode := partialCached "dark-mode-config.html" "dark-mode-global" -}}
     {{- if $darkMode.enable }} data-theme-init{{ end }}>
   <head>

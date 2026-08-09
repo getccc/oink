@@ -38,8 +38,6 @@
       active.setAttribute('aria-current', 'page');
       var row = active.closest('.td-shell-tree__row');
       if (row) row.classList.add('td-shell-active');
-      var label = active.querySelector('span');
-      if (label) label.classList.add('td-sidebar-nav-active-item');
     }
 
     for (

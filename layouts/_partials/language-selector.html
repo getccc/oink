@@ -11,8 +11,12 @@
   {{- end -}}
   {{- $next := index $targets (mod (add $currentIndex 1) $count) -}}
   {{- if eq $mode "list" -}}
-<nav class="td-language-selector td-language-selector--list{{ with $class }} {{ . }}{{ end }}"
-  aria-label="{{ T "ui_language_select" }}">
+{{- /* role=group, not <nav>: the list variant is rendered more than once per
+       page (sidebar utilities, footer, mobile menu), and duplicate navigation
+       landmarks sharing one name are indistinguishable to assistive tech. The
+       group is still named, and still sits inside a real landmark. */ -}}
+<div class="td-language-selector td-language-selector--list{{ with $class }} {{ . }}{{ end }}"
+  role="group" aria-label="{{ T "ui_language_select" }}">
   {{- range $targets -}}
     {{- if .active -}}
   <span class="td-language-selector__item active" lang="{{ .code }}" dir="{{ .direction }}" aria-current="page">{{ .label }}</span>
@@ -20,7 +24,7 @@
   <a class="td-language-selector__item" href="{{ .url }}" lang="{{ .code }}" hreflang="{{ .code }}" dir="{{ .direction }}">{{ .label }}</a>
     {{- end -}}
   {{- end }}
-</nav>
+</div>
   {{- else -}}
 <div class="td-language-selector td-language-selector--menu{{ with $class }} {{ . }}{{ end }}">
   <a class="td-language-selector__trigger" href="{{ $next.url }}"

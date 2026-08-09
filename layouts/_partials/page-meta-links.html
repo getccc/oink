@@ -36,7 +36,9 @@
 
   {{ $viewURL := printf "%s/tree/%s" $gh_repo $gh_repo_path -}}
   {{ $editURL := printf "%s/edit/%s" $gh_repo $gh_repo_path -}}
-  {{ $issuesURL := printf "%s/issues/new?title=%s" $gh_repo (safeURL $.Title ) -}}
+  {{/* querify, not safeURL: a title containing &, #, ? or + has to survive as
+       a single query value. */ -}}
+  {{ $issuesURL := printf "%s/issues/new?%s" $gh_repo (querify "title" $.Title) -}}
   {{ $newPageStub := resources.Get "stubs/new-page-template.md" -}}
   {{ $newPageQS := querify "value" $newPageStub.Content "filename" "change-me.md" | safeURL -}}
   {{ $newPageURL := printf "%s/new/%s?%s" $gh_repo (path.Dir $gh_repo_path) $newPageQS -}}

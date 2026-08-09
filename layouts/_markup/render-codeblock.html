@@ -1,0 +1,19 @@
+{{- /*
+Render fenced code blocks with Chroma class names instead of inline styles.
+
+Hugo does not merge a theme's root-level `markup` config into the site config,
+so the theme cannot ship `markup.highlight.noClasses: false`. Without it Hugo
+inlines one fixed palette and the theme's light/dark code styling
+(assets/scss/td/_chroma.scss) never applies.
+
+Every other highlight option — style, lineNos, tabWidth, … — still comes from
+the site config, and per-fence attributes still win over both. Sites that want
+Hugo's inline styles back can set `params.highlight_classes: false`.
+*/ -}}
+{{- $useClasses := .Page.Param "highlight_classes" -}}
+{{- if eq $useClasses nil }}{{ $useClasses = true }}{{ end -}}
+{{- $options := .Options -}}
+{{- if $useClasses -}}
+  {{- $options = merge (dict "noClasses" false) $options -}}
+{{- end -}}
+{{- transform.Highlight (strings.TrimRight "\n" .Inner) .Type $options -}}

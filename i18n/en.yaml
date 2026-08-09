@@ -106,3 +106,9 @@ feedback_negative: No
 # Table of contents
 toc_on_this_page: On this page
 toc_top_of_page: Top of page
+
+# Error pages
+error_404_title: Page not found
+error_404_body: >-
+  Sorry, this page does not exist. Try starting again from the home page.
+error_404_home: Go to the home page

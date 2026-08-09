@@ -30,6 +30,32 @@ Build or preview the site:
 hugo server
 ```
 
+## Output formats
+
+The theme ships templates for three optional outputs, but Hugo does not let a
+theme add entries to `outputs`, so a site has to opt in:
+
+```yaml
+outputs:
+  home: [HTML, RSS, LLMS]      # /llms.txt site index for language models
+  page: [HTML, markdown, print] # .md source, and a printable single page
+  section: [HTML, RSS, print]   # printable "whole section" view
+```
+
+`markdown` is what backs the page menu's **Copy as Markdown** and **View
+Markdown** entries; without it, those entries are omitted. `print` backs
+**Print entire section** and publishes under `/_print/`. Leaving `outputs`
+unset is supported — the affected controls simply do not render.
+
+## Syntax highlighting
+
+Code blocks are highlighted with Chroma class names so they follow the theme's
+light and dark palettes. Hugo ignores `markup` settings that come from a theme,
+so this is applied by `layouts/_markup/render-codeblock.html` rather than by
+config. Every other highlight option — `style`, `lineNos`, `tabWidth`, and
+per-fence attributes — still comes from your site config. To go back to Hugo's
+inline highlight styles, set `params.highlight_classes: false`.
+
 ## Composable landing page
 
 The landing page is assembled from the `sections` array in Hugo data. A
@@ -138,6 +164,22 @@ theme: oink
 
 Oink requires Hugo 0.160.1 or newer. See
 [oink.pgsty.com](https://oink.pgsty.com) for documentation and examples.
+
+## Building the example
+
+`exampleSite/` carries a `themes/oink` symlink back to the repository root, so
+it builds straight from a clone:
+
+```sh
+cd exampleSite && hugo server
+```
+
+If your platform did not materialize the symlink (Git on Windows without
+`core.symlinks`), point Hugo at the checkout instead:
+
+```sh
+cd exampleSite && hugo server --themesDir ../..
+```
 
 
 ## License and upstream

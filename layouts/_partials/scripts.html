@@ -173,16 +173,20 @@ window.markmap = {
 {{ if $hasGiscus -}}
   {{ $jsArray = $jsArray | append (resources.Get "js/giscus.js") -}}
 {{ end -}}
+{{ $hasFeedback := .Page.Store.Get "hasFeedback" | default false -}}
+{{ if $hasFeedback -}}
+  {{ $jsArray = $jsArray | append (resources.Get "js/feedback.js") -}}
+{{ end -}}
 
 {{ if not (.Param "ui.scrollSpy.disable") -}}
   {{ $jsScrollSpyPatch := resources.Get "js/scrollspy-patch.js" -}}
   {{ $jsArray = $jsArray | append $jsScrollSpyPatch -}}
 {{ end -}}
 
-{{ $bundleKey := printf "%v-%v-%v-%v-%v-%v-%v-%v-%v-%v-%v-%v"
+{{ $bundleKey := printf "%v-%v-%v-%v-%v-%v-%v-%v-%v-%v-%v-%v-%v"
   $shell $localSearch .Site.Params.offlineSearch $hasMarkmap
   $hasPlantuml .Site.Params.drawio.enable
-  $hasAsciinema $hasEcharts $hasInfographic $hasDocCarousel $hasGiscus
+  $hasAsciinema $hasEcharts $hasInfographic $hasDocCarousel $hasGiscus $hasFeedback
   (not (.Param "ui.scrollSpy.disable")) | md5 -}}
 {{ $js := $jsArray | resources.Concat (printf "js/main-%s.js" $bundleKey) -}}
 {{ if hugo.IsProduction -}}

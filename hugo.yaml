@@ -3,6 +3,11 @@
 # cSpell:ignore docsy fortawesome fontawesome github permalinkable twbs webfonts
 
 params:
+  # Highlight code with Chroma class names so it follows the theme's light/dark
+  # palettes. Hugo ignores `markup` set by a theme, so the theme applies this
+  # through layouts/_markup/render-codeblock.html instead. Set to false to fall
+  # back to Hugo's inline highlight styles.
+  highlight_classes: true
   offlineSearchIndex: content
   offlineSearchMaxResults: 10
   time_format_blog: Monday, January 02, 2006

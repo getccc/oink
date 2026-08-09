@@ -17,6 +17,43 @@
   var html = document.documentElement;
   var MD = '(min-width: 768px)';
 
+  /* ----------------------------------------------------------- focus trap */
+
+  var FOCUSABLE =
+    'a[href], button:not([disabled]), input:not([disabled]), ' +
+    'select:not([disabled]), textarea:not([disabled]), ' +
+    '[tabindex]:not([tabindex="-1"])';
+
+  function focusable(container) {
+    return Array.prototype.filter.call(
+      container.querySelectorAll(FOCUSABLE),
+      function (el) {
+        return el.offsetParent !== null || el === document.activeElement;
+      },
+    );
+  }
+
+  // Keep Tab inside a modal surface. Returns a handler to attach on keydown;
+  // it is inert until `isActive()` reports the surface as open, so the same
+  // listener can stay bound for the life of the page.
+  function tabTrap(container, isActive) {
+    return function (event) {
+      if (event.key !== 'Tab' || !isActive()) return;
+      var items = focusable(container);
+      if (!items.length) return;
+      var first = items[0];
+      var last = items[items.length - 1];
+      var active = document.activeElement;
+      if (event.shiftKey && (active === first || !container.contains(active))) {
+        event.preventDefault();
+        last.focus();
+      } else if (!event.shiftKey && active === last) {
+        event.preventDefault();
+        first.focus();
+      }
+    };
+  }
+
   /* -------------------------------------------------------- rightCollapse */
 
   // 右侧栏整栏隐藏（与左侧对称）：标题图标钮切换，右上浮动钮恢复，localStorage 持久化。
@@ -166,6 +203,14 @@
       if (e.key === 'Escape' && html.hasAttribute('data-td-shell-drawer'))
         close(true);
     });
+    // 抽屉是模态：背后的正文被遮罩挡住，Tab 不能走到那里去。
+    document.addEventListener(
+      'keydown',
+      tabTrap(sidebar, function () {
+        return html.hasAttribute('data-td-shell-drawer');
+      }),
+      true,
+    );
     // 视口跨过 md 断点时清掉抽屉态，避免桌面端残留滚动锁。
     window.matchMedia(MD).addEventListener('change', function (mq) {
       if (mq.matches) close(false);
@@ -1106,22 +1151,7 @@
       }
     });
 
-    panel.addEventListener('keydown', function (e) {
-      if (e.key !== 'Tab') return;
-      var focusable = Array.prototype.slice.call(
-        panel.querySelectorAll('input:not([disabled]), button:not([disabled])'),
-      );
-      if (!focusable.length) return;
-      var first = focusable[0];
-      var last = focusable[focusable.length - 1];
-      if (e.shiftKey && document.activeElement === first) {
-        e.preventDefault();
-        last.focus();
-      } else if (!e.shiftKey && document.activeElement === last) {
-        e.preventDefault();
-        first.focus();
-      }
-    });
+    document.addEventListener('keydown', tabTrap(panel, isOpen), true);
 
     document.addEventListener('keydown', function (e) {
       if ((e.metaKey || e.ctrlKey) && String(e.key).toLowerCase() === 'k') {

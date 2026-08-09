@@ -14,12 +14,12 @@
 <div class="td-blog-posts">
   {{ $pager := .Paginate (( $.Scratch.Get "blog-pages").GroupByDate "2006" ) -}}
   {{ range $pager.PageGroups -}}
-  <div class="h2">{{ T "post_posts_in" }} {{ .Key }}</div>
+  <h2>{{ T "post_posts_in" }} {{ .Key }}</h2>
   <ul class="td-blog-posts-list">
     {{ range .Pages -}}
     <li class="td-blog-posts-list__item">
       <div class="td-blog-posts-list__body">
-        <h5 class="mt-0 mb-1"><a href="{{ .RelPermalink }}">{{ .Title }}</a></h5>
+        <h3 class="h5 mt-0 mb-1"><a href="{{ .RelPermalink }}">{{ .Title }}</a></h3>
         <p class="mb-2 mb-md-3"><small class="text-body-secondary">
           {{- .Date.Format ($.Param "time_format_blog") }} {{ T "ui_in"}} {{ .CurrentSection.LinkTitle -}}
         </small></p>
