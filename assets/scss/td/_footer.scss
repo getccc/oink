@@ -183,10 +183,12 @@
       grid-template-columns: minmax(0, 1fr);
     }
 
-    // One track per column, never more — a spare track would sit empty at the
-    // end and read as a wide right margin.
+    // Content-sized tracks pushed apart, so the last column ends at the
+    // container's right edge. Equal `1fr` tracks left the short links in the
+    // last column trailing off well before it.
     &__grid {
-      grid-template-columns: repeat(var(--td-footer-cols, 4), minmax(0, 1fr));
+      grid-template-columns: repeat(var(--td-footer-cols, 4), minmax(0, max-content));
+      justify-content: space-between;
     }
   }
 

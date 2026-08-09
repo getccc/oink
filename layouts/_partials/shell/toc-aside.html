@@ -57,11 +57,27 @@
          the contents-plus-actions stay reachable. Keep it one element. */ -}}
     <div class="td-shell-aside" data-td-shell-aside>
       {{ if $hasToc -}}
-      <h3 class="td-shell-toc__title">
-        {{- partialCached "shell/icon.html" "text-align-start" "text-align-start" -}}
-        <span>{{ T "toc_on_this_page" }}</span>
-      </h3>
-      {{ partial "shell/toc.html" $p }}
+      {{/* Collapsible like the groups below it, but open by default and left
+           open when the block moves into the drawer — it is the reason the
+           block exists. */ -}}
+      <div class="td-shell-aside-group td-shell-aside-group--toc">
+        <button type="button" class="td-shell-tree__row td-shell-aside-group__head"
+          data-td-shell-tree-toggle data-td-shell-aside-keep-open
+          aria-expanded="true" aria-controls="td-shell-aside-toc"
+          aria-label="{{ T "ui_sidebar_collapse_section" }}: {{ T "toc_on_this_page" }}"
+          data-label-expand="{{ T "ui_sidebar_expand_section" }}: {{ T "toc_on_this_page" }}"
+          data-label-collapse="{{ T "ui_sidebar_collapse_section" }}: {{ T "toc_on_this_page" }}">
+          <span class="td-shell-aside-group__title">{{ T "toc_on_this_page" }}</span>
+          <span class="td-shell-tree__chevron" aria-hidden="true">
+            {{- partialCached "shell/icon.html" "chevron-down" "chevron-down" -}}
+          </span>
+        </button>
+        <div id="td-shell-aside-toc" class="td-shell-tree__children is-open">
+          <div class="td-shell-tree__children-inner">
+            {{ partial "shell/toc.html" $p }}
+          </div>
+        </div>
+      </div>
       {{- end }}
       {{/* taxonomy 页无源文件，「编辑此页/打印」等元链接无意义，隐去。 */}}
       {{ if not (in (slice "term" "taxonomy") $p.Kind) -}}

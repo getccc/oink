@@ -299,13 +299,37 @@
   padding-inline-start: 8px;
 }
 
-// In the rail the block is the flex remainder, so a long table of contents
-// still scrolls inside its own body rather than pushing the groups out.
 .td-shell-toc__panel > .td-shell-aside {
-  display: flex;
-  flex-direction: column;
   flex: 1 1 auto;
   min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: none;
+  mask-image: linear-gradient(
+    to bottom,
+    transparent,
+    #000 12px,
+    #000 calc(100% - 12px),
+    transparent
+  );
+  -webkit-mask-image: linear-gradient(
+    to bottom,
+    transparent,
+    #000 12px,
+    #000 calc(100% - 12px),
+    transparent
+  );
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+
+  // The fade and the scroll live on the stack, not on the contents alone.
+  .td-shell-toc__body {
+    overflow: visible;
+    mask-image: none;
+    -webkit-mask-image: none;
+  }
 }
 
 /* ---------------------------------------------- relocatable rail contents */
@@ -329,9 +353,13 @@
 }
 
 .td-shell-aside-group + .td-shell-tags-cloud,
-.td-shell-toc__inner + .td-shell-aside-group {
+.td-shell-aside-group + .td-shell-aside-group {
   margin-top: 8px;
 }
+
+// The whole stack scrolls as one now that every section is collapsible;
+// scrolling only the contents let the groups below squeeze it to nothing on a
+// short viewport.
 
 // Below xl the block is moved into the sidebar drawer. There it sits under the
 // navigation tree, so it borrows the tree's metrics — same row height, same
@@ -402,8 +430,54 @@
     }
   }
 
+  // Terms are navigation here, not filter chips: one row each, with the count
+  // as a quiet badge. The pill treatment belongs to the wide rail.
   .td-shell-tags-cloud__chips {
-    padding-inline: 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    padding-inline: 0;
+  }
+
+  .td-shell-tag {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 8px;
+    border: 0;
+    border-radius: 10px;
+    background: transparent;
+    font-size: 14px;
+    line-height: 20px;
+
+    > span:first-child {
+      flex: 1 1 auto;
+      min-width: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    &:hover {
+      background: var(--td-shell-accent);
+    }
+
+    &.is-active {
+      border-color: transparent;
+      background: var(--td-shell-primary-dim);
+    }
+  }
+
+  .td-shell-tag__count {
+    flex: 0 0 auto;
+    min-width: 20px;
+    padding: 0 6px;
+    border-radius: 999px;
+    background: var(--td-shell-accent);
+    color: var(--td-shell-muted-fg);
+    font-size: 11px;
+    line-height: 18px;
+    text-align: center;
   }
 
   // No fixed panel to scroll within: let the contents extend the drawer's own

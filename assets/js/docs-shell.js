@@ -440,7 +440,9 @@
 
     function setGroups(expanded) {
       aside
-        .querySelectorAll('[data-td-shell-tree-toggle]')
+        .querySelectorAll(
+          '[data-td-shell-tree-toggle]:not([data-td-shell-aside-keep-open])',
+        )
         .forEach(function (button) {
           var target = document.getElementById(
             button.getAttribute('aria-controls'),

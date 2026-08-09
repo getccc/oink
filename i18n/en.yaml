@@ -40,7 +40,7 @@ ui_language_select: Choose language
 ui_language_switch: Switch language
 ui_details: Details
 ui_skip_to_content: Skip to content
-ui_page_actions: Action
+ui_page_actions: Actions
 ui_copy_markdown: Copy as Markdown
 ui_copy_success: Markdown copied
 ui_copy_error: Could not copy Markdown
