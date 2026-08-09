@@ -295,23 +295,7 @@
 /* TOC 下方的页面元链接（编辑 / 查看源码 / 提 issue …） */
 
 .td-shell-toc .td-page-meta {
-  margin: 16px 0 0 !important;
-  padding: 12px 0 0 !important;
+  margin: 16px 0 0;
+  padding: 12px 0 0;
   border-top: 1px solid var(--bs-border-color);
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-
-  a {
-    display: block;
-    padding: 3px 0;
-    font-size: 13px;
-    font-weight: 400;
-    color: var(--td-shell-muted-fg);
-
-    &:hover {
-      color: var(--bs-body-color);
-      text-decoration: none;
-    }
-  }
 }

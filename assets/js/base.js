@@ -68,18 +68,32 @@ limitations under the License.
         const menu = document.querySelector('.mobile-menu');
         if (!toggle || !menu) return;
 
+        function setOpen(open) {
+            menu.classList.toggle('active', open);
+            toggle.classList.toggle('active', open);
+            toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+            const label = open ? toggle.dataset.labelClose : toggle.dataset.labelOpen;
+            if (label) toggle.setAttribute('aria-label', label);
+        }
+
         toggle.addEventListener('click', function() {
-            const active = menu.classList.toggle('active');
-            toggle.classList.toggle('active', active);
-            toggle.setAttribute('aria-expanded', active ? 'true' : 'false');
+            setOpen(!menu.classList.contains('active'));
         });
 
+        // The theme and language option chips act on the current page, so they
+        // must not dismiss the menu the way a navigation link does.
         menu.querySelectorAll('a, [data-mobile-menu-dismiss]').forEach(function(item) {
+            if (item.closest('.mobile-menu-options')) return;
             item.addEventListener('click', function() {
-                menu.classList.remove('active');
-                toggle.classList.remove('active');
-                toggle.setAttribute('aria-expanded', 'false');
+                setOpen(false);
             });
+        });
+
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Escape' && menu.classList.contains('active')) {
+                setOpen(false);
+                toggle.focus();
+            }
         });
     }
 

@@ -171,41 +171,24 @@
   }
 }
 
+// Mobile menu -----------------------------------------------------------
+// The toggle is the same ghost icon button as the rest of the header; the
+// glyph swaps between menu and close.
+
 .mobile-menu-toggle {
   display: none;
-  flex-direction: column;
-  justify-content: center;
-  gap: 5px;
-  width: 42px;
-  height: 42px;
-  padding: 8px;
-  border: 1px solid var(--bs-border-color);
-  border-radius: 6px;
-  background: none;
-  color: var(--bs-body-color);
-  cursor: pointer;
 
-  span {
-    display: block;
-    height: 2px;
-    border-radius: 2px;
-    background: var(--bs-body-color);
-    transition:
-      transform 200ms ease,
-      opacity 200ms ease;
+  .td-shell-icon--x {
+    display: none;
   }
 
   &.active {
-    span:nth-child(1) {
-      transform: translateY(7px) rotate(45deg);
+    .td-shell-icon--menu {
+      display: none;
     }
 
-    span:nth-child(2) {
-      opacity: 0;
-    }
-
-    span:nth-child(3) {
-      transform: translateY(-7px) rotate(-45deg);
+    .td-shell-icon--x {
+      display: block;
     }
   }
 }
@@ -218,7 +201,7 @@
   z-index: 99;
   display: none;
   flex-direction: column;
-  padding: 10px 20px 18px;
+  padding: 6px 18px 14px;
   border-bottom: 1px solid var(--bs-border-color);
   background: var(--td-brand-header-bg);
   box-shadow: var(--td-brand-shadow-md);
@@ -229,49 +212,122 @@
     display: flex;
   }
 
+  // One row shape for every entry: a fixed icon column, then the label.
   .mobile-menu-link {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
     width: 100%;
-    padding: 13px 6px;
+    padding: 12px 6px;
     border: 0;
-    border-bottom: 1px solid var(--bs-border-color);
     border-radius: 0;
     background: none;
     color: var(--bs-body-color);
     font-family: var(--bs-font-sans-serif);
-    font-size: 1rem;
+    font-size: 0.95rem;
     font-weight: 500;
     text-align: start;
     cursor: pointer;
 
     &:hover,
     &:focus-visible {
+      color: var(--bs-link-color);
+      text-decoration: none;
+    }
+
+    &.active {
+      color: var(--bs-link-color);
+    }
+
+    // Font Awesome (menu entries) and lucide (utilities) share one column so
+    // every label starts on the same axis.
+    > i,
+    > .td-shell-icon {
+      flex: 0 0 auto;
+      width: 18px;
+      height: 18px;
+      font-size: 15px;
+      line-height: 18px;
+      text-align: center;
+      color: var(--bs-tertiary-color);
+    }
+
+    > span {
+      min-width: 0;
+    }
+  }
+
+  // Rows that pair an action with its options: language, color theme.
+  .mobile-menu-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+
+    .mobile-menu-link {
+      width: auto;
+      flex: 0 1 auto;
+    }
+  }
+
+  .mobile-menu-options {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+  }
+
+  .mobile-menu-chip {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 32px;
+    height: 30px;
+    padding: 0 0.6rem;
+    border: 1px solid transparent;
+    border-radius: 7px;
+    background: transparent;
+    color: var(--bs-secondary-color);
+    font-family: var(--bs-font-sans-serif);
+    font-size: 0.85rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition:
+      background-color 100ms ease,
+      color 100ms ease;
+
+    &:hover,
+    &:focus-visible {
+      background: var(--td-brand-elev);
       color: var(--bs-body-color);
       text-decoration: none;
     }
 
-    &:last-child {
-      border-bottom: 0;
+    &.is-active {
+      border-color: var(--bs-border-color);
+      background: var(--td-brand-elev);
+      color: var(--bs-link-color);
     }
 
-    > i {
-      width: 22px;
-      color: var(--bs-tertiary-color);
+    .td-shell-icon {
+      width: 16px;
+      height: 16px;
     }
   }
 
-  .mobile-menu-link--btn {
-    display: flex;
-    align-items: center;
-    gap: 0;
+  .mobile-menu-chip--icon {
+    padding: 0;
   }
 
-  .mobile-menu-languages {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: flex-start;
-    gap: 4px;
-    padding: 10px 0;
+  // Separators between top-level entries, but not inside a paired row.
+  > .mobile-menu-link,
+  > .mobile-menu-row {
     border-bottom: 1px solid var(--bs-border-color);
+  }
+
+  > :last-child {
+    border-bottom: 0;
   }
 }
 

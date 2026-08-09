@@ -1,16 +1,11 @@
+// ============================================================
+// Page actions. One surface only: the action list in the TOC rail. The page
+// heading no longer carries a duplicate dropdown.
+// ============================================================
+
 .td-content > .td-page-heading {
   @extend .td-max-width-on-larger-screens;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 0.8rem;
   margin-bottom: 1rem;
-
-  @include media-breakpoint-up(sm) {
-    flex-direction: row;
-    align-items: center;
-    justify-content: space-between;
-  }
 
   > h1 {
     min-width: 0;
@@ -19,133 +14,76 @@
   }
 }
 
-.td-page-context {
-  position: relative;
-  z-index: 15;
-  flex: 0 0 auto;
-  font-size: 0.8125rem;
+.td-page-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
 }
 
-.td-page-context__controls {
-  display: inline-flex;
-  overflow: hidden;
-  border: 1px solid var(--bs-border-color);
-  border-radius: 0.55rem;
-  background: var(--td-shell-card, var(--bs-body-bg));
-  transition: border-color 120ms ease;
-
-  &:hover,
-  &:focus-within {
-    border-color: color-mix(
-      in srgb,
-      var(--bs-border-color) 45%,
-      var(--bs-body-color)
-    );
-  }
-}
-
-.td-page-context__copy,
-.td-page-context__toggle,
-.td-page-context__menu a,
-.td-page-context__menu button {
+.td-page-meta__action {
   display: flex;
   align-items: center;
-  gap: 0.45rem;
+  gap: 0.5rem;
+  width: 100%;
+  padding: 3px 0;
   border: 0;
   background: transparent;
-  color: var(--bs-secondary-color);
+  color: var(--td-shell-muted-fg);
   font: inherit;
+  font-size: 13px;
+  font-weight: 400;
   text-align: start;
   text-decoration: none;
   cursor: pointer;
+  transition: color 100ms ease;
 
   &:hover,
   &:focus-visible {
-    background: var(--td-shell-accent, var(--bs-tertiary-bg));
     color: var(--bs-body-color);
     text-decoration: none;
   }
 
-  .td-shell-icon,
-  > i {
-    flex: 0 0 auto;
-    width: 1rem;
-    height: 1rem;
-  }
-}
-
-.td-page-context__copy {
-  padding: 0.38rem 0.65rem;
-}
-
-.td-page-context__toggle {
-  justify-content: center;
-  padding: 0.38rem 0.45rem;
-  border-inline-start: 1px solid var(--bs-border-color);
-
+  // Font Awesome (custom links) and lucide (built-ins) share one column so
+  // every label starts on the same axis.
+  > i,
   .td-shell-icon {
-    transition: transform 140ms ease;
+    flex: 0 0 auto;
+    width: 15px;
+    height: 15px;
+    font-size: 13px;
+    line-height: 15px;
+    text-align: center;
   }
 
-  &[aria-expanded='true'] .td-shell-icon {
-    transform: rotate(180deg);
+  > span:last-child {
+    min-width: 0;
   }
 }
 
-.td-page-context__success-icon {
+// Copy button: the check swaps in for the clipboard while the toast is up.
+.td-page-meta__icon {
+  display: inline-flex;
+}
+
+.td-page-meta__icon--done {
   display: none;
+  color: var(--bs-success);
 }
 
-.td-page-context__copy.is-copied {
-  .td-page-context__copy-icon {
+.td-page-meta__action.is-copied {
+  color: var(--bs-success);
+
+  .td-page-meta__icon {
     display: none;
   }
 
-  .td-page-context__success-icon {
+  .td-page-meta__icon--done {
     display: inline-flex;
-    color: var(--bs-success);
   }
 }
 
-.td-page-context__menu {
-  position: absolute;
-  inset-block-start: calc(100% + 0.35rem);
-  inset-inline-end: 0;
-  z-index: 50;
-  min-width: 13rem;
-  max-width: unquote('min(22rem, calc(100vw - 2rem))');
-  max-height: unquote('min(22rem, 70vh)');
-  margin: 0;
-  padding: 0.3rem;
-  overflow-y: auto;
-  list-style: none;
-  border: 1px solid var(--bs-border-color);
-  border-radius: 0.6rem;
-  background: var(--td-shell-popover, var(--bs-body-bg));
-  box-shadow: var(--td-shell-shadow-lg, var(--bs-box-shadow-lg));
-
-  &[hidden] {
-    display: none;
-  }
-
-  a,
-  button {
-    width: 100%;
-    padding: 0.48rem 0.55rem;
-    border-radius: 0.4rem;
-    white-space: nowrap;
-  }
-}
-
-.td-page-context__separator {
+.td-page-meta__separator {
   height: 1px;
-  margin: 0.3rem 0.2rem;
+  margin: 0.35rem 0;
   background: var(--bs-border-color);
-}
-
-@media (max-width: 575.98px) {
-  .td-page-context__menu {
-    inset-inline-start: 0;
-    inset-inline-end: auto;
-  }
 }

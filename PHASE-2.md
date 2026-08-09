@@ -222,19 +222,19 @@ Options: (a) accept it and smooth the transition; (b) give non-shell pages the
 shell too; (c) give shell pages a slim top bar at `≥md`. **This choice
 determines the shape of B1 — please pick one before that work starts.**
 
-#### B3. Unify the page-action UI
+#### B3. Unify the page-action UI — **done**
 
-Two implementations of the same thing render on every docs page: the right-rail
-`page-meta-links.html` (View Markdown / View source / Edit / Create child page /
-Create doc issue / Create project issue / Print entire section) and the
-`page-context-menu.html` dropdown beside the title (Copy as Markdown / View
-Markdown / Edit / Create doc issue / Print). Both build GitHub URLs from
-`github_repo` + `github_branch` + `path_base_for_github_subdir` independently —
-the `querify` bug fixed in phase 1 existed in only one of them.
+Two implementations of the same thing used to render on every docs page: the
+right-rail `page-meta-links.html` and a `page-context-menu.html` dropdown
+beside the title, each building GitHub URLs independently — the `querify` bug
+fixed in phase 1 existed in only one of them.
 
-**Approach.** Extract the URL construction into one partial that returns a
-dict, and have both surfaces consume it. Then decide whether both surfaces
-should exist at all.
+Resolved by folding everything into `page-meta-links.html` (eight actions, one
+icon each) and deleting `page-context-menu.html`. `initPageContext` shrank to
+the copy and print handlers. Note the two consequences: `post_view_this`
+("View page source", styling hook `.td-page-meta__view`) is no longer rendered
+although `oink.pgsty.com` still documents it, and the actions inherit the
+rail's `xl` breakpoint — see **C1**.
 
 ---
 
@@ -247,6 +247,11 @@ should exist at all.
 page loses the TOC, the page-meta links, **and** the taxonomy cloud, with no
 fallback. That band covers tablets, small laptops, and every split-screen
 window, plus all phones.
+
+**Raised priority.** The page actions (copy/view Markdown, edit, child page,
+issues, print) now live only in this rail — the duplicate dropdown beside the
+page title was removed. Until this item lands, those actions are unreachable
+below `xl`.
 
 **Approach.** A collapsible "On this page" disclosure under the page title at
 `< xl`, or a bottom-sheet triggered from the mobile subnav. The TOC data and

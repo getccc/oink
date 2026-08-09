@@ -682,23 +682,15 @@
 
   /* ---------------------------------------------------------- pageContext */
 
+  // "Copy as Markdown" and "Print this page" in the TOC rail's action list.
   function initPageContext() {
     document
       .querySelectorAll('[data-td-page-context]')
       .forEach(function (root) {
-        var toggle = root.querySelector('[data-td-page-context-toggle]');
-        var menu = root.querySelector('.td-page-context__menu');
         var status = root.querySelector('[data-td-page-context-status]');
         var copyButtons = root.querySelectorAll('[data-td-page-copy]');
-        var primaryCopy = root.querySelector('.td-page-context__copy');
+        var printButtons = root.querySelectorAll('[data-td-page-print]');
         var cached = new Map();
-        if (!toggle || !menu) return;
-
-        function menuItems() {
-          return Array.prototype.slice.call(
-            menu.querySelectorAll('[role="menuitem"]'),
-          );
-        }
 
         function announce(text) {
           if (!status) return;
@@ -706,20 +698,6 @@
           window.requestAnimationFrame(function () {
             status.textContent = text;
           });
-        }
-
-        function close(restoreFocus) {
-          if (menu.hidden) return;
-          menu.hidden = true;
-          toggle.setAttribute('aria-expanded', 'false');
-          if (restoreFocus) toggle.focus();
-        }
-
-        function open() {
-          menu.hidden = false;
-          toggle.setAttribute('aria-expanded', 'true');
-          var items = menuItems();
-          if (items.length) items[0].focus();
         }
 
         function fallbackCopy(text) {
@@ -751,111 +729,65 @@
           return fallbackCopy(text);
         }
 
-        function showCopied() {
-          var label =
-            primaryCopy &&
-            primaryCopy.querySelector('[data-td-page-copy-label]');
-          if (primaryCopy) primaryCopy.classList.add('is-copied');
+        function showCopied(button) {
+          var label = button.querySelector('[data-td-page-copy-label]');
+          button.classList.add('is-copied');
           if (label && !label.dataset.original)
             label.dataset.original = label.textContent;
-          if (label)
-            label.textContent = root.dataset.tCopied || label.textContent;
+          if (label) label.textContent = root.dataset.tCopied || label.textContent;
           announce(root.dataset.tCopied || 'Copied');
           window.setTimeout(function () {
-            if (primaryCopy) primaryCopy.classList.remove('is-copied');
+            button.classList.remove('is-copied');
             if (label && label.dataset.original)
               label.textContent = label.dataset.original;
           }, 1400);
         }
 
-        function copy(button) {
-          var url = button.dataset.url;
-          if (!url) return;
-          var content = cached.get(url);
-          var pending = content
-            ? Promise.resolve(content)
-            : fetch(url)
-                .then(function (response) {
-                  if (!response.ok) throw new Error('Markdown request failed');
-                  return response.text();
-                })
-                .then(function (text) {
-                  cached.set(url, text);
-                  return text;
-                });
-          pending
-            .then(writeClipboard)
-            .then(showCopied)
-            .catch(function () {
-              announce(root.dataset.tCopyError || 'Copy failed');
+        function fetchMarkdown(url) {
+          if (cached.has(url)) return Promise.resolve(cached.get(url));
+          return fetch(url)
+            .then(function (response) {
+              if (!response.ok) throw new Error('Markdown request failed');
+              return response.text();
+            })
+            .then(function (text) {
+              cached.set(url, text);
+              return text;
             });
         }
 
         copyButtons.forEach(function (button) {
           var url = button.dataset.url;
-          if (url && !cached.has(url)) {
-            fetch(url)
-              .then(function (response) {
-                if (!response.ok) throw new Error('Markdown request failed');
-                return response.text();
-              })
-              .then(function (text) {
-                cached.set(url, text);
+          if (!url) return;
+          // Warm the cache on intent rather than on load: most readers never
+          // press this, and an unconditional fetch is a request per page view.
+          ['pointerenter', 'focus'].forEach(function (event) {
+            button.addEventListener(
+              event,
+              function () {
+                fetchMarkdown(url).catch(function () {
+                  /* retry on activation */
+                });
+              },
+              { once: true },
+            );
+          });
+          button.addEventListener('click', function () {
+            fetchMarkdown(url)
+              .then(writeClipboard)
+              .then(function () {
+                showCopied(button);
               })
               .catch(function () {
-                /* retry on activation */
+                announce(root.dataset.tCopyError || 'Copy failed');
               });
-          }
-          button.addEventListener('click', function () {
-            copy(button);
-            if (menu.contains(button)) close(true);
           });
         });
 
-        toggle.addEventListener('click', function () {
-          if (menu.hidden) {
-            open();
-          } else {
-            close(false);
-          }
-        });
-        toggle.addEventListener('keydown', function (event) {
-          if (event.key === 'ArrowDown') {
-            event.preventDefault();
-            open();
-          }
-        });
-        menu.addEventListener('keydown', function (event) {
-          var items = menuItems();
-          var index = items.indexOf(document.activeElement);
-          if (event.key === 'Escape') {
-            event.preventDefault();
-            close(true);
-          } else if (event.key === 'ArrowDown' || event.key === 'ArrowUp') {
-            event.preventDefault();
-            var step = event.key === 'ArrowDown' ? 1 : -1;
-            items[(index + step + items.length) % items.length].focus();
-          } else if (event.key === 'Home' || event.key === 'End') {
-            event.preventDefault();
-            items[event.key === 'Home' ? 0 : items.length - 1].focus();
-          } else if (event.key === 'Tab') {
-            close(false);
-          }
-        });
-        menu.querySelectorAll('a[role="menuitem"]').forEach(function (link) {
-          link.addEventListener('click', function () {
-            close(false);
-          });
-        });
-        var printButton = menu.querySelector('[data-td-page-print]');
-        if (printButton) {
-          printButton.addEventListener('click', function () {
-            close(false);
+        printButtons.forEach(function (button) {
+          button.addEventListener('click', function () {
             window.print();
           });
-        }
-        document.addEventListener('pointerdown', function (event) {
-          if (!menu.hidden && !root.contains(event.target)) close(false);
         });
       });
   }

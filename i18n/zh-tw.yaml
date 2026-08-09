@@ -9,7 +9,7 @@ warning: 警告
 ui_pager_prev: 上一頁
 ui_pager_next: 下一頁
 ui_read_more: 閱讀全文
-ui_search: 站內搜尋…
+ui_search: 搜尋…
 ui_search_empty: 找不到結果
 ui_search_loading: 正在載入搜尋索引…
 ui_search_nav: 選擇
@@ -28,6 +28,9 @@ ui_tag_title: 標籤
 ui_categories_title: 分類
 ui_category_title: 分類
 ui_theme_toggle: 切換配色
+ui_theme_auto: 跟隨系統
+ui_theme_light: 亮色
+ui_theme_dark: 暗色
 ui_toc_hide: 隱藏目錄
 ui_toc_show: 顯示目錄
 ui_language_select: 選擇語言

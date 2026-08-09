@@ -7,12 +7,6 @@
 {{- $hasToc := .hasToc -}}
 {{- $config := partial "shell/config.html" $p -}}
 {{- $baseURL := urls.Parse $p.Site.BaseURL -}}
-{{- $defaultIcons := dict
-  "docs" "fa-solid fa-book"
-  "blog" "fa-solid fa-blog"
-  "examples" "fa-solid fa-flask"
-  "community" "fa-solid fa-people-group"
--}}
 <aside class="td-shell-toc d-print-none" aria-label="{{ T "toc_on_this_page" }}">
   <div class="td-shell-toc__panel">
     <div class="td-shell-toc__actions">
@@ -26,11 +20,10 @@
         {{- if in $config.quickLinks $key -}}
           {{- $href := .URL | relLangURL -}}
           {{- $description := "" -}}
-          {{- $icon := index $defaultIcons $key | default "fa-solid fa-link" -}}
+          {{- $icon := partial "menu-icon.html" . -}}
           {{- with .Page -}}
             {{- $href = .RelPermalink -}}
             {{- $description = .Description | default .Title | plainify -}}
-            {{- with .Params.icon }}{{ $icon = . }}{{ end -}}
           {{- end -}}
           {{- $target := urls.Parse .URL -}}
           {{- $external := and $target.Host (ne $baseURL.Host $target.Host) -}}

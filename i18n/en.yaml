@@ -9,7 +9,7 @@ warning: Warning
 ui_pager_prev: Previous
 ui_pager_next: Next
 ui_read_more: Read more
-ui_search: Search this site…
+ui_search: Search…
 ui_search_empty: No results found
 ui_search_loading: Loading search index…
 ui_search_results: '{count} results found'
@@ -29,6 +29,9 @@ ui_tag_title: Tag
 ui_categories_title: Categories
 ui_category_title: Category
 ui_theme_toggle: Toggle color theme
+ui_theme_auto: Follow system
+ui_theme_light: Light
+ui_theme_dark: Dark
 ui_toc_hide: Hide table of contents
 ui_toc_show: Show table of contents
 ui_language_select: Choose language

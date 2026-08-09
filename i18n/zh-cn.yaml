@@ -9,7 +9,7 @@ warning: 警告
 ui_pager_prev: 上一页
 ui_pager_next: 下一页
 ui_read_more: 阅读全文
-ui_search: 站内搜索……
+ui_search: 搜索…
 ui_search_empty: 未找到结果
 ui_search_loading: 正在加载搜索索引……
 ui_search_results: '找到 {count} 条结果'
@@ -29,6 +29,9 @@ ui_tag_title: 标签
 ui_categories_title: 分类
 ui_category_title: 分类
 ui_theme_toggle: 切换配色
+ui_theme_auto: 跟随系统
+ui_theme_light: 亮色
+ui_theme_dark: 暗色
 ui_toc_hide: 隐藏目录
 ui_toc_show: 显示目录
 ui_language_select: 选择语言
