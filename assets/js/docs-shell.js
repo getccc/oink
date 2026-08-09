@@ -419,6 +419,55 @@
     window.addEventListener('pagehide', save);
   }
 
+  /* -------------------------------------------------------- asideRelocate */
+
+  /*
+   * Below xl the TOC rail is hidden, which used to take the table of contents,
+   * the page actions and the taxonomy clouds with it. Rather than render a
+   * second copy — duplicate ids would break the scrollspy and the disclosure
+   * wiring — the single block is moved into a slot in the sidebar drawer and
+   * moved back on the way up.
+   *
+   * The groups follow the context: expanded in the rail, where there is room
+   * for them, collapsed in the drawer, where the navigation tree comes first.
+   */
+  function initAsideRelocate() {
+    var aside = document.querySelector('[data-td-shell-aside]');
+    var slot = document.querySelector('[data-td-shell-aside-slot]');
+    if (!aside || !slot) return;
+    var home = aside.parentElement;
+    var wide = window.matchMedia('(min-width: 1200px)');
+
+    function setGroups(expanded) {
+      aside
+        .querySelectorAll('[data-td-shell-tree-toggle]')
+        .forEach(function (button) {
+          var target = document.getElementById(
+            button.getAttribute('aria-controls'),
+          );
+          if (!target) return;
+          button.setAttribute('aria-expanded', expanded ? 'true' : 'false');
+          target.classList.toggle('is-open', expanded);
+          var label = expanded
+            ? button.dataset.labelCollapse
+            : button.dataset.labelExpand;
+          if (label) button.setAttribute('aria-label', label);
+        });
+    }
+
+    function place(isWide) {
+      var parent = isWide ? home : slot;
+      if (aside.parentElement !== parent) parent.appendChild(aside);
+      slot.hidden = isWide;
+      setGroups(isWide);
+    }
+
+    place(wide.matches);
+    wide.addEventListener('change', function (event) {
+      place(event.matches);
+    });
+  }
+
   /* ------------------------------------------------------------------ toc */
 
   /*
@@ -1163,6 +1212,9 @@
   initResize();
   initTreeToggles();
   initTreeScroll();
+  // Before initToc: the table of contents measures geometry, so it should be
+  // built where it will actually live.
+  initAsideRelocate();
   initToc();
   initPageContext();
   initSearch();

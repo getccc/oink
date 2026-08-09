@@ -294,8 +294,66 @@
 
 /* TOC 下方的页面元链接（编辑 / 查看源码 / 提 issue …） */
 
-.td-shell-toc .td-page-meta {
-  margin: 16px 0 0;
-  padding: 12px 0 0;
+// The group heading supplies the separation now; no rule of its own.
+.td-shell-aside .td-page-meta {
+  padding-inline-start: 8px;
+}
+
+// In the rail the block is the flex remainder, so a long table of contents
+// still scrolls inside its own body rather than pushing the groups out.
+.td-shell-toc__panel > .td-shell-aside {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
+/* ---------------------------------------------- relocatable rail contents */
+
+// Labelled, collapsible group around the page actions, matching the taxonomy
+// clouds so the rail reads as one stack of sections.
+.td-shell-aside-group__head {
+  width: 100%;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+}
+
+.td-shell-aside-group__title {
+  flex: 1 1 auto;
+  min-width: 0;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--bs-body-color);
+  text-align: start;
+}
+
+.td-shell-aside-group + .td-shell-tags-cloud,
+.td-shell-toc__inner + .td-shell-aside-group {
+  margin-top: 8px;
+}
+
+// Below xl the block is moved into the sidebar drawer, where it is part of a
+// scrolling column rather than a fixed panel.
+.td-shell-sidebar__aside {
+  margin-top: 12px;
+  padding-top: 12px;
   border-top: 1px solid var(--bs-border-color);
+
+  &[hidden] {
+    display: none;
+  }
+
+  .td-shell-toc__title {
+    margin-top: 0;
+  }
+
+  // No fixed panel to scroll within: let the contents extend the drawer's own
+  // scroller instead of nesting a second one behind a fade mask.
+  .td-shell-toc__body {
+    max-height: none;
+    overflow: visible;
+    mask-image: none;
+    -webkit-mask-image: none;
+  }
 }

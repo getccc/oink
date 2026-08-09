@@ -240,7 +240,19 @@ rail's `xl` breakpoint — see **C1**.
 
 ### C. Layout and interaction
 
-#### C1. No table of contents below 1200px — the biggest UX gap
+#### C1. No table of contents below 1200px — **done**
+
+Resolved by relocation rather than duplication: the rail's contents live in a
+single `[data-td-shell-aside]` block that `docs-shell.js#initAsideRelocate`
+moves into a slot in the sidebar drawer below `xl`, and back above it. Ids stay
+unique, so the scrollspy and the disclosure wiring keep working; the table of
+contents rebuilds through its existing `ResizeObserver`. The page actions and
+the taxonomies became labelled disclosures — expanded in the rail, collapsed in
+the drawer, matching the taxonomy clouds that were already built that way.
+
+Original analysis follows.
+
+#### C1 (original) — no table of contents below 1200px
 
 **Evidence.** `assets/scss/td/shell/_toc.scss:7-18` sets
 `.td-shell-toc { display: none }` and only restores it at `xl`. Below that the
@@ -251,7 +263,7 @@ window, plus all phones.
 **Raised priority.** The page actions (copy/view Markdown, edit, child page,
 issues, print) now live only in this rail — the duplicate dropdown beside the
 page title was removed. Until this item lands, those actions are unreachable
-below `xl`.
+below `xl`. *(Resolved, see above.)*
 
 **Approach.** A collapsible "On this page" disclosure under the page title at
 `< xl`, or a bottom-sheet triggered from the mobile subnav. The TOC data and
@@ -399,7 +411,7 @@ they emit nothing that matches.
 **Round 2** — independent, verifiable, no design decisions required:
 `A1`, `A3`, `A5`, `A6`, `C2`, `C3`, `D4`, `E1`, `E2`.
 
-**Round 3** — needs design or build-chain work: `C1`, `A2`, `A4`, `D1`, `D3`.
+**Round 3** — needs design or build-chain work: `A2`, `A4`, `D1`, `D3`.
 
 **Round 4** — architecture: `B2` (decision) then `B1`, then `B3`, `E4`, `E6`.
 
@@ -411,7 +423,6 @@ open for another reason.
 ## 4. Open questions
 
 1. **B2** — which top-bar model? Blocks B1.
-2. **C1** — where do the page-meta links and the tag cloud go below `xl`?
 3. **A2** — is an icon allowlist acceptable to projects, or must the full Font
    Awesome set always ship?
 4. **E3** — is Windows a supported development platform for this repo?

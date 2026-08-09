@@ -33,6 +33,10 @@
   </div>
   <div class="td-shell-sidebar__viewport" data-td-shell-sidebar-scroll>
     {{ partial "shell/sidebar.html" . }}
+    {{/* Below xl the TOC rail is hidden; docs-shell.js parks its contents here
+         so the table of contents, the page actions and the taxonomies stay
+         reachable from the drawer. Empty until then. */ -}}
+    <div class="td-shell-sidebar__aside" data-td-shell-aside-slot hidden></div>
   </div>
   {{/* Footer row: the version selector, then the global utilities. They live
        here rather than under the brand so they stay in the same place whether
