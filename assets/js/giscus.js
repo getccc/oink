@@ -7,13 +7,21 @@
   const sections = document.querySelectorAll('[data-td-giscus]');
   if (!sections.length) return;
 
+  const resolveTheme = theme => theme && theme.startsWith('/')
+    ? new URL(theme, window.location.origin).href
+    : theme;
+
   const getTheme = section => {
     const configuredTheme = section.dataset.theme;
-    if (configuredTheme && configuredTheme !== 'auto') return configuredTheme;
+    if (configuredTheme && configuredTheme !== 'auto') return resolveTheme(configuredTheme);
 
     const siteTheme = document.documentElement.getAttribute('data-bs-theme');
-    if (siteTheme === 'light' || siteTheme === 'dark') return siteTheme;
-    return colorScheme.matches ? 'dark' : 'light';
+    const colorMode = siteTheme === 'light' || siteTheme === 'dark'
+      ? siteTheme
+      : colorScheme.matches ? 'dark' : 'light';
+    return colorMode === 'dark'
+      ? resolveTheme(section.dataset.themeDark || 'dark')
+      : resolveTheme(section.dataset.themeLight || 'light');
   };
 
   const setTheme = section => {

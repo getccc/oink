@@ -165,6 +165,8 @@ params:
       emitMetadata: 0
       inputPosition: top
       theme: auto
+      lightTheme: light
+      darkTheme: dark
       loading: lazy
 ```
 
@@ -177,8 +179,15 @@ produces a Hugo warning and skips giscus instead of failing the site build.
 By default, the giscus interface follows the page language and OINK's
 light/dark theme. Unsupported giscus locales fall back to English; set
 `params.comments.giscus.lang` to override the locale. `theme` can be `auto`, a
-built-in giscus theme, or a custom theme URL. `ariaLabel` and `errorMessage` can
-override the comments region label and its load-failure message.
+built-in giscus theme, or a custom theme URL. When `theme` is `auto`,
+`lightTheme` and `darkTheme` select the built-in theme name, custom HTTPS CSS
+URL, or site-root-relative CSS path for each OINK color mode. OINK expands a
+root-relative path against the current site origin. Because the giscus iframe
+is served over HTTPS, a root-relative custom theme works on an HTTPS site (or
+HTTPS-enabled local preview), but a plain HTTP preview falls back to a built-in
+giscus theme. Custom theme hosts must also allow the stylesheet to be loaded
+cross-origin. `ariaLabel` and `errorMessage` can override the comments region
+label and its load-failure message.
 
 The external giscus script and its local initializer are loaded only on pages
 where comments are active. Sites with a strict Content Security Policy must

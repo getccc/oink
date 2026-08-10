@@ -24,6 +24,8 @@ params:
       emitMetadata: 0
       inputPosition: top
       theme: auto
+      lightTheme: light
+      darkTheme: dark
       loading: lazy
   ui:
     feedback:

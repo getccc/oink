@@ -47,7 +47,10 @@
 {{- .Page.Store.Set "hasGiscus" true -}}
 {{- $ariaLabel := index $giscus "arialabel" | default "Comments" -}}
 {{- $errorMessage := index $giscus "errormessage" | default "Comments could not be loaded." -}}
-<section class="td-comments d-print-none mt-5 pt-4 border-top"
+{{- $theme := index $giscus "theme" | default "auto" -}}
+{{- $lightTheme := index $giscus "lighttheme" | default "light" -}}
+{{- $darkTheme := index $giscus "darktheme" | default "dark" -}}
+<section class="td-comments d-print-none"
   data-td-giscus
   data-repo="{{ $repo }}"
   data-repo-id="{{ $repoID }}"
@@ -58,7 +61,9 @@
   data-reactions-enabled="{{ $reactionsEnabled }}"
   data-emit-metadata="{{ $emitMetadata }}"
   data-input-position="{{ index $giscus "inputposition" | default "top" }}"
-  data-theme="{{ index $giscus "theme" | default "auto" }}"
+  data-theme="{{ $theme }}"
+  data-theme-light="{{ $lightTheme }}"
+  data-theme-dark="{{ $darkTheme }}"
   data-lang="{{ $lang }}"
   data-loading="{{ index $giscus "loading" | default "lazy" }}"
   {{- with index $giscus "term" }} data-term="{{ . }}"{{ end }}
