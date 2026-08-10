@@ -3,7 +3,26 @@
 {{- $id := .id -}}
 {{- $titleLines := index $hero "title_lines" -}}
 {{- $lead := $hero.lead | default $hero.desc | default $hero.text -}}
-<section id="{{ $id }}" class="oink-hero{{ with $hero.class }} {{ . }}{{ end }}" aria-labelledby="{{ $id }}-title">
+{{- $image := $hero.image -}}
+{{- $imageLight := "" -}}
+{{- $imageDark := "" -}}
+{{- $imageAlt := "" -}}
+{{- if reflect.IsMap $image -}}
+  {{- $imageLight = $image.light | default $image.src | default $image.dark -}}
+  {{- $imageDark = $image.dark | default $image.src | default $image.light -}}
+  {{- $imageAlt = $image.alt | default "" -}}
+{{- else -}}
+  {{- with $image -}}
+    {{- $imageLight = . -}}
+    {{- $imageDark = . -}}
+  {{- end -}}
+{{- end -}}
+{{- $hasImage := and $imageLight $imageDark -}}
+{{- $imageStyle := "" -}}
+{{- if $hasImage -}}
+  {{- $imageStyle = printf "--oink-hero-image-light: url(%q); --oink-hero-image-dark: url(%q);" ($imageLight | relURL) ($imageDark | relURL) -}}
+{{- end -}}
+<section id="{{ $id }}" class="oink-hero{{ if $hasImage }} oink-hero--with-media{{ end }}{{ with $hero.class }} {{ . }}{{ end }}" aria-labelledby="{{ $id }}-title">
   <div class="oink-hero__glow" aria-hidden="true"></div>
   <div class="landing-container">
     <div class="oink-hero__copy">
@@ -62,5 +81,8 @@
       </p>
       {{- end }}
     </div>
+    {{- if $hasImage }}
+    <div class="oink-hero__media" style="{{ $imageStyle | safeCSS }}"{{ with $imageAlt }} role="img" aria-label="{{ . | markdownify | plainify }}"{{ else }} aria-hidden="true"{{ end }}></div>
+    {{- end }}
   </div>
 </section>

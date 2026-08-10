@@ -43,9 +43,22 @@
         </main>
       </div>
         {{- else if eq .type "components" }}
-      <div class="oink-component-board" aria-hidden="true">
+        {{- $interactive := false }}
         {{- range .items }}
-        <span><i class="{{ .icon }}"></i><b>{{ .title }}</b><small>{{ .detail }}</small></span>
+          {{- if or .url .href }}{{ $interactive = true }}{{ end }}
+        {{- end }}
+        {{- $columns := int (.columns | default 2) }}
+        {{- if lt $columns 1 }}{{ $columns = 1 }}{{ else if gt $columns 4 }}{{ $columns = 4 }}{{ end }}
+      <div class="oink-component-board{{ if $interactive }} oink-component-board--nav{{ end }}{{ if .compact }} oink-component-board--compact{{ end }}"
+           style="--oink-component-columns: {{ $columns }}"
+           {{- if $interactive }} role="navigation" aria-label="{{ .aria_label | default $module.title }}"{{ else }} aria-hidden="true"{{ end }}>
+        {{- range .items }}
+          {{- $itemURL := .url | default .href }}
+          {{- if $itemURL }}
+        <a href="{{ $itemURL | relLangURL }}"{{ if .external }} target="_blank" rel="noopener noreferrer"{{ end }}><i class="{{ .icon }}" aria-hidden="true"></i><b>{{ .title }}</b>{{ with .detail }}<small>{{ . }}</small>{{ end }}</a>
+          {{- else }}
+        <span><i class="{{ .icon }}"></i><b>{{ .title }}</b>{{ with .detail }}<small>{{ . }}</small>{{ end }}</span>
+          {{- end }}
         {{- end }}
       </div>
         {{- end }}

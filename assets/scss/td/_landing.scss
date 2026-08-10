@@ -70,15 +70,21 @@
 
 .oink-hero {
   position: relative;
-  // Tall enough to establish the grid backdrop, short enough that the first
-  // section below it is visible without scrolling on a laptop.
-  min-height: 460px;
+  // Keep the visual substantial while still revealing the next section on a
+  // laptop-sized viewport.
+  min-height: 420px;
   display: flex;
   align-items: flex-start;
-  padding: clamp(32px, 3.5vw, 48px) 0 clamp(36px, 4.5vw, 56px);
 
   > .landing-container {
     width: 100%;
+  }
+
+  &--with-media > .landing-container {
+    display: grid;
+    grid-template-columns: minmax(0, 1.12fr) minmax(320px, 0.88fr);
+    align-items: center;
+    gap: clamp(36px, 5vw, 72px);
   }
 
   &__glow {
@@ -103,6 +109,20 @@
     min-width: 0;
     max-width: 660px;
     text-align: start;
+  }
+
+  &__media {
+    width: 100%;
+    max-width: 480px;
+    aspect-ratio: 1;
+    justify-self: end;
+    margin: 0;
+    transform: scale(1.1);
+    transform-origin: center;
+    background-image: var(--oink-hero-image-light);
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: contain;
   }
 
   &__eyebrow {
@@ -183,6 +203,15 @@
       color: var(--oink-copper);
     }
   }
+}
+
+.td-default main .oink-hero {
+  // Override Docsy's generic main-section spacing for the homepage Hero.
+  padding: clamp(24px, 2.6vw, 36px) 0 clamp(28px, 3.2vw, 42px);
+}
+
+[data-bs-theme='dark'] .oink-hero__media {
+  background-image: var(--oink-hero-image-dark);
 }
 
 .oink-status-dot {
@@ -983,12 +1012,16 @@
 
 .oink-component-board {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: repeat(
+    var(--oink-component-columns, 2),
+    minmax(0, 1fr)
+  );
   gap: 12px;
   padding: clamp(16px, 3vw, 24px);
   background: color-mix(in srgb, var(--oink-paper) 90%, transparent);
 
-  > span {
+  > span,
+  > a {
     display: grid;
     grid-template-columns: auto 1fr;
     gap: 2px 10px;
@@ -1014,6 +1047,54 @@
     small {
       color: var(--oink-muted);
       font-size: 0.68rem;
+    }
+  }
+
+  > a {
+    color: inherit;
+    text-decoration: none;
+    transition:
+      transform 160ms ease,
+      border-color 160ms ease,
+      background-color 160ms ease;
+
+    &:hover {
+      transform: translateY(-2px);
+      border-color: var(--oink-copper-dim);
+      background: color-mix(in srgb, var(--oink-blue) 7%, var(--bs-body-bg));
+    }
+
+    &:focus-visible {
+      outline: 3px solid color-mix(in srgb, var(--oink-blue) 38%, transparent);
+      outline-offset: 2px;
+      border-color: var(--oink-blue);
+    }
+  }
+
+  &--nav:hover {
+    transform: none;
+    border-color: var(--oink-terminal-line);
+    box-shadow: var(--oink-shadow);
+  }
+
+  &--compact {
+    gap: 8px;
+    padding: clamp(12px, 2vw, 18px);
+
+    > span,
+    > a {
+      min-height: 46px;
+      padding: 10px 11px;
+
+      > i {
+        font-size: 1rem;
+      }
+
+      b {
+        font-size: 0.64rem;
+        letter-spacing: 0.035em;
+        overflow-wrap: anywhere;
+      }
     }
   }
 }
@@ -1525,10 +1606,28 @@
 @media (max-width: 1100px) {
   .oink-hero {
     min-height: 0;
+
+    &--with-media > .landing-container {
+      gap: clamp(28px, 4vw, 44px);
+    }
+
+    &__media {
+      max-width: 440px;
+    }
   }
 }
 
 @media (max-width: 900px) {
+  .oink-hero {
+    &--with-media > .landing-container {
+      display: block;
+    }
+
+    &__media {
+      display: none;
+    }
+  }
+
   .oink-module {
     grid-template-columns: minmax(0, 1fr);
     gap: 28px;
@@ -1559,8 +1658,6 @@
 
 @media (max-width: 768px) {
   .oink-hero {
-    padding-top: 34px;
-
     &__title {
       font-size: clamp(2rem, 8.2vw, 3rem);
     }
@@ -1623,8 +1720,12 @@
     }
   }
 
-  .oink-component-board {
+  .oink-component-board:not(.oink-component-board--compact) {
     grid-template-columns: minmax(0, 1fr);
+  }
+
+  .oink-component-board--compact {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
   .oink-card-grid,
@@ -1650,6 +1751,10 @@
   .oink-codeplate,
   .oink-shell-demo,
   .oink-component-board {
+    transition: none;
+  }
+
+  .oink-component-board > a {
     transition: none;
   }
 }
