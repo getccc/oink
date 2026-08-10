@@ -1,5 +1,6 @@
 {{- $file := .Get "file" | default (.Get 0) -}}
 {{- if not $file }}{{ errorf "%s: asciinema requires a file parameter" .Position }}{{ end -}}
+{{- $title := .Get "title" | default $file -}}
 {{- $theme := .Get "theme" | default "auto" -}}
 {{- $fit := .Get "fit" | default "width" -}}
 {{- if not (in (slice "width" "height" "both" "none") $fit) -}}
@@ -44,6 +45,10 @@
 {{- .Page.Store.Set "hasAsciinema" true -}}
 <div id="{{ $id }}" class="td-asciinema td-max-width-on-larger-screens" data-td-asciinema
   data-timer-label="{{ T "ui_asciinema_timer" }}">
+  <div class="td-asciinema__chrome">
+    <span class="td-asciinema__lights" aria-hidden="true"><i></i><i></i><i></i></span>
+    <span class="td-asciinema__title" dir="auto">{{ $title }}</span>
+  </div>
   <div data-td-asciinema-player></div>
   <script type="application/json" data-td-asciinema-config>{{ dict "src" $src "theme" $theme "options" $options | jsonify | safeJS }}</script>
 </div>
