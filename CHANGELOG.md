@@ -5,6 +5,8 @@ All notable changes to OINK are documented here. The project follows
 
 ## [Unreleased]
 
+## [0.2.1] - 2026-08-10
+
 ### Fixed
 
 - Normalize configurable docs and blog section paths with the documented
@@ -96,6 +98,7 @@ All notable changes to OINK are documented here. The project follows
   responsive shell rails, improved footer/hero/blog layouts, and accessibility
   repairs.
 
-[Unreleased]: https://github.com/pgsty/oink/compare/v0.2.0...HEAD
+[Unreleased]: https://github.com/pgsty/oink/compare/v0.2.1...HEAD
+[0.2.1]: https://github.com/pgsty/oink/compare/v0.2.0...v0.2.1
 [0.2.0]: https://github.com/pgsty/oink/compare/v0.1.0...v0.2.0
 [0.1.0]: https://github.com/pgsty/oink/releases/tag/v0.1.0
