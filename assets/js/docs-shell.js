@@ -733,7 +733,7 @@
 
   /* ---------------------------------------------------------- pageContext */
 
-  // "Copy as Markdown" and "Print this page" in the TOC rail's action list.
+  // "Copy Markdown" and "Print this page" in the TOC rail's action list.
   function initPageContext() {
     document
       .querySelectorAll('[data-td-page-context]')

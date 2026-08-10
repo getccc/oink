@@ -42,7 +42,7 @@ outputs:
   section: [HTML, RSS, print]   # printable "whole section" view
 ```
 
-`markdown` is what backs the page menu's **Copy as Markdown** and **View
+`markdown` is what backs the page menu's **Copy Markdown** and **View
 Markdown** entries; without it, those entries are omitted. `print` backs
 **Print entire section** and publishes under `/_print/`. Leaving `outputs`
 unset is supported — the affected controls simply do not render.
