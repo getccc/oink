@@ -11,8 +11,8 @@
 	</header>
 	{{ .Render "_td-content-after-header" -}}
 	{{ .Content }}
-	{{ partial "page-meta-lastmod.html" . -}}
 	{{ partial "section-index.html" . -}}
+	{{ partial "page-meta-lastmod.html" . -}}
 	{{ partial "feedback.html" . -}}
 	{{ partial "comments.html" . -}}
 	{{ if and (.Site.Config.Services.Disqus.Shortname) (not $commentsState.suppressDisqus) -}}
