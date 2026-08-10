@@ -79,8 +79,11 @@
       &::before {
         content: '\f00c';
         position: absolute;
+        inset-block-start: 50%;
         inset-inline-start: 0.65rem;
         font: var(--fa-font-solid);
+        line-height: 1;
+        transform: translateY(-50%);
       }
     }
 

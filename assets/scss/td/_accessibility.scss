@@ -26,13 +26,21 @@
   }
 }
 
-// Body-copy links must remain identifiable without relying on color alone.
+// Oink uses color, hover color, and visible focus states for links. Keep the
+// no-underline treatment consistent across content and component overrides.
+a,
+a:hover,
+a:focus,
+a:active {
+  text-decoration: none !important;
+}
+
+// Without an underline, inline links need a non-color distinction from the
+// surrounding copy to preserve the WCAG link-in-text contract.
 .td-content,
 .oink-landing {
   :where(p, li, dd, figcaption, td, th) a:not(.btn) {
-    text-decoration-line: underline;
-    text-decoration-thickness: 1px;
-    text-underline-offset: 0.16em;
+    font-weight: 600;
   }
 }
 
@@ -53,9 +61,6 @@
 // Cover blocks use white body copy over a darkened image or brand color.
 .td-cover-block .lead a:not(.btn) {
   color: #fff;
-  text-decoration-line: underline;
-  text-decoration-thickness: 1px;
-  text-underline-offset: 0.16em;
 }
 
 // Bootstrap's disabled opacity blends both text and background below 4.5:1.
