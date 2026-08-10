@@ -1,0 +1,13 @@
+{{- /*
+
+A Markdown-first sequence of automatically numbered steps.
+
+Use Markdown shortcode delimiters (`{{% steps %}}`) and place direct child
+headings inside the block. CSS assigns the visible numbers, so authors never
+need to maintain them by hand.
+
+*/ -}}
+
+<div class="td-steps td-max-width-on-larger-screens">
+  {{- .Inner -}}
+</div>
