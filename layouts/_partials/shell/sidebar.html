@@ -22,11 +22,11 @@
   {{- end -}}
 {{- end -}}
 
-{{- if and (eq .Section $config.blogSection) (eq $sidebarRoot .Site.Home) -}}
+{{- if and (eq .Type "blog") (eq $sidebarRoot .Site.Home) -}}
   {{- with .Site.GetPage (printf "/%s" $config.blogSection) }}{{ $sidebarRoot = . }}{{ end -}}
 {{- end -}}
 
-{{- if and (eq .Section $config.docsSection) (eq $sidebarRoot .Site.Home) -}}
+{{- if and (eq .Type "docs") (eq $sidebarRoot .Site.Home) -}}
   {{- with .Site.GetPage (printf "/%s" $config.docsSection) }}{{ $sidebarRoot = . }}{{ end -}}
 {{- end -}}
 
@@ -38,7 +38,7 @@
 -}}
 {{- $docsNav := index hugo.Data "docs_nav" | default dict -}}
 {{- $tree := "shell/sidebar-tree.html" -}}
-{{- if and (eq .Section $config.docsSection) (isset $docsNav "sections") -}}
+{{- if and (eq .Type "docs") (isset $docsNav "sections") -}}
   {{- $tree = "shell/docs-sidebar-tree.html" -}}
 {{- end -}}
 {{- if $cacheSidebar -}}

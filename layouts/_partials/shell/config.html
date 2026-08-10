@@ -13,8 +13,8 @@
   {{- end -}}
 {{- end -}}
 {{- $projectRepo := .Site.Params.github_project_repo | default .Site.Params.github_repo -}}
-{{- $docsSection := .Site.Params.ui.docs_section | default "docs" | strings.Trim "/" -}}
-{{- $blogSection := .Site.Params.ui.blog_section | default "blog" | strings.Trim "/" -}}
+{{- $docsSection := strings.Trim (.Site.Params.ui.docs_section | default "docs") "/" -}}
+{{- $blogSection := strings.Trim (.Site.Params.ui.blog_section | default "blog") "/" -}}
 {{- $shellTypes := .Site.Params.ui.shell_types | default (slice "docs" "blog" "swagger") -}}
 {{- $quickLinks := .Site.Params.ui.quick_links | default (slice $docsSection $blogSection) -}}
 {{- return dict

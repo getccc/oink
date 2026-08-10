@@ -3,6 +3,17 @@
 All notable changes to OINK are documented here. The project follows
 [Semantic Versioning](https://semver.org/) for published tags.
 
+## [Unreleased]
+
+### Fixed
+
+- Normalize configurable docs and blog section paths with the documented
+  `strings.Trim STRING CUTSET` argument order instead of resolving both roots
+  to the site home.
+- Keep docs and blog shell selection type-based, so a site can place content
+  outside the configured root path while assigning `type: docs` or
+  `type: blog` through front matter cascades.
+
 ## [0.2.0] - 2026-08-10
 
 ### Breaking changes
@@ -85,5 +96,6 @@ All notable changes to OINK are documented here. The project follows
   responsive shell rails, improved footer/hero/blog layouts, and accessibility
   repairs.
 
+[Unreleased]: https://github.com/pgsty/oink/compare/v0.2.0...HEAD
 [0.2.0]: https://github.com/pgsty/oink/compare/v0.1.0...v0.2.0
 [0.1.0]: https://github.com/pgsty/oink/releases/tag/v0.1.0
