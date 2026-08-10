@@ -8,7 +8,7 @@
     </h2>
     {{- if not .Date.IsZero }}
     <p class="mb-2 mb-md-3"><small class="text-body-secondary">
-      {{- .Date.Format (.Param "time_format_blog") }} {{ T "ui_in" }} {{ .CurrentSection.LinkTitle -}}
+      {{- .Date.Format (.Param "time_format_blog") }} {{ T "ui_in" }} <a class="td-blog-posts-list__section-link" href="{{ .CurrentSection.RelPermalink }}">{{ .CurrentSection.LinkTitle }}</a>
     </small></p>
     {{- end }}
     <header class="article-meta">
@@ -25,16 +25,16 @@
     {{- else -}}
       {{- $summary = .Plain | htmlUnescape | truncate 250 -}}
     {{- end -}}
-    <div class="d-none d-md-flex align-items-start gap-3 pt-1">
+    <div class="td-blog-posts-list__summary-row d-none d-md-flex align-items-start gap-3 mt-1{{ if $featuredImage }} td-blog-posts-list__summary-row--with-image{{ end }}">
       {{- with $featuredImage }}
-      <figure class="flex-shrink-0 mb-0" style="width: 250px">
+      <figure class="td-blog-posts-list__thumbnail flex-shrink-0 mb-0" style="width: 250px">
         <a href="{{ $manualLink }}"{{ if $isExternal }} target="_blank" rel="noopener"{{ end }}>
           <img src="{{ . }}" alt="{{ $pageTitle }}" width="250" height="125" style="object-fit: cover;">
         </a>
       </figure>
       {{- end }}
-      <div class="flex-grow-1"><p class="pt-0 mt-0 mb-0">{{ $summary }}</p></div>
+      <div class="td-blog-posts-list__summary flex-grow-1"><p class="pt-0 mt-0 mb-0">{{ $summary }}</p></div>
     </div>
-    <div class="d-md-none"><p class="pt-0 mt-0 mb-0">{{ $summary }}</p></div>
+    <div class="td-blog-posts-list__summary-mobile d-md-none"><p class="pt-0 mt-0 mb-0">{{ $summary }}</p></div>
   </div>
 </li>

@@ -5,6 +5,7 @@
        入参：dict "page" . "hasToc" bool */ -}}
 {{- $p := .page -}}
 {{- $hasToc := .hasToc -}}
+{{- $rssURL := .rssURL | default "" -}}
 {{- $config := partial "shell/config.html" $p -}}
 {{- $baseURL := urls.Parse $p.Site.BaseURL -}}
 <aside class="td-shell-toc d-print-none" aria-label="{{ T "toc_on_this_page" }}">
@@ -105,6 +106,12 @@
 </aside>
 {{/* 整栏隐藏后的右上恢复钮（fixed，仅 collapsed + ≥xl 显示）。 */}}
 <div class="td-shell-toc-float d-print-none">
+  {{- with $rssURL }}
+  <a class="td-shell-iconbtn td-shell-toc-float__rss" title="RSS" aria-label="RSS"
+    href="{{ . | safeURL }}" target="_blank" rel="noopener">
+    <i class="fa-solid fa-rss" aria-hidden="true"></i>
+  </a>
+  {{- end }}
   <button type="button" class="td-shell-iconbtn" data-td-shell-right-toggle
     title="{{ T "ui_toc_show" }}" aria-label="{{ T "ui_toc_show" }}">
     {{- partialCached "shell/icon.html" "panel-right" "panel-right" -}}

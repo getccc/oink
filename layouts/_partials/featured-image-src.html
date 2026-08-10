@@ -3,11 +3,13 @@
 Order:
   1. `images` in front matter — the first entry.
   2. A page resource matching `**featured*`.
-  3. `default_featured_image`, taken from the page (so a section `cascade`
-     works) and then from each ancestor, nearest first.
-  4. The theme's placeholder.
+  3. `default_featured`, taken from the page (so a section `cascade`
+     works), then from each ancestor, nearest first, and finally from site
+     params.
 
-Set `default_featured_image: false` on a section, or in site params, to stop at
+If no explicit default is configured, return an empty string.
+
+Set `default_featured: false` on a section, or in site params, to stop at
 step 2 and render nothing.
 
 Input: a page. Returns: a string. */ -}}
@@ -29,8 +31,8 @@ Input: a page. Returns: a string. */ -}}
   {{- /* isset, not `with`: an explicit `false` is exactly the value that opts
          out, and `with` would skip it as empty. */ -}}
   {{- range $sources -}}
-    {{- if and (not $default) (not $disabled) (isset .Params "default_featured_image") -}}
-      {{- $value := printf "%v" (index .Params "default_featured_image") -}}
+    {{- if and (not $default) (not $disabled) (isset .Params "default_featured") -}}
+      {{- $value := printf "%v" (index .Params "default_featured") -}}
       {{- if or (eq $value "false") (eq $value "") -}}
         {{- $disabled = true -}}
       {{- else -}}
@@ -38,14 +40,9 @@ Input: a page. Returns: a string. */ -}}
       {{- end -}}
     {{- end -}}
   {{- end -}}
-  {{- if and (not $default) (not $disabled) (isset .Site.Params "default_featured_image") -}}
-    {{- $value := printf "%v" (index .Site.Params "default_featured_image") -}}
+  {{- if and (not $default) (not $disabled) (isset .Site.Params "default_featured") -}}
+    {{- $value := printf "%v" (index .Site.Params "default_featured") -}}
     {{- if or (eq $value "false") (eq $value "") }}{{ $disabled = true }}{{ else }}{{ $default = $value }}{{ end -}}
-  {{- end -}}
-  {{- if and (not $default) (not $disabled) -}}
-    {{- with resources.Get "icons/featured-placeholder.svg" -}}
-      {{- $default = .RelPermalink -}}
-    {{- end -}}
   {{- end -}}
   {{- $src = $default -}}
 {{- end -}}

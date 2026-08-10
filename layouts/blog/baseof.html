@@ -14,6 +14,10 @@
   {{ $navWrap := eq (.Param "ui.sidebar_item_overflow") "wrap" -}}
   {{ $hasSidebar := partial "shell/sidebar-enabled.html" . -}}
   {{ $pageWidth := .Param "page_width" | default "normal" -}}
+  {{ $rssURL := "" -}}
+  {{ with .CurrentSection.OutputFormats.Get "rss" -}}
+    {{ $rssURL = .RelPermalink -}}
+  {{ end -}}
   {{ if not (in (slice "normal" "wide" "full") $pageWidth) -}}
     {{ errorf "invalid page_width %q in %s (allowed: normal | wide | full)" $pageWidth .Path -}}
   {{ end -}}
@@ -33,8 +37,8 @@
         {{- end }}
         <main id="td-main-content" class="td-shell-main" role="main" tabindex="-1">
           <article class="td-shell-article">
-            {{ with .CurrentSection.OutputFormats.Get "rss" -}}
-            <a class="td-rss-button" title="RSS" href="{{ .RelPermalink | safeURL }}" target="_blank" rel="noopener">
+            {{ with $rssURL -}}
+            <a class="td-rss-button td-rss-button--content" title="RSS" aria-label="RSS" href="{{ . | safeURL }}" target="_blank" rel="noopener">
               <i class="fa-solid fa-rss" aria-hidden="true"></i>
             </a>
             {{ end -}}
@@ -44,7 +48,7 @@
             {{ block "main" . }}{{ end }}
           </article>
         </main>
-        {{ partial "shell/toc-aside.html" (dict "page" . "hasToc" $hasToc) }}
+        {{ partial "shell/toc-aside.html" (dict "page" . "hasToc" $hasToc "rssURL" $rssURL) }}
       </div>
       {{ partial "shell/footer-line.html" . }}
     </div>

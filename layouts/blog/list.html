@@ -21,7 +21,7 @@
       <div class="td-blog-posts-list__body">
         <h3 class="h5 mt-0 mb-1"><a href="{{ .RelPermalink }}">{{ .Title }}</a></h3>
         <p class="mb-2 mb-md-3"><small class="text-body-secondary">
-          {{- .Date.Format ($.Param "time_format_blog") }} {{ T "ui_in"}} {{ .CurrentSection.LinkTitle -}}
+          {{- .Date.Format ($.Param "time_format_blog") }} {{ T "ui_in"}} <a class="td-blog-posts-list__section-link" href="{{ .CurrentSection.RelPermalink }}">{{ .CurrentSection.LinkTitle }}</a>
         </small></p>
         <header class="article-meta">
           {{- partial "taxonomy_terms_article_wrapper.html" . -}}
@@ -29,9 +29,13 @@
             {{- partial "reading-time.html" . -}}
           {{ end -}}
         </header>
-        {{- partial "featured-image.html" (dict "p" . "w" 250 "h" 125 "class" "float-start me-3 pt-1 d-none d-md-block") -}}
-        <p class="pt-0 mt-0">{{ .Plain | safeHTML | truncate 250 }}</p>
-        <p class="pt-0"><a href="{{ .RelPermalink }}" aria-label="{{ T "ui_read_more"}} - {{ .LinkTitle }}">{{ T "ui_read_more"}}</a></p>
+        {{- $featuredImage := partial "featured-image-src.html" . -}}
+        {{- $summary := .Plain | safeHTML | truncate 250 -}}
+        <div class="td-blog-posts-list__summary-row d-none d-md-flex align-items-start gap-3 mt-1{{ if $featuredImage }} td-blog-posts-list__summary-row--with-image{{ end }}">
+          {{- partial "featured-image.html" (dict "p" . "w" 250 "h" 125 "class" "td-blog-posts-list__thumbnail flex-shrink-0 mb-0") -}}
+          <div class="td-blog-posts-list__summary flex-grow-1"><p class="pt-0 mt-0 mb-0">{{ $summary }}</p></div>
+        </div>
+        <div class="td-blog-posts-list__summary-mobile d-md-none"><p class="pt-0 mt-0 mb-0">{{ $summary }}</p></div>
       </div>
     </li>
     {{ end -}}
