@@ -12,6 +12,9 @@
   --td-asciinema-muted: #5d7189;
   --td-asciinema-title: #16222e;
   --td-asciinema-accent: #245f94;
+  --td-asciinema-font-family:
+    'IBM Plex Mono', 'Cascadia Mono', Consolas, 'Liberation Mono', Menlo,
+    monospace;
   overflow: hidden;
   border: 1px solid var(--td-asciinema-line);
   border-radius: 0.78rem;
@@ -116,9 +119,7 @@
 }
 
 .td-asciinema .ap-player {
-  --term-font-family:
-    'IBM Plex Mono', 'Cascadia Mono', Consolas, 'Liberation Mono', Menlo,
-    monospace;
+  --term-font-family: var(--td-asciinema-font-family);
   overflow: hidden;
   border: 0;
   border-radius: 0;
@@ -126,20 +127,24 @@
   font-family: var(--term-font-family);
 }
 
-.td-asciinema pre {
+.td-asciinema .ap-term pre.ap-term-text {
   border: 0;
   background: var(--term-color-background);
   box-shadow: none;
 }
 
+.td-asciinema .ap-default-term-ff .ap-term {
+  border: 0.25em solid transparent;
+}
+
 .td-asciinema .ap-term {
-  border: 0;
   background: var(--term-color-background);
   box-shadow: none;
 }
 
 .td-asciinema .ap-player .ap-control-bar {
-  height: 34px;
+  height: 32px;
+  box-sizing: border-box;
   border-block-start: 1px solid
     color-mix(
       in srgb,

@@ -48,6 +48,9 @@
       } else {
         options.theme = config.theme;
       }
+      options.terminalFontFamily = getComputedStyle(root)
+        .getPropertyValue('--td-asciinema-font-family')
+        .trim();
       window.AsciinemaPlayer.create(config.src, target, options);
       var timer = target.querySelector('.ap-timer');
       if (timer && !timer.getAttribute('aria-label')) {
