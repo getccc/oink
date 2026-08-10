@@ -3,11 +3,7 @@
 All notable changes to OINK are documented here. The project follows
 [Semantic Versioning](https://semver.org/) for published tags.
 
-## [0.3.0] - Unreleased
-
-No `v0.2.0` tag was published. The changes prepared under that version number
-are included in this release so the repository history and public module tags
-have one authoritative upgrade target.
+## [0.2.0] - 2026-08-10
 
 ### Breaking changes
 
@@ -89,5 +85,5 @@ have one authoritative upgrade target.
   responsive shell rails, improved footer/hero/blog layouts, and accessibility
   repairs.
 
-[0.3.0]: https://github.com/pgsty/oink/compare/v0.1.0...v0.3.0
+[0.2.0]: https://github.com/pgsty/oink/compare/v0.1.0...v0.2.0
 [0.1.0]: https://github.com/pgsty/oink/releases/tag/v0.1.0
