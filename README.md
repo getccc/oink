@@ -53,10 +53,11 @@ A post's list entry looks for an image in this order:
 
 1. `images` in the post's front matter — the first entry.
 2. A page resource whose name matches `**featured*`.
-3. `default_featured_image`, read from the post (so a section `cascade` applies)
+3. `default_featured`, read from the post (so a section `cascade` applies)
    and then from each ancestor section, nearest first, and finally from site
    params.
-4. The theme's placeholder, `assets/icons/featured-placeholder.svg`.
+
+If none of these provides an image, the list entry renders without one.
 
 So a section can give all of its posts one image:
 
@@ -64,12 +65,12 @@ So a section can give all of its posts one image:
 # content/blog/_index.md
 ---
 title: Blog
-default_featured_image: /images/blog-card.png
+default_featured: /images/blog-card.png
 ---
 ```
 
 Any post that sets its own image still wins. Set
-`default_featured_image: false` on a section — or in site params — to stop at
+`default_featured: false` on a section — or in site params — to stop at
 step 2 and render no image at all.
 
 ## Syntax highlighting
@@ -103,6 +104,10 @@ hero:
   eyebrow: Local-first documentation
   title: Build **clearer** docs.
   desc: Start with the [OINK guide](docs/oink/) and customize from there.
+  image:
+    light: images/hero-light.webp
+    dark: images/hero-dark.webp
+    alt: Product documentation workflow
 
 ecosystem:
   title: Used with the tools you already know
@@ -113,6 +118,10 @@ ecosystem:
       icon: fa-solid fa-bolt
       url: https://gohugo.io/
 ```
+
+`hero.image` is optional. Use `light` and `dark` for theme-aware artwork, `src`
+or a string value for one shared image, and `alt` when the image carries
+meaning. Image paths resolve from the consumer site's `static/` directory.
 
 String entries use a same-named top-level data block. Object entries can select
 another block with `key`, override the anchor with `id`, or be removed with
