@@ -1,3 +1,4 @@
+{{- /* Place nested cards in an accessible carousel. Optional: label. */ -}}
 {{- $id := printf "td-carousel-%s-%d" (md5 .Page.RelPermalink) .Ordinal -}}
 {{- .Page.Store.Set "hasDocCarousel" true -}}
 <section id="{{ $id }}" class="td-doc-carousel" data-td-carousel role="region"

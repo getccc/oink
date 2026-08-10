@@ -1,10 +1,10 @@
 // ============================================================
-// shell/blog —— 博客列表（上游版式 + fumadocs 风格美化）与 Tags 样式
+// Blog lists, article metadata, and taxonomy surfaces inside the shell.
 // ============================================================
 
-/* ------------------------------------------------- 列表页（上游版式） */
+/* ------------------------------------------------------------ list page */
 
-// 年份分组标签：小号大写 muted（替代上游的 h2 大标题观感）。
+// Compact uppercase year labels replace oversized inherited headings.
 .td-shell-chrome .td-blog-posts > h2 {
   margin: 2.25rem 0 0.25rem;
   font-size: 12px;
@@ -32,7 +32,7 @@
     }
   }
 
-  // 标题标签是 h2/h3（保持 heading 层级），视觉走 Bootstrap 的 .h5。
+  // Preserve h2/h3 semantics while using the visual size of Bootstrap .h5.
   .h5 {
     font-size: 17px;
     font-weight: 600;
@@ -53,7 +53,7 @@
     }
   }
 
-  // 日期 · 栏目 行。
+  // Date and section metadata row.
   small {
     font-size: 12.5px;
     letter-spacing: 0.01em;
@@ -69,7 +69,7 @@
     }
   }
 
-  // 桌面摘要行由缩略图定义固定高度；右侧正文只能占用同样的空间。
+  // On desktop, the thumbnail defines the summary row height.
   &__summary-row--with-image {
     height: 125px;
     overflow: hidden;
@@ -142,7 +142,7 @@
   }
 }
 
-// RSS 按钮：纯图标，无任何背景框/描边，hover 仅变色。
+// RSS is an icon-only action; hover changes color without adding a box.
 .td-shell-chrome .td-rss-button {
   display: inline-flex;
   align-items: center;
@@ -164,16 +164,16 @@
   }
 }
 
-// 右栏收起后，把 RSS 并入右上恢复按钮组，避免两个浮动动作斜向散落。
+// When the right rail is collapsed, group RSS with its restore control.
 @include media-breakpoint-up(xl) {
   [data-td-shell-toc='collapsed'] .td-rss-button--content {
     display: none !important;
   }
 }
 
-/* ------------------------------------- Tags（纯文本 + hover 底色显现） */
+/* -------------------------------------------- inline taxonomy terms */
 
-// 文章页/列表的 "Tags:" 行（taxonomy_terms_article）。
+// The article/list "Tags:" row rendered by taxonomy_terms_article.
 .taxonomy.taxonomy-terms-article {
   display: flex;
   align-items: baseline;
@@ -201,7 +201,7 @@
   }
 }
 
-// 纯文本标签：无描边无底色，hover 时浮现背景。
+// Plain-text terms gain a subtle background on hover.
 a.taxonomy-term {
   display: inline-flex;
   align-items: baseline;
@@ -234,7 +234,7 @@ a.taxonomy-term {
   }
 }
 
-/* ------------------------------------------ 标签 chip（云图/过滤条通用） */
+/* -------------------------------------- taxonomy chips and filters */
 
 .td-shell-tag {
   display: inline-flex;
@@ -277,7 +277,7 @@ a.taxonomy-term {
   }
 }
 
-/* 右栏分类法：与目录/操作同款标题；条目按数量降序逐行排列。 */
+/* Right-rail taxonomy list, ordered by count. */
 
 .td-shell-tags-cloud {
   &__chips {
@@ -329,7 +329,7 @@ a.taxonomy-term {
   }
 }
 
-/* 标签索引页顶部过滤条 */
+/* Taxonomy index filter bar. */
 
 .td-shell-tags-filter {
   display: flex;

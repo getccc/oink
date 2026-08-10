@@ -1,3 +1,5 @@
+{{- /* Embed an asciinema cast. Required: file (named or positional). Optional:
+       title, theme, fit, autoplay, loop, preload, speed, timing, and size. */ -}}
 {{- $file := .Get "file" | default (.Get 0) -}}
 {{- if not $file }}{{ errorf "%s: asciinema requires a file parameter" .Position }}{{ end -}}
 {{- $title := .Get "title" | default $file -}}

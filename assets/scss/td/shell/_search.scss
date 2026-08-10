@@ -1,5 +1,5 @@
 // ============================================================
-// shell/search —— ⌘K 搜索弹窗（240ms 缩放入场，键盘导航）
+// Command search dialog with a 240ms scale entrance and keyboard navigation.
 // ============================================================
 
 .td-shell-search {
@@ -52,7 +52,7 @@
   }
 }
 
-/* 输入行 */
+/* ------------------------------------------------------------ input row */
 
 .td-shell-search__head {
   display: flex;
@@ -87,7 +87,7 @@
     color: var(--td-shell-muted-fg);
   }
 
-  // 干掉 UA 自带的清除小叉，避免与 esc 徽章打架。
+  // Hide the user-agent clear button so it does not overlap the Escape badge.
   &::-webkit-search-cancel-button,
   &::-webkit-search-decoration {
     -webkit-appearance: none;
@@ -112,7 +112,7 @@
   }
 }
 
-/* 结果列表 */
+/* ---------------------------------------------------------- result list */
 
 .td-shell-search__list {
   min-height: 0;
@@ -193,7 +193,7 @@
   color: var(--td-shell-muted-fg);
 }
 
-/* 底部快捷键提示 */
+/* -------------------------------------------------------- keyboard hints */
 
 .td-shell-search__foot {
   display: flex;

@@ -1,6 +1,6 @@
 {
   "schema": 1,
-  "generated": "2026-08-08",
+  "generated": "2026-08-10",
   "hash": "sha256",
   "dependencies": [
     {
@@ -33,7 +33,10 @@
       "licenseFiles": ["assets/third_party/Font-Awesome/LICENSE.txt"],
       "artifacts": [
         {"path": "assets/third_party/Font-Awesome/scss/fontawesome.scss", "sha256": "3e751a5d7f3cb0bac9f5efc5b03072fc915632fc8ed1d3cf7a9e1a749ee8df72"},
-        {"path": "static/webfonts/fa-solid-900.woff2", "sha256": "aa75998623a391e61c6901794ace832e3ecdd288b56d608f21bea0411acc0b8e"}
+        {"path": "assets/third_party/Font-Awesome/scss/regular.scss", "sha256": "97b0d92dbdaf5a3883f86124250ac308a28e91355f63ccefd9b07c6a25cae663"},
+        {"path": "static/webfonts/fa-solid-900.woff2", "sha256": "aa75998623a391e61c6901794ace832e3ecdd288b56d608f21bea0411acc0b8e"},
+        {"path": "static/webfonts/fa-regular-400.woff2", "sha256": "e3456d1283b9d75337a773dfd147bf908fd02c01b4bf48576d8603a69b13cbe5"},
+        {"path": "static/webfonts/fa-regular-400.ttf", "sha256": "54cf6086f7bb21f9d072ad494a19b4681fa516dd0a14cee52da01d3651a913a3"}
       ]
     },
     {

@@ -106,3 +106,14 @@ error_404_title: 頁面不存在
 error_404_body: >-
   抱歉，該頁面不存在。可以從首頁重新開始。
 error_404_home: 返回首頁
+
+# OINK UI additions.
+ui_search_results: '找到 {count} 筆結果'
+ui_skip_to_content: 跳至主要內容
+ui_copy_markdown: 複製 Markdown
+ui_copy_success: 已複製 Markdown
+ui_copy_error: 無法複製 Markdown
+ui_print_page: 列印此頁
+ui_sidebar_expand_section: 展開章節
+ui_sidebar_collapse_section: 收合章節
+ui_asciinema_timer: 播放時間

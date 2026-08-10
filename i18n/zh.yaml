@@ -1,0 +1,117 @@
+# Generic Chinese defaults to Simplified Chinese; use zh-tw for Traditional Chinese.
+# Alert labels
+caution: 注意
+important: 重要
+note: 说明
+tip: 提示
+warning: 警告
+
+# UI strings. Buttons and similar.
+ui_pager_prev: 上一页
+ui_pager_next: 下一页
+ui_read_more: 阅读全文
+ui_search: 搜索…
+ui_search_empty: 未找到结果
+ui_search_loading: 正在加载搜索索引……
+ui_search_results: '找到 {count} 条结果'
+ui_search_nav: 选择
+ui_search_open: 打开
+ui_search_close: 关闭
+ui_sidebar_nav: 章节导航
+ui_main_nav: 主导航
+ui_home: 首页
+ui_sidebar_expand: 展开侧栏
+ui_sidebar_collapse: 收起侧栏
+ui_drawer_open: 打开导航
+ui_drawer_close: 关闭导航
+ui_root_menu_label: 选择栏目
+ui_tags_title: 标签
+ui_tag_title: 标签
+ui_categories_title: 分类
+ui_category_title: 分类
+ui_theme_toggle: 切换配色
+ui_language: 语言切换
+ui_theme: 主题颜色
+ui_theme_auto: 跟随系统
+ui_theme_light: 亮色
+ui_theme_dark: 暗色
+ui_toc_hide: 隐藏目录
+ui_toc_show: 显示目录
+ui_language_select: 选择语言
+ui_language_switch: 切换语言
+ui_details: 详情
+ui_skip_to_content: 跳转到主要内容
+ui_page_actions: 操作
+ui_copy_markdown: 复制 Markdown
+ui_copy_success: 已复制 Markdown
+ui_copy_error: 无法复制 Markdown
+ui_print_page: 打印此页面
+ui_sidebar_expand_section: 展开章节
+ui_sidebar_collapse_section: 收起章节
+ui_doc_carousel: 文档轮播
+ui_carousel_previous: 上一张卡片
+ui_carousel_next: 下一张卡片
+ui_asciinema_timer: 播放时间
+
+# Used in sentences such as "Posted in News"
+ui_in: 发布于
+
+# Used in sentences such as "All Tags"
+ui_all: 全部
+
+# Footer text
+footer_all_rights_reserved: 保留所有权利
+
+footer_privacy_policy: 隐私政策
+
+# Post (blog, article, etc.)
+post_byline_by: 撰文：
+post_created: 创建
+post_last_mod: 最后修改
+post_upstream_attribution: 上游文档原文与署名
+post_downstream_modified: 本页包含{{ .Site.Title }}所作的下游修改。
+post_edit_this: 编辑此页面
+post_view_markdown: 查看 Markdown
+post_view_this: 查看页面源码
+post_create_child_page: 添加子页面
+post_create_issue: 提交文档问题
+post_create_project_issue: 提交项目问题
+post_posts_in: 撰写于
+post_reading_time: 分钟阅读
+post_less_than_a_minute_read: 1分钟内可阅读完
+
+# Print support
+print_printable_section: 这是本节的多页打印视图。
+print_click_to_print: 点击此处打印
+print_show_regular: 返回本页常规视图
+print_entire_section: 打印整章节
+
+# Community
+community_join: 加入 {{ .Site.Title }}社区
+community_introduce: >-
+  {{ .Site.Title
+  }}是由社区共同建设的开源项目，欢迎任何人使用、改进并分享成果。期待你的加入！你可以通过以下渠道了解项目动态、交流使用经验或参与贡献。
+community_learn: 学习与交流
+community_using: 正在使用或准备使用 {{ .Site.Title }}？你可以从这些入口开始：
+community_develop: 开发与贡献
+community_contribute: >-
+  希望进一步参与 {{ .Site.Title }}的建设？欢迎从以下入口加入：
+community_how_to: 关于为 {{ .Site.Title }}贡献代码或文档的方法，请参阅
+community_guideline: >-
+  贡献指南
+
+# Feedback
+feedback_title: 意见反馈
+feedback_question: 这个页面对您有帮助吗？
+feedback_positive: 有帮助
+feedback_negative: 没帮助
+
+# Table of contents
+toc_on_this_page: 目录
+toc_top_of_page: 回到顶部
+
+# Error pages
+error_404_title: 页面不存在
+error_404_body: >-
+  抱歉，该页面不存在。可以从首页重新开始。
+error_404_home: 返回首页

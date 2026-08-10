@@ -1,10 +1,10 @@
 // ============================================================
-// shell/sidebar —— 侧栏面板内部：头部搜索钮 / 导航树 / 底部操作区
+// Sidebar internals: header/search, navigation tree, and footer actions.
 // ============================================================
 
-/* ----------------------------------------------------------------- 头部 */
+/* --------------------------------------------------------------- header */
 
-// 固定头部纵列：品牌行 + 搜索行 + 根下拉（fumadocs v16 header stack 同构）。
+// Fixed vertical header: brand row, search row, and optional root switcher.
 .td-shell-sidebar__header {
   display: flex;
   flex-direction: column;
@@ -12,8 +12,8 @@
   padding: 16px 16px 8px;
 }
 
-// 品牌行（v16 logo row）：logo+wordmark 左、收起钮右上。抽屉态（<md）隐藏
-//（subnav 已展示品牌）。
+// Brand row with the logo/wordmark and collapse action. The mobile subnav
+// already carries the brand, so this row is hidden in drawer mode.
 .td-shell-sidebar__brand-row {
   display: none;
 
@@ -127,7 +127,7 @@
   border: 1px solid var(--bs-border-color);
   border-radius: 10px;
   background: var(--td-shell-field);
-  color: var(--bs-tertiary-color); // 占位文案更灰一档
+  color: var(--bs-tertiary-color); // Keep placeholder text one tone quieter.
   font-size: 14px;
   line-height: 20px;
   text-align: start;
@@ -157,7 +157,7 @@
     display: inline-flex;
     gap: 2px;
 
-    // 触屏设备上快捷键徽章没有意义。
+    // Shortcut badges are not useful on touch-only devices.
     @media (hover: none) and (pointer: coarse) {
       display: none;
     }
@@ -175,7 +175,7 @@
   }
 }
 
-// 抽屉关闭钮：仅移动端显示（复合选择器压过 .td-shell-iconbtn 的 display）。
+// Drawer close action, mobile only; specificity overrides the icon-button rule.
 .td-shell-iconbtn.td-shell-sidebar__close {
   display: none;
 
@@ -184,7 +184,7 @@
   }
 }
 
-/* ------------------------------------------------------------- 滚动视口 */
+/* ------------------------------------------------------ scroll viewport */
 
 .td-shell-sidebar__viewport {
   flex: 1 1 auto;
@@ -231,7 +231,7 @@
   }
 }
 
-/* --------------------------------------------------------------- 导航树 */
+/* ------------------------------------------------------ navigation tree */
 
 .td-shell-tree {
   ul {
@@ -240,7 +240,7 @@
     padding: 0;
   }
 
-  // 顶级小节之间留一丝呼吸感。
+  // Add slight separation between top-level groups.
   .ul-1 > li + li {
     margin-top: 2px;
   }
@@ -265,7 +265,7 @@
     padding-block: 6px;
   }
 
-  // fumadocs 手感：hover 入场瞬时、出场 150ms 淡出。
+  // Hover appears immediately and fades out over 150ms.
   &:hover {
     background: var(--td-shell-accent);
     transition: none;
@@ -309,7 +309,7 @@
     color: var(--bs-tertiary-color);
   }
 
-  // 默认溢出策略：单行省略号（params.ui.sidebar_item_overflow: ellipsis）。
+  // Default overflow mode is a single-line ellipsis.
   > span {
     min-width: 0;
     flex: 1 1 auto;
@@ -319,7 +319,7 @@
   }
 }
 
-// wrap 模式（params.ui.sidebar_item_overflow: wrap，经 cascade 可按栏目覆盖）。
+// Wrap mode can be selected globally or through a section cascade.
 .td-shell-layout--nav-wrap .td-shell-tree__link > span {
   white-space: normal;
   overflow: visible;
@@ -327,7 +327,7 @@
   overflow-wrap: anywhere;
 }
 
-// 顶级小节行：字重与颜色略强，构成分组层级。
+// Top-level group rows use stronger weight and color.
 .td-shell-tree .ul-1 > li > .td-shell-tree__row > .td-shell-tree__link {
   font-weight: 500;
   color: var(--bs-body-color);
@@ -337,12 +337,12 @@
   color: var(--bs-body-color);
 }
 
-// 活跃行内的图标随主色。
+// Icons in the active row follow the accent color.
 .td-shell-tree__row.td-shell-active .td-shell-tree__link > i {
   color: inherit;
 }
 
-/* 折叠机制：语义化 button + aria-expanded + grid-rows 高度动画 */
+/* Semantic collapse buttons with aria-expanded and a grid-row animation. */
 
 .td-shell-tree__chevron {
   flex-shrink: 0;
@@ -383,7 +383,7 @@
   display: grid;
   grid-template-rows: 0fr;
   opacity: 0;
-  // visibility 在收起动画结束后才切换，保证折叠内容不可命中 / 不可键盘聚焦。
+  // Delay visibility until collapse completes so hidden content is not focusable.
   visibility: hidden;
   transition:
     grid-template-rows 150ms var(--td-shell-ease-collapsible),
@@ -413,7 +413,7 @@
   min-height: 0;
 }
 
-/* 缩进（行自身 padding）与嵌套竖轨（挂在 ul-2 容器上，x=10px） */
+/* Row indentation and nested vertical rails. */
 
 .td-shell-tree .ul-2 > li > .td-shell-tree__row {
   --td-shell-indent: 24px;
@@ -441,7 +441,7 @@
   }
 }
 
-// 活跃行在同一 x 处覆画一段主色轨。
+// Paint an accent segment over the rail beside the active row.
 .td-shell-tree .ul-2 .td-shell-tree__row.td-shell-active::before {
   content: '';
   position: absolute;
@@ -452,7 +452,7 @@
   z-index: 2;
 }
 
-/* blog 树根：渲染成小节标题样貌的链接行 */
+/* Blog tree root rendered as a section-heading link. */
 
 .td-shell-tree__row--root {
   margin-bottom: 4px;
@@ -463,9 +463,9 @@
   }
 }
 
-/* ----------------------------------------------------------------- 底部 */
+/* --------------------------------------------------------------- footer */
 
-/* ghost 图标钮（浮控等通用） */
+/* Shared ghost icon button. */
 
 .td-shell-iconbtn {
   display: inline-flex;
@@ -493,7 +493,7 @@
   }
 }
 
-/* 根节点下拉（v16 SidebarTabsDropdown）：搜索行下方，切换 docs 根 / self 根 section */
+/* Root switcher below search for docs and self-rooted sections. */
 
 .td-shell-root {
   position: relative;
@@ -626,7 +626,7 @@
   overflow: hidden;
 }
 
-// 非活跃条目的对勾保留占位（invisible），保证行宽一致（v16 同款）。
+// Invisible checkmarks reserve equal row width for inactive items.
 .td-shell-root__check {
   display: inline-flex;
   flex-shrink: 0;

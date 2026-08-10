@@ -13,11 +13,17 @@
   {{- end -}}
 {{- end -}}
 {{- $projectRepo := .Site.Params.github_project_repo | default .Site.Params.github_repo -}}
-{{- $quickLinks := .Site.Params.ui.quick_links | default (slice "docs" "blog") -}}
+{{- $docsSection := .Site.Params.ui.docs_section | default "docs" | strings.Trim "/" -}}
+{{- $blogSection := .Site.Params.ui.blog_section | default "blog" | strings.Trim "/" -}}
+{{- $shellTypes := .Site.Params.ui.shell_types | default (slice "docs" "blog" "swagger") -}}
+{{- $quickLinks := .Site.Params.ui.quick_links | default (slice $docsSection $blogSection) -}}
 {{- return dict
   "brandName" $name
   "logoURL" $logoURL
   "wordmarkURL" $wordmarkURL
   "projectRepo" $projectRepo
+  "docsSection" $docsSection
+  "blogSection" $blogSection
+  "shellTypes" $shellTypes
   "quickLinks" $quickLinks
 -}}

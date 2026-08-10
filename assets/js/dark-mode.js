@@ -12,8 +12,20 @@
   'use strict'
 
   const themeKey = 'td-color-theme'
-  const getStoredTheme = () => localStorage.getItem(themeKey)
-  const setStoredTheme = theme => localStorage.setItem(themeKey, theme)
+  const getStoredTheme = () => {
+    try {
+      return localStorage.getItem(themeKey)
+    } catch (_) {
+      return null
+    }
+  }
+  const setStoredTheme = theme => {
+    try {
+      localStorage.setItem(themeKey, theme)
+    } catch (_) {
+      // A blocked storage policy must not disable the in-page theme control.
+    }
+  }
 
   const getPreferredTheme = () => {
     const storedTheme = getStoredTheme()
@@ -58,9 +70,13 @@
     })
   }
 
-  setTheme(getPreferredTheme())
-
-  document.documentElement.removeAttribute('data-theme-init')
+  try {
+    setTheme(getPreferredTheme())
+  } finally {
+    // Never leave the transition-suppression attribute behind, even when a
+    // browser API or consumer override throws during initialisation.
+    document.documentElement.removeAttribute('data-theme-init')
+  }
 
   window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
     const storedTheme = getStoredTheme()

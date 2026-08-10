@@ -50,3 +50,77 @@ community_how_to: >-
   You can find out how to contribute to {{ .Site.Title }} in our
 community_guideline: >-
   Contribution Guidelines
+
+# Explicit English fallbacks for untranslated OINK UI strings.
+# Replace these values with reviewed translations when available.
+caution: Caution
+important: Important
+note: Note
+tip: Tip
+warning: Warning
+
+# UI strings. Buttons and similar.
+ui_search_empty: No results found
+ui_search_loading: Loading search index…
+ui_search_results: '{count} results found'
+ui_search_nav: Navigate
+ui_search_open: Open
+ui_search_close: Close
+ui_sidebar_nav: Section navigation
+ui_main_nav: Main navigation
+ui_home: Home
+ui_sidebar_expand: Expand sidebar
+ui_sidebar_collapse: Collapse sidebar
+ui_drawer_open: Open navigation
+ui_drawer_close: Close navigation
+ui_root_menu_label: Choose section
+ui_tags_title: Tags
+ui_tag_title: Tag
+ui_categories_title: Categories
+ui_category_title: Category
+ui_theme_toggle: Toggle color theme
+ui_language: Language
+ui_theme: Theme
+ui_theme_auto: Follow system
+ui_theme_light: Light
+ui_theme_dark: Dark
+ui_toc_hide: Hide table of contents
+ui_toc_show: Show table of contents
+ui_language_select: Choose language
+ui_language_switch: Switch language
+ui_details: Details
+ui_skip_to_content: Skip to content
+ui_page_actions: Actions
+ui_copy_markdown: Copy Markdown
+ui_copy_success: Markdown copied
+ui_copy_error: Could not copy Markdown
+ui_print_page: Print this page
+ui_sidebar_expand_section: Expand section
+ui_sidebar_collapse_section: Collapse section
+ui_doc_carousel: Document carousel
+ui_carousel_previous: Previous card
+ui_carousel_next: Next card
+ui_asciinema_timer: Playback time
+
+# Used in sentences such as "Posted in News"
+ui_all: all
+
+# Footer text
+post_upstream_attribution: Upstream source and attribution
+post_downstream_modified:
+  This page includes downstream modifications by {{ .Site.Title }}.
+post_view_this: View page source
+feedback_title: Feedback
+feedback_question: Was this page helpful?
+feedback_positive: Yes
+feedback_negative: No
+
+# Table of contents
+toc_on_this_page: Content
+toc_top_of_page: Top of page
+
+# Error pages
+error_404_title: Page not found
+error_404_body: >-
+  Sorry, this page does not exist. Try starting again from the home page.
+error_404_home: Go to the home page

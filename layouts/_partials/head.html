@@ -29,7 +29,13 @@
 <script>
   (function() {
     const themeKey = 'td-color-theme';
-    const storedTheme = localStorage.getItem(themeKey);
+    let storedTheme = null;
+    try {
+      storedTheme = localStorage.getItem(themeKey);
+    } catch (_) {
+      // Storage can be blocked by browser or embedding policy. System color
+      // preference remains a safe first-paint fallback.
+    }
     let theme = storedTheme || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
 
     if (theme === 'auto') {

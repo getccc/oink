@@ -1,10 +1,11 @@
-{{- /* 根节点下拉（fumadocs v16 SidebarTabsDropdown 同款）。
-       条目 = docs 根 + 所有 sidebar_root_for: self 的 section；当前根打勾。
-       开关 params.ui.sidebar_root_menu；无 self 根 section 时整体不渲染。 */ -}}
+{{- /* Sidebar root switcher. Entries are the configured docs root plus every
+       section with sidebar_root_for: self; the current root is checked.
+       params.ui.sidebar_root_menu controls rendering. */ -}}
 {{- if .Site.Params.ui.sidebar_root_menu -}}
 {{- $roots := where .Site.Pages "Params.sidebar_root_for" "self" -}}
 {{- if gt (len $roots) 0 -}}
-  {{- $docsRoot := .Site.GetPage "/docs" -}}
+  {{- $config := partial "shell/config.html" . -}}
+  {{- $docsRoot := .Site.GetPage (printf "/%s" $config.docsSection) -}}
   {{- $entries := slice -}}
   {{- with $docsRoot }}{{ $entries = $entries | append . }}{{ end -}}
   {{- range $roots -}}
@@ -12,7 +13,7 @@
   {{- end -}}
   {{- $current := $docsRoot -}}
   {{- range $roots -}}
-    {{- /* 同 type 兜底：/tags/ 等 blog 语境页不在 /blog/ 树内，也归入 Blog 根。 */ -}}
+    {{- /* Same-type fallback keeps taxonomy pages in the blog context. */ -}}
     {{- if or (eq $ .) ($.IsDescendant .) (eq $.Type .Type) }}{{ $current = . }}{{ end -}}
   {{- end -}}
   {{- with $current -}}

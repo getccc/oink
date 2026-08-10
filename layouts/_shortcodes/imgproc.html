@@ -1,3 +1,4 @@
+{{- /* Process a page-bundle image: image, Fit|Resize|Fill|Crop, dimensions. */ -}}
 {{ $original := .Page.Resources.GetMatch (printf "**%s*" (.Get 0)) -}}
 {{ $command := .Get 1 -}}
 {{ $options := .Get 2 -}}

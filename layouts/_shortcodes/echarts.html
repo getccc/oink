@@ -1,3 +1,5 @@
+{{- /* Render ECharts options from inner YAML/JSON. Optional: height, theme,
+       full; fenced JavaScript may register formatter callbacks. */ -}}
 {{- $height := .Get "height" | default "400px" -}}
 {{- if not (findRE `^[0-9]+(?:\.[0-9]+)?(?:px|rem|em|vh|vw|%)$` $height) -}}
   {{- errorf "%s: echarts height %q is not a safe CSS length" .Position $height -}}

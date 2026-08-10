@@ -3,6 +3,9 @@
 // - https://www.google.com/cse/static/style/look/v4/default.css
 // - https://www.google.com/cse/static/element/6467658b9628de43/default+en.css
 //
+// Status: opt-in compatibility styles.
+// Usage: @import 'td/gcs-search-dark'; from a consumer _styles_project.scss.
+//
 // cSpell:ignore gcsc tabh refinementhActive subelements
 
 @if $enable-dark-mode {

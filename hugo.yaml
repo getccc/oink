@@ -28,6 +28,9 @@ params:
       darkTheme: dark
       loading: lazy
   ui:
+    shell_types: [docs, blog, swagger]
+    docs_section: docs
+    blog_section: blog
     feedback:
       enable: false
     sidebar_menu_compact: true

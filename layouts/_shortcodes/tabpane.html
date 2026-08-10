@@ -1,5 +1,6 @@
 {{/* Check parameter types */ -}}
 
+{{ .Page.Store.Set "hasTabpane" true -}}
 {{ $tpPersistAttrName := "data-td-tp-persist" -}}
 
 {{ with .Get "langEqualsHeader" -}}
@@ -115,7 +116,7 @@
     {{- $isActive := and $enabled (not $activeSet) (or $isPreferred (not $hasSelected)) -}}
 
 {{- "" -}}
-<li class="nav-item{{ if $rightpush }} ms-auto{{ end }}"><button class="nav-link{{ if $isActive }}{{ $activeSet = true }} active{{ end }}{{ if not $enabled }} disabled{{ end }}" id="{{ $tabid }}" data-bs-toggle="tab" data-bs-target="#{{ $entryid }}" role="tab"{{ if $persistTab }} {{ printf "%s=%q" $tpPersistAttrName $persistKey | safeHTMLAttr }}{{ end }} aria-controls="{{ $entryid }}" aria-selected="{{ $isActive }}"{{ if not $enabled }} disabled aria-disabled="true"{{ end }}>{{ index . "header" | markdownify }}</button></li>
+<li class="nav-item{{ if $rightpush }} ms-auto{{ end }}" role="presentation"><button class="nav-link{{ if $isActive }}{{ $activeSet = true }} active{{ end }}{{ if not $enabled }} disabled{{ end }}" id="{{ $tabid }}" data-bs-toggle="tab" data-bs-target="#{{ $entryid }}" role="tab"{{ if $persistTab }} {{ printf "%s=%q" $tpPersistAttrName $persistKey | safeHTMLAttr }}{{ end }} aria-controls="{{ $entryid }}" aria-selected="{{ $isActive }}"{{ if not $enabled }} disabled aria-disabled="true"{{ end }}>{{ index . "header" | markdownify }}</button></li>
   {{- end -}}
 </ul>
 

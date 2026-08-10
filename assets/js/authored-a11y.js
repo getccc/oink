@@ -37,4 +37,12 @@
         return;
       icon.setAttribute('aria-hidden', 'true');
     });
+
+  // Print controls also appear in the standalone print output, which does not
+  // load docs-shell.js. Keep the behavior in this global, CSP-safe bundle.
+  document.querySelectorAll('[data-td-page-print]').forEach(function (button) {
+    button.addEventListener('click', function () {
+      window.print();
+    });
+  });
 })();

@@ -1,6 +1,6 @@
-{{/* Docs navigation rendered from the frozen Sphinx toctree order.
-     Fumadocs 风格标记：checkbox 状态 + 行（链接与 chevron 分离）+ grid-rows 折叠动画。
-     数据来源与展开逻辑（docs_nav.json / active_path / sidebar_expanded）保持不变。 */ -}}
+{{/* Docs navigation rendered from the frozen Sphinx toctree order. Checkbox
+     state, separate link/chevron controls, and grid-row animation preserve the
+     existing active_path and sidebar_expanded model. */ -}}
 {{ $context := .context -}}
 {{ $sidebarRootID := .sidebarRootID -}}
 {{ $cacheSidebar := .cacheSidebar -}}
@@ -11,18 +11,24 @@
 {{ with .Site.LanguagePrefix -}}
   {{ $currentURL = strings.TrimPrefix . $currentURL -}}
 {{ end -}}
-{{ $activeURLs := index hugo.Data.docs_nav.active_path_by_url $currentURL | default (slice) -}}
+{{ $docsNav := index hugo.Data "docs_nav" | default dict -}}
+{{ $activeByURL := index $docsNav "active_path_by_url" | default dict -}}
+{{ $activeURLs := index $activeByURL $currentURL | default (slice) -}}
+{{ $sidebarRootURL := $sidebarRootID -}}
+{{ with .Site.LanguagePrefix -}}
+  {{ $sidebarRootURL = strings.TrimPrefix . $sidebarRootURL -}}
+{{ end -}}
 
 <div id="td-sidebar-menu" class="td-shell-tree-wrap{{ if $shouldDelayActive }} d-none{{ end }}">
   <nav class="td-shell-tree" id="td-section-nav" aria-label="{{ T "ui_sidebar_nav" }}"
       {{- if .Site.Params.ui.sidebar_root_enabled }} data-sidebar-root-id="{{ $sidebarRootID }}"{{ end -}}>
-    {{/* 根下拉开启时，树中不再重复渲染 docs 根（Documentation）首项。 */ -}}
+    {{/* Do not repeat the docs root while the root switcher is visible. */ -}}
     {{ $rootMenuOn := and .Site.Params.ui.sidebar_root_menu
         (gt (len (where .Site.Pages "Params.sidebar_root_for" "self")) 0) -}}
-    {{ with hugo.Data.docs_nav.sections -}}
+    {{ with (index $docsNav "sections") -}}
     <ul class="td-shell-tree__list ul-1">
       {{ range . -}}
-        {{ if and $rootMenuOn (eq .url "/docs/") }}{{ continue }}{{ end -}}
+        {{ if and $rootMenuOn (eq .url $sidebarRootURL) }}{{ continue }}{{ end -}}
         {{ template "shell-docs-tree-nav-node" (dict
             "page" $context
             "node" .

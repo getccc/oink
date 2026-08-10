@@ -221,6 +221,9 @@ window.markmap = {
 {{ partial "hooks/body-end.html" . -}}
 
 {{ define "algolia/scripts" -}}
+{{ if not (and .appId .apiKey .indexName) -}}
+  {{ errorf "params.search.algolia requires explicit appId, apiKey, and indexName values; OINK does not use another project's DocSearch credentials" -}}
+{{ end -}}
 {{ $docsearchJS := resources.Get "third_party/docsearch/docsearch.js" -}}
 {{ if hugo.IsProduction }}{{ $docsearchJS = $docsearchJS | fingerprint }}{{ end -}}
 <script src="{{ $docsearchJS.RelPermalink }}"
@@ -230,9 +233,9 @@ const containers = ['#docsearch-0', '#docsearch-1'];
 for (let c of containers) {
   docsearch({
     container: c,
-    appId: {{ .appId | default "R2IYF7ETH7" | jsonify | safeJS }},
-    apiKey: {{ .apiKey | default "599cec31baffa4868cae4e79f180729b" | jsonify | safeJS }},
-    indexName: {{ .indexName | default "docsearch" | jsonify | safeJS }},
+    appId: {{ .appId | jsonify | safeJS }},
+    apiKey: {{ .apiKey | jsonify | safeJS }},
+    indexName: {{ .indexName | jsonify | safeJS }},
   });
 }
 </script>

@@ -1,9 +1,9 @@
 // ============================================================
-// shell/toc —— 右侧「本页目录」：灰轨 + 1px 主色 thumb 竖条
+// Right-rail table of contents with a muted track and accent indicator.
 // Active path geometry is calculated by docs-shell.js.
 // ============================================================
 
-// 占位列（面板本体 fixed，右侧滚到底不随文档移动；整栏可隐藏）。
+// The column reserves width while the fixed, collapsible panel stays in place.
 .td-shell-toc {
   display: none;
 
@@ -36,7 +36,7 @@
   }
 }
 
-// 整栏隐藏（html[data-td-shell-toc=collapsed]）：列宽归零、面板右滑出。
+// Collapsed state removes column width and slides the panel away.
 @include media-breakpoint-up(xl) {
   [data-td-shell-toc='collapsed'] .td-shell-toc {
     width: 0;
@@ -54,7 +54,7 @@
   }
 }
 
-// 右上恢复浮钮（仅 collapsed + ≥xl 显示）。
+// Floating restore action, visible only when collapsed at xl and above.
 .td-shell-toc-float {
   display: none;
   position: fixed;
@@ -80,7 +80,7 @@
   }
 }
 
-/* controls 行：整栏隐藏开关 + 内容快捷入口 / 语言 + 亮暗 + GitHub */
+/* Controls for rail collapse, content shortcuts, language, theme, and GitHub. */
 
 .td-shell-toc__actions {
   display: flex;
@@ -139,7 +139,7 @@
   flex: 1 1 auto;
 }
 
-// 小号 ghost 钮（actions 行专用，紧凑排布容纳五枚）。
+// Compact ghost button used in the rail action row.
 .td-shell-iconbtn.td-shell-iconbtn--sm {
   padding: 4px;
   border-radius: 6px;
@@ -149,7 +149,7 @@
     height: 16px;
   }
 
-  // FA 图标（Docs/Blog 快捷钮，与左侧导航同款）尺寸对齐 lucide。
+  // Size Font Awesome content shortcuts to align with Lucide icons.
   i {
     display: inline-block;
     width: 16px;
@@ -192,8 +192,8 @@
   }
 }
 
-/* v16「normal」变体：每条目一段 SVG 轨道 + 主色路径 clip-path 高亮 + 滑动圆点。
-   缩进（20/32/44px）由 docs-shell.js 以内联 padding-inline-start 写入。 */
+/* Each entry owns an SVG segment. The accent path is clipped to the active
+   range, and docs-shell.js writes depth-dependent logical indentation. */
 
 .td-shell-toc__body #TableOfContents {
   ul {
@@ -204,7 +204,7 @@
 
   a {
     position: relative;
-    z-index: 0; // 让 z-index:-1 的轨道 SVG 垫在文字之下
+    z-index: 0; // Keep the z-index:-1 track SVG behind the text.
     display: block;
     padding: 6px 0;
     font-size: 14px;
@@ -232,7 +232,7 @@
   }
 }
 
-// 每条目的灰色轨道段（line + 深度变化的贝塞尔连接线）。
+// Muted per-item track with Bezier connectors across depth changes.
 .td-shell-toc__rail {
   position: absolute;
   inset-inline-start: 0;
@@ -248,13 +248,13 @@
     fill: none;
   }
 
-  // 下一条目深度不同：本段提前 6px 结束，给连接曲线让位。
+  // End early before a depth change to leave room for the connector.
   &--cut {
     height: 100%;
   }
 }
 
-// 活跃高亮：整列主色路径按 --td-shell-track-top/bottom 裁剪，150ms 平滑伸缩。
+// Clip the accent path to the active range with a 150ms transition.
 .td-shell-toc__active {
   position: absolute;
   top: 0;
@@ -281,7 +281,7 @@
   }
 }
 
-// 沿路径滑动的 4px 圆点（CSS motion path）。
+// A 4px dot follows the accent path through CSS motion-path properties.
 .td-shell-toc__dot {
   position: absolute;
   top: 0;
@@ -297,7 +297,7 @@
     opacity 150ms ease;
 }
 
-/* TOC 下方的页面元链接（编辑 / 查看源码 / 提 issue …） */
+/* Page metadata actions below the TOC. */
 
 // The group heading supplies the separation now; no rule of its own.
 .td-shell-aside .td-page-meta {

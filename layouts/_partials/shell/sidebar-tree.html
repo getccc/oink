@@ -1,7 +1,6 @@
-{{/* 通用侧栏树（blog 等非 docs 章节）。Fumadocs 风格标记，与 docs-sidebar-tree.html 同款行结构。
-     行为差异：ui.sidebar_menu_foldable / sidebar_menu_compact / ul_show 改为页面级 .Param 查询，
-     使 blog cascade（foldable:false, compact:false, ul_show:3 → 静态全展开）真正生效。
-     树根（ulNr=0）渲染为小节标题样式的链接行。已移除死掉的 sidebar_divider 分支。 */ -}}
+{{/* Generic sidebar tree for blog and other non-docs sections. Page-level
+     .Param lookups let section cascades control foldable, compact, and ul_show.
+     The root row renders as a section-heading link. */ -}}
 {{ $context := .context -}}
 {{ $sidebarRoot := .sidebarRoot -}}
 {{ $sidebarRootID := .sidebarRootID -}}
@@ -92,7 +91,7 @@
       {{ $manualLink = .RelPermalink -}}
     {{ end -}}
   {{ end -}}
-  {{/* 根下拉开启时，树根自身行（如「Blog」）不再渲染 —— 只输出其子级列表。 */ -}}
+  {{/* With the root switcher enabled, emit only children, not the root row. */ -}}
   {{ $rootMenuOn := and $p.Site.Params.ui.sidebar_root_menu
       (gt (len (where $p.Site.Pages "Params.sidebar_root_for" "self")) 0) -}}
   {{ if and $treeRoot $rootMenuOn -}}

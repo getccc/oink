@@ -896,7 +896,7 @@
   overflow: hidden;
   background: var(--bs-body-bg);
 
-  aside {
+  &__sidebar {
     display: flex;
     flex-direction: column;
     gap: 12px;
@@ -973,7 +973,7 @@
     }
   }
 
-  main {
+  &__main {
     padding: clamp(28px, 5vw, 54px);
 
     small {
@@ -1711,11 +1711,11 @@
   .oink-shell-demo {
     grid-template-columns: 42% 1fr;
 
-    aside {
+    &__sidebar {
       padding: 14px 10px;
     }
 
-    main {
+    &__main {
       padding: 24px 16px;
     }
   }

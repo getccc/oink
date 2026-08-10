@@ -1,3 +1,4 @@
+{{- /* Print a page parameter, falling back to site configuration. Positional: name. */ -}}
 {{- $name := .Get 0 -}}
 {{- if not $name -}}
   {{- errorf "%s: param requires a page or site parameter name" .Position -}}

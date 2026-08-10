@@ -1,7 +1,8 @@
 {{- $format := partial "outputformat.html" . -}}
 {{- $type := .Type | default "" -}}
 {{- $kind := .Kind | default "" -}}
+{{- $config := partial "shell/config.html" . -}}
 {{- return and (ne $format "print") (or
-  (in (slice "docs" "blog" "swagger") $type)
+  (in $config.shellTypes $type)
   (in (slice "taxonomy" "term") $kind)
 ) -}}

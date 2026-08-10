@@ -1,15 +1,16 @@
 /**
  * docs-shell.js — documentation shell interactions (no framework).
  *
- * 模块：rootMenu（根节点下拉）/ drawer（移动抽屉）/ collapse（桌面侧栏收起 +
- *       悬停弹出）/ resize（拖拽调宽）/
- *       treeScroll（侧栏滚动位保持）/ toc（v16 轨道 + clip-path 高亮 + 滑动圆点）/
- *       search（⌘K 弹窗，lunr + 中文子串兜底）。
+ * Modules: rootMenu (root switcher), drawer (mobile navigation), collapse
+ * (desktop sidebar and hover overlay), resize, treeScroll, toc (SVG track,
+ * clip-path highlight, and moving dot), and search (command dialog with a
+ * CJK substring fallback for lunr).
  *
- * 约定：主题沿用 localStorage `td-color-theme` + <html data-bs-theme>；
- *       侧栏收起态存 localStorage `td-shell-sidebar-collapsed`，由 head-end 的
- *       预绘制脚本在首帧前恢复；首帧动画由 <html data-td-shell-no-anim> 抑制，
- *       本文件在两帧后移除该属性。
+ * The theme keeps the `td-color-theme` localStorage key and
+ * <html data-bs-theme>. The collapsed sidebar state is stored under
+ * `td-shell-sidebar-collapsed` and restored by the prepaint script. That
+ * script also suppresses first-frame animations; this file re-enables them
+ * after two animation frames.
  */
 (function () {
   'use strict';
@@ -56,7 +57,7 @@
 
   /* -------------------------------------------------------- rightCollapse */
 
-  // 右侧栏整栏隐藏（与左侧对称）：标题图标钮切换，右上浮动钮恢复，localStorage 持久化。
+  // Collapse the complete right rail and persist the state in localStorage.
   function initRightCollapse() {
     var buttons = document.querySelectorAll('[data-td-shell-right-toggle]');
     if (!buttons.length) return;
@@ -82,7 +83,7 @@
 
   /* --------------------------------------------------------- footerOffset */
 
-  // 固定侧栏在页脚进入视口时缩短同等高度，底部版本选择器始终位于页脚上方。
+  // Shorten the fixed sidebar as the footer enters the viewport.
   function initFooterOffset() {
     var footer = document.querySelector('.td-shell-footline');
     var panel = document.querySelector('.td-shell-sidebar__panel');
@@ -120,7 +121,7 @@
 
   /* ------------------------------------------------------------ rootMenu */
 
-  // 根节点下拉（v16 SidebarTabsDropdown）：100ms scale 弹层，外点/Esc 关闭。
+  // Root switcher: a 100ms scale popover closed by Escape or an outside click.
   function initRootMenu() {
     var root = document.querySelector('.td-shell-root');
     if (!root) return;
@@ -203,7 +204,7 @@
       if (e.key === 'Escape' && html.hasAttribute('data-td-shell-drawer'))
         close(true);
     });
-    // 抽屉是模态：背后的正文被遮罩挡住，Tab 不能走到那里去。
+    // The drawer is modal; keep keyboard focus out of the obscured document.
     document.addEventListener(
       'keydown',
       tabTrap(sidebar, function () {
@@ -211,7 +212,7 @@
       }),
       true,
     );
-    // 视口跨过 md 断点时清掉抽屉态，避免桌面端残留滚动锁。
+    // Clear drawer state across the md breakpoint to avoid a stale scroll lock.
     window.matchMedia(MD).addEventListener('change', function (mq) {
       if (mq.matches) close(false);
     });
@@ -244,7 +245,8 @@
       } catch (e) {
         /* ignore */
       }
-      lockUntil = performance.now() + 150; // fumadocs 同款：状态切换后 150ms 抑制悬停弹出
+      // Suppress hover-open briefly after an explicit state change.
+      lockUntil = performance.now() + 150;
     }
 
     document
@@ -255,7 +257,7 @@
         });
       });
 
-    // 悬停弹出：收起的面板保留 16px 隐形热区（opacity:0 不影响命中测试）。
+    // The collapsed panel leaves a 16px transparent hover target.
     panel.addEventListener('pointerenter', function (e) {
       if (e.pointerType === 'touch' || !mdQuery.matches) return;
       if (!collapsed() || performance.now() < lockUntil) return;
@@ -264,7 +266,7 @@
     });
     panel.addEventListener('pointerleave', function (e) {
       if (e.pointerType === 'touch' || !collapsed()) return;
-      // fumadocs 同款延迟：离开点贴近视口左右边缘（≤100px）给 500ms 宽限，否则立即收回。
+      // Near a viewport edge, allow extra time for the pointer to return.
       var nearEdge =
         Math.min(e.clientX, document.body.clientWidth - e.clientX) <= 100;
       window.clearTimeout(closeTimer);
@@ -284,9 +286,9 @@
 
   /* --------------------------------------------------------------- resize */
 
-  // 侧栏拖拽调宽：写 --td-shell-sidebar-w（列与面板共用），localStorage 持久化，
-  // 双击复位。min/max 由 .td-shell-layout 的 --td-shell-sidebar-min/max 钳制
-  // （站点参数 + 栏目 front matter cascade）。嵌入态与悬浮弹出态共用同一面板。
+  // Resize the shared sidebar column/panel through --td-shell-sidebar-w and
+  // persist it in localStorage. Double-click resets it; min/max come from the
+  // site parameters or section cascade on .td-shell-layout.
   function initResize() {
     var aside = document.getElementById('td-shell-sidebar');
     if (!aside) return;
@@ -339,7 +341,7 @@
       handle.addEventListener('pointercancel', onUp);
     });
 
-    // 双击复位为断点默认宽（268/286）。
+    // Double-click resets to the breakpoint default (268px or 286px).
     handle.addEventListener('dblclick', function () {
       html.style.removeProperty('--td-shell-sidebar-w');
       try {
@@ -390,7 +392,7 @@
       /* ignore */
     }
 
-    // 活跃行不在视口内时（深链直达 / 恢复位失效）将其居中。
+    // Center the active row when a deep link or restored offset placed it outside the viewport.
     var active = viewport.querySelector('.td-shell-tree__row.td-shell-active');
     if (active) {
       var rowRect = active.getBoundingClientRect();
@@ -473,11 +475,11 @@
   /* ------------------------------------------------------------------ toc */
 
   /*
-   * TOC —— fumadocs.dev v16 同款「normal」变体：
-   *   · 每个条目一段 SVG 轨道，深度变化处用三次贝塞尔曲线平滑连接；
-   *   · 活跃高亮 = 一条覆盖整列的主色路径，clip-path 裁剪活跃区间（150ms 过渡）；
-   *   · 一枚 4px 圆点沿同一路径滑动（CSS offset-path / offset-distance）。
-   * 缩进 20/32/44px，轨道 x 8/16/24（+0.5 使 1px 描边落在整像素）。
+   * TOC track: each item owns an SVG segment, with cubic Bezier connectors at
+   * depth changes. A full-height accent path is clipped to the active range,
+   * and a 4px dot moves along that path with CSS motion-path properties.
+   * Indents are 20/32/44px and track x positions are 8/16/24px; the 0.5px
+   * offset keeps a 1px stroke aligned to device pixels.
    */
   function initToc() {
     var body = document.getElementById('td-shell-toc-body');
@@ -490,7 +492,7 @@
 
     var SVG_NS = 'http://www.w3.org/2000/svg';
 
-    // 深度 = 祖先 <ul> 层数 + 1（Hugo TOC 从 h2 起，对应 fumadocs depth 2）。
+    // Depth is the number of ancestor <ul> elements plus one (Hugo starts at h2).
     function depthOf(a) {
       var d = 0;
       var el = a.parentElement;
@@ -508,14 +510,14 @@
     }
 
     var depths = links.map(depthOf);
-    var positions = []; // 每条目 [top, bottom]（相对 body，去除 padding）
+    var positions = []; // Per-item [top, bottom], relative to body without padding.
     var overlay = null;
     var dot = null;
     var pathEl = null;
     var pathLength = 0;
 
     function build() {
-      // 清场重建（ResizeObserver 触发时布局已变）。
+      // Rebuild after ResizeObserver reports changed geometry.
       body.querySelectorAll('.td-shell-toc__rail').forEach(function (el) {
         el.remove();
       });
@@ -536,7 +538,7 @@
         var l0 = i === 0 ? l1 : lineOffset(depths[i - 1]);
         var l2 = i === links.length - 1 ? l1 : lineOffset(depths[i + 1]);
 
-        // --- 每条目的灰色轨道段 ---
+        // Per-item muted track segment.
         var rail = document.createElementNS(SVG_NS, 'svg');
         rail.setAttribute(
           'class',
@@ -568,7 +570,7 @@
         rail.appendChild(seg);
         a.appendChild(rail);
 
-        // --- 主色路径的节点（相对 body 原点）---
+        // Accent-path nodes relative to the body origin.
         var style = getComputedStyle(a);
         var top = a.offsetTop + parseFloat(style.paddingTop);
         var bottom =
@@ -620,7 +622,7 @@
       pathLength = pathEl.getTotalLength();
     }
 
-    // 沿路径二分查找 y 坐标对应的路径距离（路径在 y 上单调递增）。
+    // Binary-search the path distance for a y coordinate; y is monotonic.
     function distanceAtY(y) {
       var lo = 0;
       var hi = pathLength;
@@ -685,7 +687,7 @@
         distanceAtY(trackTop) + 'px',
       );
 
-      // 长 TOC：保证首个活跃项在滚动区内可见。
+      // Keep the first active entry visible in a long, scrollable TOC.
       var first = links[firstIdx];
       if (first) {
         var container = body.getBoundingClientRect();
@@ -705,7 +707,7 @@
             visible.add(entry.target);
           } else {
             visible.delete(entry.target);
-            // 记住最近滚出视口上沿的标题：节与节之间保持上一节高亮。
+            // Keep the preceding section active between observed headings.
             if (entry.boundingClientRect.top < 100) lastAbove = entry.target;
           }
         });
@@ -733,14 +735,13 @@
 
   /* ---------------------------------------------------------- pageContext */
 
-  // "Copy Markdown" and "Print this page" in the TOC rail's action list.
+  // "Copy Markdown" in the TOC rail's action list.
   function initPageContext() {
     document
       .querySelectorAll('[data-td-page-context]')
       .forEach(function (root) {
         var status = root.querySelector('[data-td-page-context-status]');
         var copyButtons = root.querySelectorAll('[data-td-page-copy]');
-        var printButtons = root.querySelectorAll('[data-td-page-print]');
         var cached = new Map();
 
         function announce(text) {
@@ -785,7 +786,8 @@
           button.classList.add('is-copied');
           if (label && !label.dataset.original)
             label.dataset.original = label.textContent;
-          if (label) label.textContent = root.dataset.tCopied || label.textContent;
+          if (label)
+            label.textContent = root.dataset.tCopied || label.textContent;
           announce(root.dataset.tCopied || 'Copied');
           window.setTimeout(function () {
             button.classList.remove('is-copied');
@@ -832,12 +834,6 @@
               .catch(function () {
                 announce(root.dataset.tCopyError || 'Copy failed');
               });
-          });
-        });
-
-        printButtons.forEach(function (button) {
-          button.addEventListener('click', function () {
-            window.print();
           });
         });
       });
@@ -959,7 +955,7 @@
         });
     }
 
-    // 中文等 CJK 查询：lunr 的分词对 CJK 无能为力，改用全量子串扫描。
+    // lunr cannot tokenize CJK reliably, so scan the indexed text for substrings.
     function queryCjk(q) {
       var hits = [];
       var needle = q.toLowerCase();
@@ -990,7 +986,7 @@
       return hits.slice(0, maxResults);
     }
 
-    // 拉丁文查询：兼容旧实现的三连查询（精确 boost 100 / 通配 10 / 容错 editDistance 2）。
+    // Latin queries retain exact, wildcard, and edit-distance matching.
     function queryLatin(q) {
       var found = index.query(function (builder) {
         lunr.tokenizer(q.toLowerCase()).forEach(function (token) {
@@ -1157,7 +1153,7 @@
         el.addEventListener('click', close);
       });
 
-    // 非 Apple 平台把 ⌘ 徽章换成 Ctrl。
+    // Show Ctrl instead of the Command badge on non-Apple platforms.
     var apple = /Mac|iPhone|iPad|iPod/.test(
       navigator.platform || navigator.userAgent,
     );
@@ -1187,7 +1183,7 @@
   initPageContext();
   initSearch();
 
-  // 首帧后恢复过渡动画（head-end 预绘制脚本置位）。
+  // Restore transitions after the first painted frame.
   window.requestAnimationFrame(function () {
     window.requestAnimationFrame(function () {
       html.removeAttribute('data-td-shell-no-anim');

@@ -1,9 +1,9 @@
 // ============================================================
-// shell/layout —— 文档页三栏壳：侧栏列 / 正文列 / TOC 列
-// 含桌面侧栏收起状态机（16px 热区 + 悬停弹出 overlay）与移动抽屉。
+// Three-column documentation shell: sidebar, article, and TOC rail.
+// Includes desktop collapse/hover behavior and the mobile drawer.
 // ============================================================
 
-// 全出血布局：去掉 container-fluid 的默认水平内边距。
+// Full-bleed shell: remove the inherited container-fluid padding.
 .td-shell-chrome .td-outer {
   padding-left: 0;
   padding-right: 0;
@@ -14,23 +14,23 @@
   display: flex;
   align-items: stretch;
   padding-top: 0;
-  // footer 已迁入内容列：压掉上游的 2rem 底距，侧栏列直达页面底边。
+  // The footer is part of the content flow, so remove inherited bottom space.
   padding-bottom: 0;
 
   @include media-breakpoint-up(md) {
-    // 固定顶栏只在 ≥md 存在，布局整体下移一个顶栏高度。
+    // Apply the reserved navbar offset only on desktop; it is zero by default.
     padding-top: var(--td-shell-nav-h);
   }
 }
 
-// 干掉上游给 .td-main main 的 calc(1.5rem + 4rem) 顶距，改由 article 自理。
+// Remove the inherited main offset; the article owns its spacing.
 .td-shell-layout .td-shell-main {
   flex: 1 1 0;
   min-width: 0;
   padding: 0;
 }
 
-// 正文列宽：page_width 参数（normal 1050 / wide 1300 / full 占满）。
+// Article widths selected by page_width: normal, wide, or full.
 .td-shell-article {
   max-width: 1050px;
   width: 100%;
@@ -50,10 +50,10 @@
   max-width: none;
 }
 
-/* ------------------------------------------------------------ 单行页脚 */
+/* --------------------------------------------------------- compact footer */
 
-// 全宽贴文档底：td-outer 纵向 flex + 布局区 flex:1，短页面时页脚也钉在
-// 视口底；长页面时隐于首屏外，滚动到底才出现。
+// Flex layout keeps the footer at the viewport edge on short pages and below
+// the fold on long pages.
 .td-shell-chrome .td-outer {
   display: flex;
   flex-direction: column;
@@ -64,11 +64,10 @@
   flex: 1 0 auto;
 }
 
-// 页脚 = 不透明「盖板」：滚动到底时作为一整张全宽面从下方浮现，
-// 盖住两侧 fixed 面板的底缘 —— 侧栏内容不动、不裁切，渲染自然。
+// The opaque full-width footer covers the bottom edges of the fixed rails.
 .td-shell-footline {
   position: relative;
-  z-index: 35; // 高于两侧面板（sidebar 30 / toc 20），低于浮控（40）与弹层
+  z-index: 35; // Above both rails, below floating controls and dialogs.
   display: flex;
   align-items: center;
   gap: 1rem;
@@ -129,7 +128,7 @@
   }
 }
 
-/* ------------------------------------------------------- 移动端 subnav */
+/* --------------------------------------------------------- mobile subnav */
 
 .td-shell-subnav {
   position: sticky;
@@ -181,10 +180,9 @@
   }
 }
 
-/* ---------------------------------------------------------------- 侧栏列 */
+/* ------------------------------------------------------- sidebar column */
 
-// 占位列：只负责在布局中保留宽度（面板本体 fixed，不随文档滚动——
-// 右侧正文滚到底时 logo/搜索框纹丝不动，全宽页脚从面板下方滑过）。
+// This column reserves layout width; the actual panel remains fixed.
 .td-shell-sidebar {
   flex: 0 0 auto;
   width: clamp(
@@ -192,10 +190,10 @@
     var(--td-shell-sidebar-w),
     var(--td-shell-sidebar-max)
   );
-  transition: width 150ms ease; // v16 列宽过渡时长
+  transition: width 150ms ease;
 
   @include media-breakpoint-down(md) {
-    display: contents; // 移动端无占位列，面板即抽屉
+    display: contents; // Mobile uses the panel directly as a drawer.
   }
 }
 
@@ -219,10 +217,10 @@
     transform 250ms ease,
     opacity 150ms ease,
     border-radius 250ms ease,
-    inset 250ms ease; // v16 面板动效时长
+    inset 250ms ease;
 
   @include media-breakpoint-down(md) {
-    // 抽屉面板（v16：右侧滑入）：85vw 封顶 380px，无圆角，250ms。
+    // Right-side drawer: 85vw capped at 380px, square corners, 250ms motion.
     inset-inline-start: auto;
     inset-inline-end: 0;
     inset-block-end: 0;
@@ -248,20 +246,19 @@
   }
 }
 
-// ---- 桌面收起状态机 ----
+// Desktop collapse state.
 @include media-breakpoint-up(md) {
   [data-td-shell-sidebar='collapsed'] .td-shell-sidebar {
     width: 0;
   }
 
-  // 收起：面板滑出视口，仅留 16px 隐形热区（opacity:0 不影响命中测试）。
+  // Slide out while retaining a 16px transparent pointer target.
   [data-td-shell-sidebar='collapsed'] .td-shell-sidebar__panel {
     transform: translateX(calc(-100% + 16px));
     opacity: 0;
   }
 
-  // 悬停弹出：浮层形态（圆角 + 全描边 + 投影），不回推正文；
-  // z 提到浮控（z-40）之上。
+  // Hover overlay floats above the content without changing column width.
   [data-td-shell-sidebar='collapsed']
     .td-shell-sidebar--overlay
     .td-shell-sidebar__panel {
@@ -286,7 +283,7 @@
   }
 }
 
-/* ------------------------------------------------------------- 移动抽屉 */
+/* --------------------------------------------------------- mobile drawer */
 
 [data-td-shell-drawer='open'] .td-shell-sidebar__panel {
   transform: translateX(0);
@@ -309,7 +306,7 @@
   pointer-events: auto;
 }
 
-/* --------------------------------------------------- 收起态左上浮动控件 */
+/* --------------------------------------- collapsed floating controls */
 
 .td-shell-float {
   display: none;
@@ -319,13 +316,13 @@
   z-index: 40;
   gap: 2px;
   padding: 2px;
-  border-radius: 12px; // v16 rounded-xl
+  border-radius: 12px;
   border: 1px solid var(--bs-border-color);
   background: var(--td-shell-card);
   box-shadow: var(--td-shell-shadow-lg);
 }
 
-/* ------------------------------------------------------------ 拖拽调宽 */
+/* -------------------------------------------------------- drag resizing */
 
 .td-shell-sidebar__resizer {
   display: none;
@@ -337,7 +334,7 @@
   z-index: 5;
   touch-action: none;
 
-  // 悬停/拖拽时中央浮现 2px 主色指示条。
+  // Reveal a centered 2px accent indicator on hover or drag.
   &::after {
     content: '';
     position: absolute;
@@ -358,7 +355,7 @@
   }
 }
 
-// 拖拽进行中：全局关过渡、禁选中，指示条常亮。
+// Disable transitions and selection while dragging.
 html[data-td-shell-resizing] {
   cursor: col-resize;
   user-select: none;
@@ -373,7 +370,7 @@ html[data-td-shell-resizing] {
     opacity: 0.7;
   }
 
-  // 拖过 iframe/嵌入内容时防止指针事件被吞。
+  // Prevent embedded content from swallowing pointer events during a drag.
   iframe {
     pointer-events: none;
   }

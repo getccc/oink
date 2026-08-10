@@ -30,17 +30,17 @@
       </div>
         {{- else if eq .type "shell" }}
       <div class="oink-shell-demo" aria-hidden="true">
-        <aside>
+        <div class="oink-shell-demo__sidebar">
           <span class="oink-shell-demo__brand"><i></i> {{ .brand }}</span>
           <span class="oink-shell-demo__search">{{ .search }} <kbd>{{ .shortcut }}</kbd></span>
           <b><i class="{{ .section_icon }}"></i> {{ .section }} <em>⌃</em></b>
           <ul>{{ range .items }}<li{{ if .active }} class="active"{{ end }}>{{ .label }}</li>{{ end }}</ul>
-        </aside>
-        <main>
+        </div>
+        <div class="oink-shell-demo__main">
           <small>{{ .eyebrow }}</small>
           <strong>{{ range .title_lines }}{{ . }}<br>{{ end }}</strong>
           {{- range .rules }}<span style="--w: {{ . }}"></span>{{ end }}
-        </main>
+        </div>
       </div>
         {{- else if eq .type "components" }}
         {{- $interactive := false }}
