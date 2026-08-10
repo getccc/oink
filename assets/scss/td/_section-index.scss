@@ -1,10 +1,21 @@
 .section-index {
+  margin-top: 1.5rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--bs-border-color);
+
   .entry {
-    padding: 0.75rem;
+    padding: 0.75rem 0;
+    border: 0;
   }
 
-  .h5 {
-    margin-bottom: 0;
+  // Bind the reset to the semantic heading as well as its sizing class so
+  // the regular document-title rule cannot restore borders or large margins.
+  .h5,
+  .entry > h2 {
+    margin: 0;
+    padding-bottom: 0;
+    border: 0;
+    line-height: 1.4;
 
     a {
       font-weight: $font-weight-bold;
@@ -12,6 +23,10 @@
   }
 
   p {
-    margin-top: 0;
+    margin: 0.125rem 0 0;
+  }
+
+  > ul {
+    margin-bottom: 0;
   }
 }

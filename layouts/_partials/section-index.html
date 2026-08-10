@@ -1,17 +1,16 @@
+{{ $page := .Page -}}
+{{ $pages := (where .Site.Pages "Section" .Section).ByWeight -}}
+{{ $pages = (where $pages "Type" "!=" "search") }}
+{{ $pages = (where $pages ".Params.hide_summary" "!=" true) -}}
+{{ $pages = (where $pages ".Parent" "!=" nil) -}}
+{{ $pages = (where $pages ".Parent.File" "!=" nil) -}}
+{{ if $page.File -}}
+    {{ $pages = (where $pages "Parent.File.UniqueID" "==" $page.File.UniqueID) -}}
+{{ end -}}
+{{ if not (or $page.Params.no_list (eq (len $pages) 0)) -}}
 <div class="section-index">
-    {{ $page := .Page -}}
-    {{ $pages := (where .Site.Pages "Section" .Section).ByWeight -}}
-    {{ $pages = (where $pages "Type" "!=" "search") }}
-    {{ $pages = (where $pages ".Params.hide_summary" "!=" true) -}}
-    {{ $pages = (where $pages ".Parent" "!=" nil) -}}
-    {{ $pages = (where $pages ".Parent.File" "!=" nil) -}}
-    {{ if $page.File -}}
-        {{ $pages = (where $pages "Parent.File.UniqueID" "==" $page.File.UniqueID) -}}
-    {{ end -}}
-    {{ if or $page.Params.no_list (eq (len $pages) 0) -}}
-    {{/* If no_list is true or we don't have subpages we don't show a list of subpages */}}
-    {{ else if $page.Params.simple_list -}}
-    {{/* If simple_list is true we show a bulleted list of subpages */}}
+    {{ if $page.Params.simple_list -}}
+        {{/* If simple_list is true we show a bulleted list of subpages */}}
         <ul>
             {{ range $pages -}}
                 {{ $manualLink := cond (isset .Params "manuallink") .Params.manualLink ( cond (isset .Params "manuallinkrelref") (relref . .Params.manualLinkRelref) .RelPermalink) }}
@@ -19,8 +18,7 @@
             {{ end -}}
         </ul>
     {{ else -}}
-    {{/* Otherwise we show a nice formatted list of subpages with page descriptions */}}
-    <hr class="panel-line">
+        {{/* Otherwise we show a formatted list of subpages with page descriptions */}}
         {{ range $pages -}}
             {{ $manualLink := cond (isset .Params "manuallink") .Params.manualLink ( cond (isset .Params "manuallinkrelref") (relref . .Params.manualLinkRelref) .RelPermalink) -}}
             <div class="entry">
@@ -32,3 +30,4 @@
         {{ end -}}
     {{ end -}}
 </div>
+{{ end -}}

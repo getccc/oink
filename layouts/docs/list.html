@@ -11,6 +11,7 @@
 	</header>
 	{{ .Render "_td-content-after-header" -}}
 	{{ .Content }}
+	{{ partial "page-meta-lastmod.html" . -}}
 	{{ partial "section-index.html" . -}}
 	{{ partial "feedback.html" . -}}
 	{{ partial "comments.html" . -}}
@@ -18,6 +19,5 @@
 		<br />
 		{{- partial "disqus-comment.html" . -}}
 	{{ end -}}
-	{{ partial "page-meta-lastmod.html" . -}}
 </div>
 {{ end -}}
