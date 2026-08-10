@@ -277,37 +277,55 @@ a.taxonomy-term {
   }
 }
 
-/* 右栏标签云：可折叠区块（默认展开），chips 按文章数降序 */
+/* 右栏分类法：与目录/操作同款标题；条目按数量降序逐行排列。 */
 
 .td-shell-tags-cloud {
-  margin-top: 16px;
-  padding-top: 10px;
-  border-top: 1px solid var(--bs-border-color);
-
-  &__head {
-    width: 100%;
-    padding: 5px 6px;
-    border: 0;
-    background: transparent;
-    color: inherit;
-    font: inherit;
-    text-align: start;
-    cursor: pointer;
-    margin-bottom: 0;
-  }
-
-  &__title {
-    flex: 1 1 auto;
-    font-size: 14px;
-    font-weight: 400;
-    color: var(--td-shell-muted-fg);
-  }
-
   &__chips {
     display: flex;
-    flex-wrap: wrap;
-    gap: 5px;
-    padding: 6px 6px 2px;
+    flex-direction: column;
+    gap: 0;
+    padding: 6px 0 2px;
+  }
+
+  .td-shell-tag {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 8px;
+    border: 0;
+    border-radius: 10px;
+    background: transparent;
+    font-size: 14px;
+    line-height: 20px;
+
+    > span:first-child {
+      flex: 1 1 auto;
+      min-width: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    &:hover {
+      background: var(--td-shell-accent);
+    }
+
+    &.is-active {
+      border-color: transparent;
+      background: var(--td-shell-primary-dim);
+    }
+  }
+
+  .td-shell-tag__count {
+    flex: 0 0 auto;
+    min-width: 20px;
+    padding: 0 6px;
+    border-radius: 999px;
+    background: var(--td-shell-accent);
+    color: var(--bs-body-color);
+    font-size: 11px;
+    line-height: 18px;
+    text-align: center;
   }
 }
 

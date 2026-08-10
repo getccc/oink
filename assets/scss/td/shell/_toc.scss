@@ -357,7 +357,6 @@
   text-align: start;
 }
 
-.td-shell-aside-group + .td-shell-tags-cloud,
 .td-shell-aside-group + .td-shell-aside-group {
   margin-top: 8px;
 }
@@ -381,8 +380,7 @@
 
   // Section headings read like the tree's top-level rows.
   .td-shell-toc__title,
-  .td-shell-aside-group__title,
-  .td-shell-tags-cloud__title {
+  .td-shell-aside-group__title {
     font-size: 14px;
     font-weight: 500;
     line-height: 20px;
@@ -399,8 +397,7 @@
     }
   }
 
-  .td-shell-aside-group__head,
-  .td-shell-tags-cloud__head {
+  .td-shell-aside-group__head {
     border-radius: 10px;
 
     &:hover {
@@ -433,56 +430,6 @@
       font-size: 14px;
       line-height: 16px;
     }
-  }
-
-  // Terms are navigation here, not filter chips: one row each, with the count
-  // as a quiet badge. The pill treatment belongs to the wide rail.
-  .td-shell-tags-cloud__chips {
-    display: flex;
-    flex-direction: column;
-    gap: 0;
-    padding-inline: 0;
-  }
-
-  .td-shell-tag {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    padding: 6px 8px;
-    border: 0;
-    border-radius: 10px;
-    background: transparent;
-    font-size: 14px;
-    line-height: 20px;
-
-    > span:first-child {
-      flex: 1 1 auto;
-      min-width: 0;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-    }
-
-    &:hover {
-      background: var(--td-shell-accent);
-    }
-
-    &.is-active {
-      border-color: transparent;
-      background: var(--td-shell-primary-dim);
-    }
-  }
-
-  .td-shell-tag__count {
-    flex: 0 0 auto;
-    min-width: 20px;
-    padding: 0 6px;
-    border-radius: 999px;
-    background: var(--td-shell-accent);
-    color: var(--td-shell-muted-fg);
-    font-size: 11px;
-    line-height: 18px;
-    text-align: center;
   }
 
   // No fixed panel to scroll within: let the contents extend the drawer's own
