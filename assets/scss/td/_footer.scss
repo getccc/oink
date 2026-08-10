@@ -122,6 +122,11 @@
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
     }
+
+    &--wordmark img {
+      width: auto;
+      height: 34px;
+    }
   }
 
   &__tagline,

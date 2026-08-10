@@ -4,11 +4,20 @@
 {{- with resources.Get $logoPath -}}
   {{- $logoURL = .RelPermalink -}}
 {{- end -}}
+{{- $wordmarkPath := .Site.Params.wordmark | default "" -}}
+{{- $wordmarkURL := "" -}}
+{{- if $wordmarkPath -}}
+  {{- $wordmarkURL = $wordmarkPath | relURL -}}
+  {{- with resources.Get $wordmarkPath -}}
+    {{- $wordmarkURL = .RelPermalink -}}
+  {{- end -}}
+{{- end -}}
 {{- $projectRepo := .Site.Params.github_project_repo | default .Site.Params.github_repo -}}
 {{- $quickLinks := .Site.Params.ui.quick_links | default (slice "docs" "blog") -}}
 {{- return dict
   "brandName" $name
   "logoURL" $logoURL
+  "wordmarkURL" $wordmarkURL
   "projectRepo" $projectRepo
   "quickLinks" $quickLinks
 -}}
