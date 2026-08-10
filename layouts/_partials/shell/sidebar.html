@@ -35,7 +35,7 @@
   "sidebarRoot" $sidebarRoot
   "sidebarRootID" $sidebarRoot.RelPermalink
 -}}
-{{- $docsNav := index site.Data "docs_nav" | default dict -}}
+{{- $docsNav := index hugo.Data "docs_nav" | default dict -}}
 {{- $tree := "shell/sidebar-tree.html" -}}
 {{- if and (eq .Type "docs") (isset $docsNav "sections") -}}
   {{- $tree = "shell/docs-sidebar-tree.html" -}}
