@@ -13,6 +13,17 @@
 .chroma {
   // Defer the code canvas to the theme token so `.chroma` matches the
   // surrounding `.highlight` chrome instead of the palette's own grey.
+  --td-code-hl-bg: color-mix(
+    in srgb,
+    var(--td-pre-bg) 95%,
+    var(--bs-link-color)
+  );
+  --td-code-hl-accent: color-mix(
+    in srgb,
+    var(--bs-link-color) 68%,
+    transparent
+  );
+
   background-color: var(--td-pre-bg);
 }
 
@@ -89,17 +100,12 @@
 // The generated Friendly palette contains several colors below 4.5:1 on
 // OINK's light code canvas. Keep the token roles, but meet WCAG AA.
 .chroma {
-  // Keep highlighted rows close to the normal code canvas so every corrected
-  // token color retains AA contrast. A subtle inset edge makes the state
-  // visible without relying on the darker background emitted by Chroma.
+  // Highlight the line as reading context, not as a bordered input. The
+  // narrow leading accent stays visible when adjacent lines are selected,
+  // while the low-chroma wash preserves token contrast.
   .hl {
-    background-color: color-mix(
-      in srgb,
-      var(--td-pre-bg) 98%,
-      var(--bs-link-color)
-    );
-    box-shadow: inset 0 0 0 1px
-      color-mix(in srgb, var(--bs-link-color) 24%, transparent);
+    background-color: var(--td-code-hl-bg);
+    box-shadow: inset 3px 0 0 var(--td-code-hl-accent);
   }
 
   .ln,
@@ -172,21 +178,26 @@
     @import 'chroma/dark';
 
     .chroma {
+      --td-code-hl-bg: color-mix(
+        in srgb,
+        var(--td-pre-bg) 91%,
+        var(--bs-link-color)
+      );
+      --td-code-hl-accent: color-mix(
+        in srgb,
+        var(--bs-link-color) 76%,
+        transparent
+      );
+
       color: inherit;
       background-color: var(--td-pre-bg);
 
+      // The generated dark palette declares its own `.hl` background under
+      // the theme selector. Re-apply the semantic treatment after the import
+      // so that declaration cannot turn selected lines into solid grey bars.
       .hl {
-        background-color: color-mix(
-          in srgb,
-          var(--td-pre-bg) 96%,
-          var(--bs-link-color)
-        );
-        box-shadow: inset
-          0
-          0
-          0
-          1px
-          color-mix(in srgb, var(--bs-link-color) 32%, transparent);
+        background-color: var(--td-code-hl-bg);
+        box-shadow: inset 3px 0 0 var(--td-code-hl-accent);
       }
 
       .ln,
@@ -195,9 +206,15 @@
         color: #9aa8ba;
       }
 
-      // Color tuning for the `native` Chroma style:
+      // Keep terminal output secondary while making the prompt immediately
+      // distinguishable from both the command and its output.
       .go {
-        color: #cccccc95;
+        color: #9aa8ba;
+      }
+
+      .gp {
+        color: #7ee787;
+        font-weight: $font-weight-semibold;
       }
     }
   }

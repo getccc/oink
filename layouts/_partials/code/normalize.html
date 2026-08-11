@@ -6,6 +6,15 @@
 {{- $code := strings.TrimRight "\r\n" (.code | default "") -}}
 {{- $language := .language | default "" -}}
 {{- $languageKey := lower $language -}}
+{{- $languageLabel := upper $language -}}
+{{- $languageLabels := dict
+  "bash" "BASH"
+  "sh" "BASH"
+  "shell" "BASH"
+-}}
+{{- with index $languageLabels $languageKey -}}
+  {{- $languageLabel = . -}}
+{{- end -}}
 {{- $outputFormat := $page.Store.Get "tdOutputFormat" | default "html" -}}
 {{- $interactive := eq (lower $outputFormat) "html" -}}
 {{- $ownerKey := printf "%v" (.key | default $position) -}}
@@ -212,7 +221,7 @@
   "position" $position
   "code" $code
   "language" $language
-  "languageLabel" (upper $language)
+  "languageLabel" $languageLabel
   "options" $options
   "outputFormat" (lower $outputFormat)
   "ownerKey" $ownerKey

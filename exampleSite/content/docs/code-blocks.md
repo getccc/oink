@@ -47,6 +47,12 @@ first
 second
 ```
 
+## Shell language label
+
+```sh {copy=false}
+echo "displayed as Bash"
+```
+
 ## Package managers
 
 {{< code-group id="install-client" sync="package-manager" persist=true label="Choose a package manager" copy="all" >}}

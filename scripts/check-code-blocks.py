@@ -47,6 +47,21 @@ def check_outputs(public: Path) -> list[str]:
     ):
         require(marker in code_html, f"HTML fixture missing {marker}", errors)
 
+    require(
+        re.search(
+            r'data-language="sh"[\s\S]*?class="td-code__language">BASH</span>',
+            code_html,
+        )
+        is not None,
+        "shell lexer alias was not presented as Bash",
+        errors,
+    )
+    require(
+        "td-code__copy-label" not in code_html,
+        "Copy control still contains a visible text label",
+        errors,
+    )
+
     require("**npm**" in code_markdown, "Markdown lost npm title", errors)
     require(
         r"**A \*\*literal\*\* \[label\]**" in code_markdown,
@@ -76,6 +91,24 @@ def check_outputs(public: Path) -> list[str]:
 
 def check_template_contracts() -> list[str]:
     errors: list[str] = []
+    token_selector = re.compile(r"\.chroma \.[A-Za-z0-9]+")
+    light_palette = (ROOT / "assets/scss/td/chroma/_light.scss").read_text()
+    dark_palette = (ROOT / "assets/scss/td/chroma/_dark.scss").read_text()
+    light_tokens = set(token_selector.findall(light_palette))
+    dark_tokens = set(token_selector.findall(dark_palette))
+    missing_dark_tokens = sorted(light_tokens - dark_tokens)
+    require(
+        not missing_dark_tokens,
+        f"dark Chroma palette leaks light-only tokens: {missing_dark_tokens}",
+        errors,
+    )
+    dark_error = re.search(r"\.chroma \.err \{(?P<body>[^}]*)\}", dark_palette)
+    require(
+        dark_error is not None and "background" not in dark_error.group("body"),
+        "dark Chroma error token must not paint a light background",
+        errors,
+    )
+
     html_bases = (
         "layouts/baseof.html",
         "layouts/baseof.taxonomy.html",

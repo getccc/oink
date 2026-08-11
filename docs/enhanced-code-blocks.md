@@ -322,7 +322,7 @@ font, focus, and light/dark tokens.
 
 ```text
 ┌──────────────────────────────────────────────────────────┐
-│ hugo.yml                         YAML        [ Copy ]     │
+│ hugo.yml                    YAML        [copy icon]      │
 ├──────────────────────────────────────────────────────────┤
 │ params:                                                  │
 │   offlineSearch: true                                    │
@@ -351,7 +351,7 @@ localized icon button and accessible label remain.
 
 ```text
 ┌──────────────────────────────────────────────────────────┐
-│ [ npm ] [ pnpm ] [ yarn ]              BASH   [ Copy ]   │
+│ [ npm ] [ pnpm ] [ yarn ]         BASH   [copy icon]     │
 ├──────────────────────────────────────────────────────────┤
 │ pnpm add @example/client                                 │
 └──────────────────────────────────────────────────────────┘
@@ -361,6 +361,10 @@ The tab row is the group's only header. The active panel's language and Copy
 action appear in an action slot at the inline end; individual panels do not
 draw a second frame or header. Long tab lists scroll horizontally instead of
 wrapping into multiple ambiguous rows.
+
+Copy is always an icon-only visual action. Its localized name remains available
+through `aria-label`, `title`, the live status region, and the success/error
+icon state; translated prose does not consume header width.
 
 ### 7.4 Collapse treatment
 
@@ -382,6 +386,12 @@ the fade or controls.
 - Preserve horizontal scrolling in non-wrap mode.
 - Preserve Chroma `.highlight`, `.chroma`, `.lntable`, `.ln`, `.lnt`, `.hl`,
   `.gi`, and `.gd` semantics.
+- Pair the Friendly light palette with GitHub Dark. Because generated palettes
+  omit roles that equal their default color, the dark layer explicitly resets
+  every token defined only by the light palette. Never carry a light error
+  token background into dark mode; `.err` uses text color only.
+- Show highlighted lines with a quiet surface wash and leading accent, not a
+  four-sided border that resembles an input control.
 - Do not use color alone to communicate Copy success or expanded state.
 
 ## 8. Server rendering architecture
@@ -523,7 +533,8 @@ Use one delegated click listener for `[data-td-code-copy]`.
 7. Try `navigator.clipboard.writeText`. If unavailable or rejected, use a
    short-lived off-screen textarea and `document.execCommand('copy')` fallback.
 8. Announce localized success or failure in the block's live region. Reflect
-   the same state with text/icon for approximately 1.5 seconds, then reset.
+   the same state in the icon plus accessible label/title for approximately
+   1.5 seconds, then reset.
 
 Do not use computed `user-select` as the data model. Explicit Chroma token
 classes are deterministic and testable.
@@ -679,8 +690,10 @@ existing i18n synchronization workflow, and `scripts/check-i18n.py` must report
 exact parity across all 32 files.
 
 Language identifiers such as `YAML`, `BASH`, and `SQL` are technical labels,
-not localized prose. Display the author language token in upper case; omit the
-visual label when the token is empty.
+not localized prose. Display the token in upper case, with the common
+`bash`/`sh`/`shell` lexer aliases presented consistently as `BASH`; this changes
+only the UI label, not the language passed to Chroma or stored in
+`data-language`. Omit the visual label when the token is empty.
 
 ## 13. Compatibility decisions
 

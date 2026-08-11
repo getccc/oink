@@ -96,8 +96,6 @@
     button.dataset.state = state;
     button.setAttribute('aria-label', label);
     button.setAttribute('title', label);
-    const text = button.querySelector('.td-code__copy-label');
-    if (text) text.textContent = label;
     const icon = button.querySelector('i');
     if (icon) {
       icon.className =
