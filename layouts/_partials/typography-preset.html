@@ -1,0 +1,6 @@
+{{- $preset := .Params.ui.typography.preset | default "technical" -}}
+{{- $allowed := slice "technical" "system" -}}
+{{- if not (in $allowed $preset) -}}
+  {{- errorf "invalid params.ui.typography.preset %q (allowed: %s)" $preset (delimit $allowed " | ") -}}
+{{- end -}}
+{{- return $preset -}}

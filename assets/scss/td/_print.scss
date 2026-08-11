@@ -29,14 +29,16 @@
 
   body,
   .td-print-view {
+    --td-body-font-family: var(--td-print-font-family);
+
+    @if $headings-font-family == null {
+      --td-heading-font-family: var(--td-print-font-family);
+    }
+
     min-width: 0 !important;
     background: #fff !important;
     color: #171717 !important;
-    font-family:
-      'Open Sans',
-      system-ui,
-      -apple-system,
-      sans-serif;
+    font-family: var(--td-print-font-family);
     line-height: 1.55;
     -webkit-print-color-adjust: exact;
     print-color-adjust: exact;

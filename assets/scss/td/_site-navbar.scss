@@ -54,7 +54,7 @@
     background: var(--td-brand-mark-gradient);
     background-clip: text;
     color: transparent;
-    font-family: 'Chakra Petch', var(--bs-font-sans-serif);
+    font-family: var(--td-display-font-family);
     font-size: 1.05rem;
     font-weight: 700;
     line-height: 1;
@@ -235,7 +235,7 @@
     border-radius: 0;
     background: none;
     color: var(--bs-body-color);
-    font-family: var(--bs-font-sans-serif);
+    font-family: var(--td-ui-font-family);
     font-size: 0.95rem;
     font-weight: 500;
     text-align: start;
@@ -301,7 +301,7 @@
     border-radius: 7px;
     background: transparent;
     color: var(--bs-secondary-color);
-    font-family: var(--bs-font-sans-serif);
+    font-family: var(--td-ui-font-family);
     font-size: 0.85rem;
     font-weight: 500;
     cursor: pointer;

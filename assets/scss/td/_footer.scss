@@ -115,7 +115,7 @@
       background: var(--td-brand-mark-gradient);
       background-clip: text;
       color: transparent;
-      font-family: 'Chakra Petch', var(--bs-font-sans-serif);
+      font-family: var(--td-display-font-family);
       font-size: 1.05rem;
       font-weight: 700;
       letter-spacing: 0.16em;
@@ -156,7 +156,7 @@
     h2 {
       margin: 0 0 1rem;
       color: var(--td-brand-silk);
-      font-family: 'IBM Plex Mono', var(--bs-font-monospace);
+      font-family: var(--td-meta-font-family);
       font-size: 0.68rem;
       font-weight: 600;
       letter-spacing: 0.14em;

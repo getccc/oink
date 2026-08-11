@@ -11,9 +11,12 @@ $td-fonts-serif:
   'Microsoft YaHei', 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans SC',
   sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji' !default;
 
-$td-font-family-monospace:
+$_td-font-family-monospace-default:
   'IBM Plex Mono', SFMono-Regular, 'Cascadia Code', 'Roboto Mono', Menlo,
-  Consolas, 'Liberation Mono', monospace !default;
+  Consolas, 'Liberation Mono', 'Sarasa Mono SC', 'Noto Sans Mono CJK SC',
+  monospace;
+
+$td-font-family-monospace: $_td-font-family-monospace-default !default;
 
 // ===================================================
 // DO NOT EDIT non-comment lines beyond this point

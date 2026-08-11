@@ -12,9 +12,7 @@
   --td-asciinema-muted: #5d7189;
   --td-asciinema-title: #16222e;
   --td-asciinema-accent: #245f94;
-  --td-asciinema-font-family:
-    'IBM Plex Mono', 'Cascadia Mono', Consolas, 'Liberation Mono', Menlo,
-    monospace;
+  --td-asciinema-font-family: var(--td-code-font-family);
   overflow: hidden;
   border: 1px solid var(--td-asciinema-line);
   border-radius: 0.78rem;
@@ -63,7 +61,7 @@
     var(--td-asciinema-chrome)
   );
   color: var(--td-asciinema-muted);
-  font-family: 'IBM Plex Mono', var(--bs-font-monospace);
+  font-family: var(--td-meta-font-family);
   line-height: 1;
 
   &::after {
@@ -318,7 +316,7 @@
 }
 
 .td-content-card__title {
-  font-family: 'Chakra Petch', var(--bs-font-sans-serif);
+  font-family: var(--td-display-font-family);
   letter-spacing: 0.04em;
   color: var(--bs-emphasis-color);
   font-size: 1.05rem;
@@ -335,7 +333,7 @@
 .td-content-card__badge {
   margin-inline-start: auto;
   color: var(--td-card-accent);
-  font-family: 'IBM Plex Mono', var(--bs-font-monospace);
+  font-family: var(--td-meta-font-family);
   font-size: 0.72rem;
   font-weight: 600;
 }

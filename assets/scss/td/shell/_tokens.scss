@@ -78,8 +78,7 @@ html:has(body.td-shell-chrome) {
 
 // Compact gradient wordmark shared by the sidebar and mobile subnav.
 .td-shell-wordmark {
-  font-family:
-    'Chakra Petch', 'IBM Plex Mono', 'Noto Sans SC', var(--bs-font-sans-serif);
+  font-family: var(--td-display-font-family);
   font-weight: 700;
   font-size: 1rem;
   letter-spacing: 0.14em;
