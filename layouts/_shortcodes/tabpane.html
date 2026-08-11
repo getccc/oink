@@ -50,7 +50,7 @@
 {{ $rightPane := default false ($.Get "right") -}}
 {{ $activeSet := false -}}
 {{/* Scratchpad gets populated through call to .Inner */ -}}
-{{ .Inner -}}
+{{ with .Inner -}}{{ end -}}
 
 {{/* Preserve selected tabs used by imported documentation. */ -}}
 {{ $hasSelected := false -}}
@@ -60,6 +60,34 @@
   {{ end -}}
 {{ end -}}
 
+{{ $outputFormat := lower (.Page.Store.Get "tdOutputFormat" | default "html") -}}
+{{ if eq $outputFormat "markdown" -}}
+  {{- $markdown := "" -}}
+  {{- range $element := $.Scratch.Get "tabs" -}}
+    {{- $lang := $langPane -}}
+    {{- if $langEqualsHeader }}{{ $lang = $element.header }}{{ end -}}
+    {{- with $element.language }}{{ $lang = . }}{{ end -}}
+    {{- $text := $textPane -}}
+    {{- with $element.text }}{{ $text = . }}{{ end -}}
+    {{- $body := strings.TrimSpace $element.content -}}
+    {{- $chunk := "" -}}
+    {{- if $text -}}
+      {{- $chunk = printf "**%s**\n\n%s" $element.header $body -}}
+    {{- else -}}
+      {{- $longest := 0 -}}
+      {{- range findRE `\x60+` $body -}}
+        {{- if gt (len .) $longest }}{{ $longest = len . }}{{ end -}}
+      {{- end -}}
+      {{- $fenceLength := 3 -}}
+      {{- if ge $longest 3 }}{{ $fenceLength = add $longest 1 }}{{ end -}}
+      {{- $fence := strings.Repeat $fenceLength "`" -}}
+      {{- $safeLang := replace (strings.TrimSpace $lang) "`" "" -}}
+      {{- $chunk = printf "**%s**\n\n%s%s\n%s\n%s" $element.header $fence $safeLang $body $fence -}}
+    {{- end -}}
+    {{- if $markdown }}{{ $markdown = printf "%s\n\n%s" $markdown $chunk }}{{ else }}{{ $markdown = $chunk }}{{ end -}}
+  {{- end -}}
+  {{- $markdown | safeHTML -}}
+{{ else -}}
 {{ $duplicate := false -}}
 {{ $duplicateKey := "" -}}
 {{ $persistKeyList := slice -}}
@@ -157,11 +185,27 @@
 
 {{- "" -}}
 <div class="{{ if $text }}tab-body {{ end }}tab-pane fade{{ if $isActive }}{{ $activeSet = true }} show active{{ end }}" id="{{ $entryid }}" role="tabpanel" aria-labelledby="{{ $tabid }}" tabindex="0">
+<div class="td-tabpane__print-title">{{ index . "header" | markdownify }}</div>
 {{- if $text -}}
 {{ index . "content" -}}
 {{- else -}}
+{{- if $.Page.Site.Params.prism_syntax_highlighting -}}
 {{ highlight (trim (index . "content") "\r\n") $lang $hloptions -}}
+{{- else -}}
+{{- $config := partial "code/normalize.html" (dict
+  "page" $.Page
+  "position" $.Position
+  "code" (index . "content")
+  "language" $lang
+  "attributes" (dict)
+  "options" $hloptions
+  "key" (printf "tabpane-%d-%s" $tabPaneOrdinal $index)
+) -}}
+{{- $highlighted := partial "code/highlight.html" $config -}}
+{{- partial "code/render.html" (dict "config" $config "highlighted" $highlighted) -}}
+{{- end -}}
 {{- end -}}
 </div>
   {{- end }}
 </div>
+{{ end -}}

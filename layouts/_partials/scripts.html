@@ -4,6 +4,12 @@
 {{ $hasMarkmap := and .Site.Params.markmap.enable (.Page.Store.Get "hasMarkmap") -}}
 {{ $hasPlantuml := and .Site.Params.plantuml.enable (.Page.Store.Get "hasPlantuml") -}}
 {{ $hasGiscus := .Page.Store.Get "hasGiscus" | default false -}}
+{{ $interactiveOutput := eq (lower (.Page.Store.Get "tdOutputFormat" | default "html")) "html" -}}
+{{ $hasCodeRuntime := and $interactiveOutput (.Page.Store.Get "hasCodeRuntime" | default false) -}}
+{{ $hasTabRuntime := and $interactiveOutput (or
+  (.Page.Store.Get "hasTabpane" | default false)
+  (.Page.Store.Get "hasCodeGroup" | default false)
+) -}}
 
 {{ if $hasMarkmap -}}
 {{ range resources.Match "third_party/katex/fonts/*" -}}
@@ -177,17 +183,23 @@ window.markmap = {
 {{ if $hasFeedback -}}
   {{ $jsArray = $jsArray | append (resources.Get "js/feedback.js") -}}
 {{ end -}}
+{{ if $hasCodeRuntime -}}
+  {{ $jsArray = $jsArray | append (resources.Get "js/code-block.js") -}}
+{{ end -}}
+{{ if $hasTabRuntime -}}
+  {{ $jsArray = $jsArray | append (resources.Get "js/code-tabs.js") -}}
+{{ end -}}
 
 {{ if not (.Param "ui.scrollSpy.disable") -}}
   {{ $jsScrollSpyPatch := resources.Get "js/scrollspy-patch.js" -}}
   {{ $jsArray = $jsArray | append $jsScrollSpyPatch -}}
 {{ end -}}
 
-{{ $bundleKey := printf "%v-%v-%v-%v-%v-%v-%v-%v-%v-%v-%v-%v-%v"
+{{ $bundleKey := printf "%v-%v-%v-%v-%v-%v-%v-%v-%v-%v-%v-%v-%v-%v-%v"
   $shell $localSearch .Site.Params.offlineSearch $hasMarkmap
   $hasPlantuml .Site.Params.drawio.enable
   $hasAsciinema $hasEcharts $hasInfographic $hasDocCarousel $hasGiscus $hasFeedback
-  (not (.Param "ui.scrollSpy.disable")) | md5 -}}
+  $hasCodeRuntime $hasTabRuntime (not (.Param "ui.scrollSpy.disable")) | md5 -}}
 {{ $js := $jsArray | resources.Concat (printf "js/main-%s.js" $bundleKey) -}}
 {{ if hugo.IsProduction -}}
   {{ $js = $js | minify | fingerprint -}}
@@ -201,23 +213,11 @@ window.markmap = {
   {{ if hugo.IsProduction }}{{ $prismJS = $prismJS | minify | fingerprint }}{{ end -}}
   <script src="{{ $prismJS.RelPermalink }}"
     {{- with $prismJS.Data.Integrity }} integrity="{{ . }}" crossorigin="anonymous"{{ end }}></script>
-{{ else if ( not .Site.Params.disable_click2copy_chroma ) -}}
-  {{ $c2cJS := resources.Get "js/click-to-copy.js" -}}
-  {{ if hugo.IsProduction -}}
-    {{ $c2cJS = $c2cJS | minify | fingerprint -}}
-  {{ end -}}
-  <script defer src="{{ $c2cJS.RelPermalink }}" {{ with $c2cJS.Data.Integrity -}}
-    integrity="{{ . }}" {{ end -}}
-    crossorigin="anonymous"></script>
 {{ end -}}
 
 {{ if and .Site.Params.search (isset .Site.Params.search "algolia") -}}
   {{ template "algolia/scripts" .Site.Params.search.algolia -}}
 {{ end -}}
-{{ $tabpaneJS := resources.FromString "js/tabpane-persist.js" (os.ReadFile "static/js/tabpane-persist.js") -}}
-{{ if hugo.IsProduction }}{{ $tabpaneJS = $tabpaneJS | minify | fingerprint }}{{ end -}}
-<script src="{{ $tabpaneJS.RelPermalink }}"
-  {{- with $tabpaneJS.Data.Integrity }} integrity="{{ . }}" crossorigin="anonymous"{{ end }}></script>
 {{ partial "hooks/body-end.html" . -}}
 
 {{ define "algolia/scripts" -}}

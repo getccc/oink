@@ -73,11 +73,38 @@
   }
 }
 
+// The enhanced shell owns horizontal scrolling and padding. Keep Chroma's
+// table line-number layout a real table, but do not create a second scroller.
+.td-content .td-code {
+  .highlight > div.chroma {
+    overflow: visible;
+  }
+
+  .lntable {
+    width: max-content;
+    min-width: 100%;
+  }
+}
+
 // The generated Friendly palette contains several colors below 4.5:1 on
 // OINK's light code canvas. Keep the token roles, but meet WCAG AA.
 .chroma {
+  // Keep highlighted rows close to the normal code canvas so every corrected
+  // token color retains AA contrast. A subtle inset edge makes the state
+  // visible without relying on the darker background emitted by Chroma.
+  .hl {
+    background-color: color-mix(
+      in srgb,
+      var(--td-pre-bg) 98%,
+      var(--bs-link-color)
+    );
+    box-shadow: inset 0 0 0 1px
+      color-mix(in srgb, var(--bs-link-color) 24%, transparent);
+  }
+
   .ln,
   .lnt,
+  .lnlinks,
   .go,
   .w {
     color: #6b6b6b;
@@ -147,6 +174,26 @@
     .chroma {
       color: inherit;
       background-color: var(--td-pre-bg);
+
+      .hl {
+        background-color: color-mix(
+          in srgb,
+          var(--td-pre-bg) 96%,
+          var(--bs-link-color)
+        );
+        box-shadow: inset
+          0
+          0
+          0
+          1px
+          color-mix(in srgb, var(--bs-link-color) 32%, transparent);
+      }
+
+      .ln,
+      .lnt,
+      .lnlinks {
+        color: #9aa8ba;
+      }
 
       // Color tuning for the `native` Chroma style:
       .go {

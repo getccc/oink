@@ -122,3 +122,13 @@ error_404_title: Page not found
 error_404_body: >-
   Sorry, this page does not exist. Try starting again from the home page.
 error_404_home: Go to the home page
+
+# Explicit English fallbacks for untranslated OINK UI strings.
+# Replace these values with reviewed translations when available.
+ui_code_copy: Copy
+ui_code_copy_label: Copy code
+ui_code_copied: Copied
+ui_code_copy_error: Copy failed
+ui_code_show_all: Show all {{ .Count }} lines
+ui_code_collapse: Collapse code
+ui_code_group_label: Code examples

@@ -122,7 +122,7 @@ Sites can locally host their own faces and override the documented
 
 English, Simplified Chinese (`zh-cn` and generic `zh`), and Traditional Chinese
 (`zh-tw`) have complete reviewed OINK interface text. Every other bundled locale
-has the same 89-key schema and keeps its inherited Docsy translations; new
+has the same 96-key schema and keeps its inherited Docsy translations; new
 OINK-only labels currently use explicit English fallback text pending community
 translation.
 

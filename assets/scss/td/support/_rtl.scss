@@ -2,6 +2,26 @@
 
 /*rtl:ignore*/
 [dir='rtl'] {
+  .td-code,
+  .td-code pre,
+  .td-code code {
+    direction: ltr;
+    text-align: left;
+    unicode-bidi: plaintext;
+  }
+
+  .td-code__header,
+  .td-code__utilities,
+  .td-code__expand {
+    direction: rtl;
+    text-align: start;
+  }
+
+  .td-code__filename,
+  .td-code__language {
+    unicode-bidi: plaintext;
+  }
+
   .highlight,
   pre,
   pre code {

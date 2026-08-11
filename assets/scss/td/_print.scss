@@ -183,9 +183,56 @@
 
   .td-heading-self-link,
   .td-click-to-copy,
+  .td-code__copy,
+  .td-code__expand,
   .td-doc-carousel__button,
   .nav-tabs {
     display: none !important;
+  }
+
+  .td-code {
+    max-height: none !important;
+    overflow: visible !important;
+    border: 0.6pt solid #c9ced4 !important;
+    border-radius: 4pt !important;
+    box-shadow: none !important;
+    break-inside: auto !important;
+
+    .td-code__header {
+      border-bottom: 0.6pt solid #c9ced4 !important;
+      background: #edf0f3 !important;
+    }
+
+    .td-code__utilities--compact {
+      position: static !important;
+      justify-content: flex-end;
+      padding: 0.35rem 0.5rem !important;
+      background: #edf0f3 !important;
+      backdrop-filter: none !important;
+    }
+
+    .td-code__viewport,
+    .highlight,
+    .chroma,
+    pre {
+      max-height: none !important;
+      overflow: visible !important;
+      border: 0 !important;
+      border-radius: 0 !important;
+      box-shadow: none !important;
+      break-inside: auto !important;
+    }
+
+    .td-code__viewport::after {
+      display: none !important;
+    }
+
+    &.td-code--untitled .td-code__viewport {
+      > .highlight > pre,
+      > .highlight > div.chroma {
+        padding-inline-end: 1rem !important;
+      }
+    }
   }
 
   .tab-content > .tab-pane,
@@ -193,6 +240,41 @@
     display: block !important;
     visibility: visible !important;
     opacity: 1 !important;
+  }
+
+  .td-code-group {
+    overflow: visible !important;
+    border: 0 !important;
+    box-shadow: none !important;
+
+    &__header {
+      display: none !important;
+    }
+
+    &__content > .tab-pane {
+      margin: 0 0 1rem !important;
+      border: 0 !important;
+    }
+
+    &__print-title {
+      display: block !important;
+      margin: 0 0 0.25rem;
+      color: #111 !important;
+      font-weight: 700;
+      break-after: avoid-page;
+    }
+
+    .td-code--embedded {
+      border: 0.6pt solid #c9ced4 !important;
+    }
+  }
+
+  .td-tabpane__print-title {
+    display: block !important;
+    margin: 0 0 0.25rem;
+    color: #111 !important;
+    font-weight: 700;
+    break-after: avoid-page;
   }
 
   .td-content-cards {

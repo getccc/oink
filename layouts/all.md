@@ -8,6 +8,7 @@ Template design:
 - Each section, other than the first, shall introduce a separator line.
 
 */ -}}
+{{- .Page.Store.Set "tdOutputFormat" "markdown" -}}
 
 # {{ .Title | strings.TrimSpace -}}
 

@@ -37,6 +37,9 @@ jobs:
         working-directory: exampleSite
         run: hugo --printPathWarnings --panicOnWarning
 
+      - name: Check enhanced code-block contracts
+        run: python3 scripts/check-code-blocks.py
+
       - name: Build the system typography preset
         working-directory: exampleSite
         env:

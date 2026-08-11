@@ -44,6 +44,13 @@ ui_page_actions: Actions
 ui_copy_markdown: Copy Markdown
 ui_copy_success: Markdown copied
 ui_copy_error: Could not copy Markdown
+ui_code_copy: Copy
+ui_code_copy_label: Copy code
+ui_code_copied: Copied
+ui_code_copy_error: Copy failed
+ui_code_show_all: Show all {{ .Count }} lines
+ui_code_collapse: Collapse code
+ui_code_group_label: Code examples
 ui_print_page: Print this page
 ui_sidebar_expand_section: Expand section
 ui_sidebar_collapse_section: Collapse section
