@@ -4,6 +4,9 @@ theme: oink
 defaultContentLanguage: en
 disableKinds: [RSS, sitemap, taxonomy, term]
 
+outputs:
+  section: [HTML, print]
+
 params:
   description: A complete example of OINK's composable landing page.
   offlineSearch: false
