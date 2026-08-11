@@ -5,6 +5,26 @@ All notable changes to OINK are documented here. The project follows
 
 ## [Unreleased]
 
+### Added
+
+- Add validated `technical` and `system` typography presets plus public
+  `--td-*-font-family` roles for UI, body, headings, code, display text,
+  metadata, and print output. Existing Docsy and Bootstrap Sass font variables
+  seed the new roles, and the system preset does not request OINK brand fonts.
+- Add a typography-token boundary check and representative docs, blog, and
+  print fixtures to the minimal example site.
+
+### Changed
+
+- Route landing, shell, navigation, footer, content-card, search, print, and
+  Asciinema font choices through semantic typography roles while preserving the
+  default technical appearance.
+- Give code stacks explicit Sarasa and Noto CJK monospace fallbacks instead of
+  relying on the browser's generic `monospace` fallback.
+- Apply body and heading roles directly to content. Sites that previously
+  changed only raw `body` or heading selectors should use the corresponding
+  `--td-*-font-family` role or established Sass variable instead.
+
 ## [0.2.1] - 2026-08-10
 
 ### Fixed

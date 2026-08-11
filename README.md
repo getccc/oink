@@ -83,6 +83,25 @@ Sites with a different docs path can set `params.ui.docs_section` (for example,
 `guide`) and use a front matter cascade with `type: docs`; additional types can
 be added through `params.ui.shell_types`.
 
+## Typography presets
+
+OINK keeps font choices behind semantic CSS custom properties. The default
+`technical` preset preserves the OINK display and monospace faces. A site that
+wants the platform font stack, with no OINK brand-font requests, can select:
+
+```yaml
+params:
+  ui:
+    typography:
+      preset: system
+```
+
+Both presets are compiled by Hugo into the same static stylesheet. They add no
+JavaScript, package-manager step, remote font service, or runtime stylesheet.
+Sites can locally host their own faces and override the documented
+`--td-*-font-family` roles in `assets/scss/_styles_project.scss`; see the
+[typography token reference](docs/typography-tokens.md).
+
 ## Example sites
 
 - [oink.pgsty.com](https://oink.pgsty.com/) —
