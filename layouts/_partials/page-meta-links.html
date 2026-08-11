@@ -18,6 +18,11 @@
 {{ if $enabled -}}
 {{ $markdownURL := "" -}}
 {{ with $p.AlternativeOutputFormats.Get "markdown" }}{{ $markdownURL = .RelPermalink }}{{ end -}}
+{{ $isDocs := eq $p.Section ($p.Site.Params.ui.docs_section | default "docs") -}}
+{{ $llmPromptTemplate := T "ui_open_in_prompt" -}}
+{{ $llmPrompt := printf $llmPromptTemplate $p.Permalink -}}
+{{ $chatgptURL := printf "https://chatgpt.com/?%s" (querify "hints" "search" "prompt" $llmPrompt) -}}
+{{ $claudeURL := printf "https://claude.ai/new?%s" (querify "q" $llmPrompt) -}}
 {{ $printURL := "" -}}
 {{ with $p.CurrentSection.AlternativeOutputFormats.Get "print" }}{{ $printURL = .RelPermalink }}{{ end -}}
 
@@ -56,8 +61,16 @@
 {{ $customLinks := slice -}}
 {{ with $p.Site.Params.ui.page_context_menu.links }}{{ $customLinks = . }}{{ end -}}
 
-<div class="td-page-meta" data-td-page-context
+<div class="td-page-meta" data-td-page-context data-td-page-open-in-prompt="{{ $llmPromptTemplate }}"
   data-t-copied="{{ T "ui_copy_success" }}" data-t-copy-error="{{ T "ui_copy_error" }}">
+  {{- if $isDocs }}
+  <a class="td-page-meta__action" href="{{ $chatgptURL | safeURL }}" data-td-page-open-in="chatgpt" target="_blank" rel="noopener noreferrer">
+    {{ partialCached "shell/icon.html" "chatgpt" "chatgpt" }}<span>{{ T "ui_open_in_chatgpt" }}</span>
+  </a>
+  <a class="td-page-meta__action" href="{{ $claudeURL | safeURL }}" data-td-page-open-in="claude" target="_blank" rel="noopener noreferrer">
+    {{ partialCached "shell/icon.html" "claude" "claude" }}<span>{{ T "ui_open_in_claude" }}</span>
+  </a>
+  {{- end }}
   {{- with $markdownURL }}
   <button type="button" class="td-page-meta__action" data-td-page-copy data-url="{{ . }}">
     <span class="td-page-meta__icon">{{ partialCached "shell/icon.html" "copy" "copy" }}</span>

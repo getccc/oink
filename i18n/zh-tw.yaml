@@ -34,6 +34,9 @@ ui_theme_auto: 跟隨系統
 ui_theme_light: 亮色
 ui_theme_dark: 暗色
 ui_page_actions: 操作
+ui_open_in_chatgpt: 在 ChatGPT 中開啟
+ui_open_in_claude: 在 Claude 中開啟
+ui_open_in_prompt: 請閱讀 %s 的內容，以便我就此向你提問。
 ui_toc_hide: 隱藏目錄
 ui_toc_show: 顯示目錄
 ui_language_select: 選擇語言

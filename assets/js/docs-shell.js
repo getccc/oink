@@ -432,6 +432,7 @@
    *
    * The groups follow the context: expanded in the rail, where there is room
    * for them, collapsed in the drawer, where the navigation tree comes first.
+   * A group can opt out of the wide expansion when its default is collapsed.
    */
   function initAsideRelocate() {
     var aside = document.querySelector('[data-td-shell-aside]');
@@ -450,9 +451,15 @@
             button.getAttribute('aria-controls'),
           );
           if (!target) return;
-          button.setAttribute('aria-expanded', expanded ? 'true' : 'false');
-          target.classList.toggle('is-open', expanded);
-          var label = expanded
+          var shouldExpand =
+            expanded &&
+            !button.hasAttribute('data-td-shell-aside-default-collapsed');
+          button.setAttribute(
+            'aria-expanded',
+            shouldExpand ? 'true' : 'false',
+          );
+          target.classList.toggle('is-open', shouldExpand);
+          var label = shouldExpand
             ? button.dataset.labelCollapse
             : button.dataset.labelExpand;
           if (label) button.setAttribute('aria-label', label);
@@ -735,14 +742,37 @@
 
   /* ---------------------------------------------------------- pageContext */
 
-  // "Copy Markdown" in the TOC rail's action list.
+  // LLM and Markdown actions in the TOC rail's action list.
   function initPageContext() {
     document
       .querySelectorAll('[data-td-page-context]')
       .forEach(function (root) {
         var status = root.querySelector('[data-td-page-context-status]');
+        var openInLinks = root.querySelectorAll('[data-td-page-open-in]');
+        var openInPrompt =
+          root.dataset.tdPageOpenInPrompt ||
+          'Read from %s so I can ask questions about it.';
         var copyButtons = root.querySelectorAll('[data-td-page-copy]');
         var cached = new Map();
+
+        // Match Nextra's current behavior: use the browser URL at activation
+        // time so the deployed host, query string, and current hash survive.
+        function syncOpenInLink(link) {
+          var service = link.dataset.tdPageOpenIn;
+          var prompt = openInPrompt.replace('%s', window.location.href);
+          var query = encodeURIComponent(prompt);
+          link.href =
+            service === 'chatgpt'
+              ? 'https://chatgpt.com/?hints=search&prompt=' + query
+              : 'https://claude.ai/new?q=' + query;
+        }
+
+        openInLinks.forEach(function (link) {
+          syncOpenInLink(link);
+          link.addEventListener('click', function () {
+            syncOpenInLink(link);
+          });
+        });
 
         function announce(text) {
           if (!status) return;
