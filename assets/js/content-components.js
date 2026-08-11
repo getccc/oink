@@ -39,25 +39,46 @@
     var config = configOf(root, '[data-td-asciinema-config]');
     var target = root.querySelector('[data-td-asciinema-player]');
     if (!config || !target) return;
+    var player;
+    var renderId = 0;
 
     function render() {
-      target.replaceChildren();
+      var currentRenderId = ++renderId;
       var options = Object.assign({}, config.options);
       if (config.theme === 'auto') {
         options.theme = currentTheme() === 'dark' ? 'td-dark' : 'td-light';
       } else {
         options.theme = config.theme;
       }
-      options.terminalFontFamily = getComputedStyle(root)
+      var fontFamily = getComputedStyle(root)
         .getPropertyValue('--td-asciinema-font-family')
         .trim();
-      window.AsciinemaPlayer.create(config.src, target, options);
-      var timer = target.querySelector('.ap-timer');
-      if (timer && !timer.getAttribute('aria-label')) {
-        timer.setAttribute(
-          'aria-label',
-          root.dataset.timerLabel || 'Playback time',
-        );
+      if (fontFamily) options.terminalFontFamily = fontFamily;
+
+      function mount() {
+        if (currentRenderId !== renderId) return;
+        if (player) player.dispose();
+        target.replaceChildren();
+        player = window.AsciinemaPlayer.create(config.src, target, options);
+        var timer = target.querySelector('.ap-timer');
+        if (timer && !timer.getAttribute('aria-label')) {
+          timer.setAttribute(
+            'aria-label',
+            root.dataset.timerLabel || 'Playback time',
+          );
+        }
+      }
+
+      // Asciinema measures terminal cells when it mounts. Wait for a custom
+      // web font so measurement and playback use the same glyph metrics.
+      if (document.fonts && document.fonts.load && fontFamily) {
+        try {
+          document.fonts.load('1em ' + fontFamily).then(mount, mount);
+        } catch (error) {
+          mount();
+        }
+      } else {
+        mount();
       }
     }
 
