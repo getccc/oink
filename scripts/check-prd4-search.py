@@ -205,7 +205,7 @@ def main() -> int:
                 )
         palette = (ROOT / "assets" / "js" / "command-palette.js").read_text(encoding="utf-8")
         require(
-            "OinkSearchEngine.group(results)" in palette
+            "searchApi.group(results)" in palette
             and "td-shell-search__group-label" in palette,
             "Palette does not render normalized result groups",
         )

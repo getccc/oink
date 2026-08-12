@@ -102,6 +102,18 @@
       return commands.slice();
     }
 
+    function getQuickLinks() {
+      return (manifest.quickLinks || []).filter(function (link) {
+        return link && link.kind === 'url' && safeUrl(link.url, windowObject.location.href);
+      }).slice();
+    }
+
+    function getRootOrder() {
+      return (manifest.rootOrder || []).map(function (key) {
+        return String(key).trim().toLowerCase();
+      }).filter(Boolean);
+    }
+
     function fetchMarkdown(url) {
       if (markdown.has(url)) return markdown.get(url);
       var pending = fetchApi(url)
@@ -223,6 +235,8 @@
       get: get,
       list: list,
       commands: getCommands,
+      quickLinks: getQuickLinks,
+      rootOrder: getRootOrder,
       run: run,
       runCommand: runCommand,
       registerExecutor: registerExecutor,

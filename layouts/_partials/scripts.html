@@ -98,6 +98,7 @@ window.markmap = {
 {{ $jsSidebarNav := resources.Get "js/sidebar-nav.js" -}}
 {{ $jsActions := resources.Get "js/action-registry.js" -}}
 {{ $jsPageActions := resources.Get "js/page-actions.js" -}}
+{{ $jsPaletteModel := resources.Get "js/palette-model.js" -}}
 {{ $jsPalette := resources.Get "js/command-palette.js" -}}
 {{ $jsSearchEngine := resources.Get "js/search-engine.js" -}}
 {{ $jsSearch := resources.Get "js/search.js" | resources.ExecuteAsTemplate "js/search.js" .Site.Home -}}
@@ -141,7 +142,7 @@ window.markmap = {
 {{ else if $hasGoogleSearch -}}
   {{ $jsArray = $jsArray | append $jsSearch -}}
 {{ end -}}
-{{ if $localSearch }}{{ $jsArray = $jsArray | append $jsSearchEngine $jsPalette }}{{ end -}}
+{{ if $localSearch }}{{ $jsArray = $jsArray | append $jsSearchEngine $jsPaletteModel $jsPalette }}{{ end -}}
 
 {{ if .Page.Store.Get "hasmermaid" -}}
   {{ partial "scripts/mermaid.html" . -}}

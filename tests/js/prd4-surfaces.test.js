@@ -377,6 +377,25 @@ function testPaletteFocusFromDrawer() {
     setTimeout() {
       return 1;
     },
+    OinkActions: {
+      commands() { return []; },
+      get() { return null; },
+      list() { return []; },
+      quickLinks() { return []; },
+      rootOrder() { return []; },
+      safeUrl(value) { return value; },
+    },
+    OinkPaletteModel: {
+      emptyGroups() { return []; },
+      commandGroups() { return []; },
+      actionRows() { return []; },
+      choiceGroup() { return []; },
+      lexical(a, b) { return String(a).localeCompare(String(b)); },
+    },
+    OinkSearchEngine: {
+      create() { return { query() { return []; } }; },
+      group() { return []; },
+    },
     OinkSurfaceCoordinator: {
       closeOthers(name) {
         assert.equal(name, 'palette');
@@ -398,7 +417,7 @@ function testPaletteFocusFromDrawer() {
 
   const escape = (documentListeners.get('keydown') || []).find((callback) => {
     document.activeElement = input;
-    callback({ key: 'Escape' });
+    callback({ key: 'Escape', preventDefault() {} });
     return document.activeElement === externalDrawerOpener;
   });
   assert.ok(escape, 'Escape must restore focus to the visible drawer opener');

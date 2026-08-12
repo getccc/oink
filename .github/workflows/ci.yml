@@ -51,6 +51,9 @@ jobs:
       - name: Check action registry and command manifest
         run: python3 scripts/check-prd4-actions.py
 
+      - name: Check Command Palette modes and behavior
+        run: python3 scripts/check-prd4-palette.py
+
       - name: Build the example site without warnings
         working-directory: exampleSite
         run: hugo --printPathWarnings --panicOnWarning

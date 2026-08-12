@@ -70,6 +70,17 @@ ui_search_results: '{count} results found'
 ui_search_nav: Navigate
 ui_search_open: Open
 ui_search_close: Close
+ui_palette_pages: Pages
+ui_palette_index_unavailable: Page index unavailable; actions still work
+ui_palette_action_failed: Action could not be completed
+ui_palette_choose: Choose an option
+ui_palette_no_commands: No matching commands
+ui_palette_quick_links: Quick links
+ui_palette_actions: Actions
+ui_palette_commands: Commands
+ui_palette_preferences: Preferences
+ui_palette_page_actions: Page actions
+ui_palette_empty_query: Quick links and actions
 ui_sidebar_nav: Section navigation
 ui_main_nav: Main navigation
 ui_home: Home
