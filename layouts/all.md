@@ -12,8 +12,14 @@ Template design:
 
 # {{ .Title | strings.TrimSpace -}}
 
-{{ $includeLlmsIndex := true -}}
+{{/* Only advertise the site index on sites that actually publish it. A site can
+enable the markdown output format without LLMS, and linking an unpublished
+llms.txt would emit a dangling link on every Markdown page. */ -}}
+{{ $llmsIndexURL := "" -}}
+{{ with .Site.Home.OutputFormats.Get "llms" }}{{ $llmsIndexURL = .RelPermalink }}{{ end -}}
 {{ $needSeparator := false -}}
+{{/* The empty else branch in each separator block below emits a single
+newline and is load-bearing; do not "simplify" it away. */ -}}
 
 {{/* Description ------------------------------------------------------- */ -}}
 
@@ -25,15 +31,16 @@ Template design:
 
 {{/* Site index -------------------------------------------------------- */ -}}
 
-{{ if $includeLlmsIndex }}
+{{ if $llmsIndexURL }}
 {{ if $needSeparator }}
 ---
 
 {{ else }}
 {{ end -}}
 
-{{ $llmsTxt := "llms.txt" -}}
-LLMS index: [ {{- $llmsTxt -}} ]( {{- $llmsTxt | relURL -}} )
+{{/* Link this language's index. `relURL` would point every translation at the
+default language's llms.txt even though Hugo publishes one per language. */ -}}
+LLMS index: [ {{- path.Base $llmsIndexURL -}} ]( {{- $llmsIndexURL -}} )
 {{ $needSeparator = true -}}
 {{ end -}}
 

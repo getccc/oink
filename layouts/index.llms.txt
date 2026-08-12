@@ -26,9 +26,15 @@
   {{- end -}}
 {{ end -}}
 
+{{/* llms.txt indexes this site's own content. Menus routinely carry off-site
+navigation (repository, issue tracker, chat); those are chrome, not content, and
+listing them here dilutes the index and fails the markdown-link expectations
+that agent-docs tooling applies to llms.txt entries. */ -}}
+{{ $siteHost := (urls.Parse .Site.BaseURL).Host -}}
 {{ range .Site.Menus.main -}}
   {{ $url := "" -}}
   {{ $description := "" -}}
+  {{ $onSite := true -}}
   {{ with .Page -}}
     {{ $url = .Permalink -}}
     {{ with .OutputFormats.Get "markdown" -}}
@@ -36,9 +42,16 @@
     {{ end -}}
     {{ $description = .Description | strings.TrimSpace | replaceRE `\s+` " " -}}
   {{ else -}}
-    {{ $url = cond (findRE `^https?://` .URL) .URL (.URL | absLangURL) -}}
+    {{ $entryHost := (urls.Parse .URL).Host -}}
+    {{ if and $entryHost (ne $entryHost $siteHost) -}}
+      {{ $onSite = false -}}
+    {{ else -}}
+      {{ $url = cond (ne $entryHost "") .URL (.URL | absLangURL) -}}
+    {{ end -}}
   {{ end -}}
+  {{ if $onSite -}}
   - [{{ .Name }}]({{ $url }}){{ with $description }}: {{ . }}{{ end }} {{- "\n" -}}
+  {{ end -}}
 {{ end -}}
 
 {{/* Doc Sections ------------------------------------------------------ */ -}}
