@@ -62,6 +62,23 @@
       docByRef.set(doc.ref, doc);
     });
 
+    // Case-fold every searchable field once. queryCjk scans the whole corpus on
+    // every keystroke, so folding here avoids re-allocating a lowercase copy of
+    // each document per character typed.
+    var folded = docs.map(function (doc) {
+      var keywordText = Array.isArray(doc.keywords)
+        ? doc.keywords.join(' ')
+        : doc.keywords || '';
+      return {
+        title: (doc.title || '').toLowerCase(),
+        keywordText: keywordText,
+        keywords: keywordText.toLowerCase(),
+        headings: (doc.headings || '').toLowerCase(),
+        description: (doc.description || '').toLowerCase(),
+        body: (doc.body || '').toLowerCase(),
+      };
+    });
+
     var index = lunrApi(function () {
       this.ref('ref');
       this.field('title', { boost: 5 });
@@ -79,15 +96,14 @@
     function queryCjk(query) {
       var needle = query.toLowerCase();
       var hits = [];
-      docs.forEach(function (doc) {
-        var titleAt = (doc.title || '').toLowerCase().indexOf(needle);
-        var keywordText = Array.isArray(doc.keywords)
-          ? doc.keywords.join(' ')
-          : doc.keywords || '';
-        var keywordAt = keywordText.toLowerCase().indexOf(needle);
-        var headingAt = (doc.headings || '').toLowerCase().indexOf(needle);
-        var descAt = (doc.description || '').toLowerCase().indexOf(needle);
-        var bodyAt = (doc.body || '').toLowerCase().indexOf(needle);
+      docs.forEach(function (doc, docIndex) {
+        var fields = folded[docIndex];
+        var titleAt = fields.title.indexOf(needle);
+        var keywordText = fields.keywordText;
+        var keywordAt = fields.keywords.indexOf(needle);
+        var headingAt = fields.headings.indexOf(needle);
+        var descAt = fields.description.indexOf(needle);
+        var bodyAt = fields.body.indexOf(needle);
         var textScore =
           (titleAt >= 0 ? 100 : 0) +
           (keywordAt >= 0 ? 80 : 0) +
