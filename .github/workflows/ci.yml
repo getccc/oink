@@ -9,6 +9,22 @@ permissions:
   contents: read
 
 jobs:
+  scripts:
+    name: Browser runtime tests
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v6
+        with:
+          node-version: '24'
+
+      # The theme ships its browser runtimes as plain assets, so these run
+      # without an install step. They are the only automated coverage of the
+      # shell, palette, search, and action-registry behavior in this repository.
+      - name: Run browser runtime tests
+        run: node --test 'tests/js/**/*.test.js'
+
   build:
     name: Hugo ${{ matrix.hugo-version }}
     runs-on: ubuntu-latest
