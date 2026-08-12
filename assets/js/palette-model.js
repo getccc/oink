@@ -126,11 +126,15 @@
       };
     });
     var actions = actionRows(registry, '', false);
-    var pageActionIds = new Set([
-      'copy_markdown', 'view_markdown', 'edit_page', 'create_issue', 'print',
-    ]);
+    // Derived from the descriptor's own placement rather than a hardcoded id
+    // list: an action that appears in the page rail belongs to this group, so
+    // adding a rail action does not silently land it under "commands".
     var pageActions = actions.filter(function (row) {
-      return row.action && pageActionIds.has(row.action.id);
+      return (
+        row.action &&
+        row.action.placements &&
+        row.action.placements.page === true
+      );
     });
     var preferences = actions.filter(function (row) {
       return row.action && row.action.kind === 'choice';

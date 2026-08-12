@@ -6,6 +6,21 @@
   'use strict';
 
   var html = document.documentElement;
+  // Typing this prefix, or pressing "/" outside a field, restricts the palette
+  // to commands.
+  var COMMAND_PREFIX = '>';
+  var TYPING_TAGS = { INPUT: true, TEXTAREA: true, SELECT: true };
+
+  // A bare single-character shortcut must yield to anything the reader could be
+  // typing into, including author-supplied editable regions.
+  function isTypingTarget(target) {
+    if (!target || target.nodeType !== 1) return false;
+    if (TYPING_TAGS[target.tagName]) return true;
+    return typeof target.closest === 'function'
+      ? target.closest('[contenteditable]:not([contenteditable="false"])') !== null
+      : false;
+  }
+
   var FOCUSABLE =
     'a[href], button:not([disabled]), input:not([disabled]), ' +
     'select:not([disabled]), textarea:not([disabled]), ' +
@@ -153,7 +168,9 @@
         });
     }
 
-    function open(event) {
+    // `seed` pre-fills the query. Passing the command prefix opens straight
+    // into command mode; it is undefined when `open` is used as a listener.
+    function open(event, seed) {
       session += 1;
       var openSession = session;
       logicalOpen = true;
@@ -190,7 +207,18 @@
       choiceState = null;
       clearPending();
       input.focus();
-      input.select();
+      if (typeof seed === 'string') {
+        input.value = seed;
+        // Caret after the prefix rather than selecting it, so the next
+        // keystroke continues the query instead of replacing the mode.
+        try {
+          input.setSelectionRange(seed.length, seed.length);
+        } catch (e) {
+          /* selection is unsupported on some input types */
+        }
+      } else {
+        input.select();
+      }
       render(input.value);
       // Empty and command-only modes are immediately useful and must not wait
       // for or trigger the local index request.
@@ -225,7 +253,7 @@
 
     function normalQuery(value) {
       var query = String(value || '').trim();
-      return query && query.charAt(0) !== '>';
+      return query && query.charAt(0) !== COMMAND_PREFIX;
     }
 
     function highlight(text, query) {
@@ -298,7 +326,7 @@
         return model.choiceGroup(choiceState.action, choiceState.command, labels);
       var raw = String(value || '').trim();
       if (!raw) return model.emptyGroups(registry, labels);
-      if (raw.charAt(0) === '>')
+      if (raw.charAt(0) === COMMAND_PREFIX)
         return model.commandGroups(registry, raw.slice(1).trim(), labels);
 
       var groups = [];
@@ -392,7 +420,7 @@
     function render(value, retryIndex) {
       if (retryIndex === undefined) retryIndex = true;
       var raw = String(value || '').trim();
-      var commandOnly = raw.charAt(0) === '>';
+      var commandOnly = raw.charAt(0) === COMMAND_PREFIX;
       var groups = groupsFor(value);
       var actionCount = groups.reduce(function (total, group) {
         return total + group.rows.length;
@@ -543,6 +571,15 @@
         event.preventDefault();
         if (isOpen()) close();
         else open();
+      } else if (
+        event.key === '/' &&
+        !event.metaKey && !event.ctrlKey && !event.altKey &&
+        !isOpen() && !isTypingTarget(event.target)
+      ) {
+        // Slash is a bare shortcut, so it must never steal a literal slash
+        // from a field the reader is typing in.
+        event.preventDefault();
+        open(event, COMMAND_PREFIX);
       } else if (event.key === 'Escape' && isOpen()) {
         event.preventDefault();
         close();

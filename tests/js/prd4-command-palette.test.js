@@ -28,6 +28,9 @@ class Element {
     this.style = {};
     this._text = '';
     this.value = '';
+    this.nodeType = 1;
+    this.selectionStart = 0;
+    this.selectionEnd = 0;
   }
   set textContent(value) { this._text = String(value); this.children = []; }
   get textContent() {
@@ -53,6 +56,7 @@ class Element {
   removeAttribute(name) { this.attributes.delete(name); }
   hasAttribute(name) { return this.attributes.has(name); }
   focus() { global.document.activeElement = this; }
+  setSelectionRange(start, end) { this.selectionStart = start; this.selectionEnd = end; }
   select() {}
   scrollIntoView() {}
   contains(candidate) {
@@ -418,6 +422,50 @@ function setup({ controlledAnimationFrame = false } = {}) {
   await tick();
   assert.equal(external.opened.length, 1, 'external result opened more than once');
   assert.equal(external.controller.isOpen(), false, 'successful external result left Palette open');
+
+  // Slash opens straight into command mode. It is a bare single-character
+  // shortcut, so it must yield to any field the reader may be typing in.
+  const slash = setup();
+  function pressKey(harness, values) {
+    const event = Object.assign(
+      {
+        key: '', metaKey: false, ctrlKey: false, altKey: false,
+        isComposing: false, keyCode: 0, target: harness.root,
+        preventDefault() { this.defaultPrevented = true; },
+      },
+      values,
+    );
+    (harness.listeners.get('keydown') || []).forEach((fn) => fn(event));
+    return event;
+  }
+
+  const opened = pressKey(slash, { key: '/' });
+  assert.equal(slash.controller.isOpen(), true, 'slash did not open the Palette');
+  assert.equal(slash.input.value, '>', 'slash did not seed command mode');
+  assert.equal(opened.defaultPrevented, true, 'slash did not prevent the literal character');
+  assert.ok(
+    slash.controller.rows().every((row) => row.type === 'command' || row.type === 'action'),
+    'slash showed page results instead of commands',
+  );
+  assert.equal(slash.input.selectionStart, 1, 'caret was not placed after the prefix');
+
+  slash.controller.close();
+  const field = new Element('input');
+  const ignoredField = pressKey(slash, { key: '/', target: field });
+  assert.equal(slash.controller.isOpen(), false, 'slash opened while typing in a field');
+  assert.notEqual(ignoredField.defaultPrevented, true, 'slash stole a literal character');
+
+  const ignoredModifier = pressKey(slash, { key: '/', ctrlKey: true });
+  assert.equal(slash.controller.isOpen(), false, 'ctrl+slash opened the Palette');
+  assert.notEqual(ignoredModifier.defaultPrevented, true, 'ctrl+slash was swallowed');
+
+  slash.controller.open({ currentTarget: slash.opener });
+  slash.input.value = 'already typing';
+  pressKey(slash, { key: '/' });
+  assert.equal(
+    slash.input.value, 'already typing',
+    'slash reset a query while the Palette was already open',
+  );
 
   console.log('PRD 4 Command Palette controller checks passed');
 })().catch((error) => {
