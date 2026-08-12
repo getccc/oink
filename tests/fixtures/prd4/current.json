@@ -87,12 +87,10 @@
       "runtime_patterns": {
         "{\"dialog\": false, \"index_reference\": false, \"lunr\": false, \"opener\": false, \"palette_controller\": false}": [
           "home",
+          "docs",
+          "blog",
           "plain",
           "print"
-        ],
-        "{\"dialog\": false, \"index_reference\": false, \"lunr\": false, \"opener\": false, \"palette_controller\": true}": [
-          "docs",
-          "blog"
         ]
       }
     },
@@ -170,7 +168,7 @@
         ]
       },
       "runtime_patterns": {
-        "{\"dialog\": false, \"index_reference\": false, \"lunr\": true, \"opener\": false, \"palette_controller\": false}": [
+        "{\"dialog\": false, \"index_reference\": false, \"lunr\": false, \"opener\": false, \"palette_controller\": false}": [
           "plain",
           "print"
         ],
@@ -254,12 +252,10 @@
       "runtime_patterns": {
         "{\"dialog\": false, \"index_reference\": false, \"lunr\": false, \"opener\": false, \"palette_controller\": false}": [
           "home",
+          "docs",
+          "blog",
           "plain",
           "print"
-        ],
-        "{\"dialog\": false, \"index_reference\": false, \"lunr\": false, \"opener\": false, \"palette_controller\": true}": [
-          "docs",
-          "blog"
         ]
       }
     },
@@ -337,7 +333,7 @@
         ]
       },
       "runtime_patterns": {
-        "{\"dialog\": false, \"index_reference\": false, \"lunr\": true, \"opener\": false, \"palette_controller\": false}": [
+        "{\"dialog\": false, \"index_reference\": false, \"lunr\": false, \"opener\": false, \"palette_controller\": false}": [
           "plain",
           "print"
         ],

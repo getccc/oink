@@ -131,9 +131,10 @@ and Palette controller. Print follows the same omission rule.
 
 No default telemetry request is allowed.
 
-The current characterization intentionally exposes places where source assets
-are still gated by params.offlineSearch alone. Issue
-[pgsty/oink#13](https://github.com/pgsty/oink/issues/13) owns closing that gap.
+The runtime-isolation implementation in
+[pgsty/oink#13](https://github.com/pgsty/oink/issues/13) makes the capability
+predicate authoritative for dialog markup, the local index reference, Lunr,
+and the Palette controller.
 
 ## Compatibility and non-goals
 

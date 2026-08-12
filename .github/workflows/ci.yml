@@ -39,6 +39,9 @@ jobs:
       - name: Check PRD 4 contracts and characterization
         run: python3 scripts/check-prd4-contract.py
 
+      - name: Check PRD 4 runtime isolation
+        run: python3 scripts/check-prd4-runtime.py
+
       - name: Build the example site without warnings
         working-directory: exampleSite
         run: hugo --printPathWarnings --panicOnWarning

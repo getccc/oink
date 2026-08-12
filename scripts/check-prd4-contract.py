@@ -691,15 +691,10 @@ def validate_observation(
                                 not runtime["dialog"]
                                 and not runtime["opener"]
                                 and not runtime["lunr"]
-                                and not runtime["index_reference"],
+                                and not runtime["index_reference"]
+                                and not runtime["palette_controller"],
                                 f"{deployment}/{variant}/{lang}/{surface} emits "
                                 "search runtime while disabled",
-                            )
-                            require(
-                                runtime["palette_controller"]
-                                is (surface in ("docs", "blog")),
-                                f"{deployment}/{variant}/{lang}/{surface} "
-                                "current controller characterization changed",
                             )
                         elif surface in ("home", "docs", "blog"):
                             require(
@@ -719,15 +714,11 @@ def validate_observation(
                             require(
                                 not runtime["dialog"]
                                 and not runtime["opener"]
-                                and runtime["lunr"]
-                                and not runtime["index_reference"],
+                                and not runtime["lunr"]
+                                and not runtime["index_reference"]
+                                and not runtime["palette_controller"],
                                 f"{deployment}/{variant}/{lang}/{surface} "
-                                "non-Palette surface characterization changed",
-                            )
-                            require(
-                                runtime["palette_controller"] is False,
-                                f"{deployment}/{variant}/{lang}/{surface} "
-                                "unexpected Palette controller",
+                                "emits Palette runtime outside its capability",
                             )
 
         flat = deployments[deployment]["flat"]["search_off"]["navigation"]
@@ -761,11 +752,36 @@ def validate_runtime_source_contract() -> None:
     )
     require(
         'resources.Get "js/third_party/lunr.min.js"' in head,
-        "current Lunr source marker changed",
+        "Lunr source marker changed",
     )
     require(
-        'resources.Get "js/docs-shell.js"' in scripts,
-        "current docs-shell controller source marker changed",
+        'resources.Get "js/command-palette.js"' in scripts,
+        "Palette controller source marker changed",
+    )
+    require(
+        'resources.Get "js/offline-search.js"' not in scripts,
+        "legacy offline-search engine leaked into the shared bundle",
+    )
+    require(
+        'resources.Get "js/surface-coordinator.js"' in scripts,
+        "transient-surface coordinator source marker changed",
+    )
+    docs_shell = (ROOT / "assets" / "js" / "docs-shell.js").read_text(
+        encoding="utf-8"
+    )
+    require(
+        "function initSearch()" not in docs_shell
+        and "td-shell-search" not in docs_shell,
+        "Palette behavior leaked back into docs-shell.js",
+    )
+    coordinator = (ROOT / "assets" / "js" / "surface-coordinator.js").read_text(
+        encoding="utf-8"
+    )
+    require(
+        "OinkSurfaceCoordinator" in coordinator
+        and "closeOthers" in coordinator
+        and "register" in coordinator,
+        "transient-surface coordinator contract changed",
     )
 
 
