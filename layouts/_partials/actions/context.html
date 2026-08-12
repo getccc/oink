@@ -1,0 +1,104 @@
+{{- /* Build page-local descriptors for the stable PRD 4 action IDs. Keep URL
+     construction in Hugo so the page rail and Command Palette share it. */ -}}
+{{- $p := . -}}
+{{- $pagePlacement := true -}}
+{{- with $p.Site.Params.ui.page_context_menu -}}
+  {{- if reflect.IsMap . -}}
+    {{- if isset . "enable" }}{{ $pagePlacement = .enable }}{{ end -}}
+  {{- else -}}
+    {{- $pagePlacement = . -}}
+  {{- end -}}
+{{- end -}}
+{{- if isset $p.Params "context_menu" }}{{ $pagePlacement = $p.Params.context_menu }}{{ end -}}
+
+{{- $urls := partial "actions/page-urls.html" $p -}}
+{{- $markdownURL := $urls.markdown -}}
+{{- $editURL := $urls.edit -}}
+{{- $issueURL := $urls.createIssue -}}
+{{- $unavailable := T "ui_action_unavailable" -}}
+
+{{- $darkMode := partialCached "dark-mode-config.html" "dark-mode-global" -}}
+{{- $languageOptions := slice -}}
+{{- range partial "language-targets.html" $p -}}
+  {{- $languageOptions = $languageOptions | append (dict
+    "id" .code "title" .label "url" .url "active" .active
+    "available" true "disabledReason" ""
+  ) -}}
+{{- end -}}
+{{- $versionOptions := slice -}}
+{{- $pagePath := "" -}}
+{{- if $p.Site.Params.version_menu_pagelinks }}{{ $pagePath = $p.RelPermalink }}{{ end -}}
+{{- $baseURL := strings.TrimSuffix "/" $p.Site.BaseURL -}}
+{{- range $p.Site.Params.versions -}}
+  {{- if ne .name "---" -}}
+    {{- $url := strings.TrimSuffix "/" (.url | default "") -}}
+    {{- $pagelinks := ne .pagelinks false -}}
+    {{- $target := $url -}}
+    {{- if and $target $pagelinks }}{{ $target = printf "%s%s" $target $pagePath }}{{ end -}}
+    {{- $versionOptions = $versionOptions | append (dict
+      "id" (.version | default (.name | urlize))
+      "title" (.name | default .version | plainify)
+      "url" $target
+      "active" (or (eq .version $p.Site.Params.version) (eq $baseURL $url))
+      "available" (ne $url "")
+      "disabledReason" (cond (ne $url "") "" (printf "URL %s" (T "ui_field_required")))
+    ) -}}
+  {{- end -}}
+{{- end -}}
+{{- $shellConfig := partial "shell/config.html" $p -}}
+{{- $projectRepo := $shellConfig.projectRepo | default "" -}}
+{{- $pageOnly := dict "page" $pagePlacement "palette" true -}}
+{{- $paletteOnly := dict "page" false "palette" true -}}
+{{- $copyTitle := T "ui_copy_markdown" -}}
+{{- $viewTitle := T "post_view_markdown" -}}
+{{- $editTitle := T "post_edit_this" -}}
+{{- $issueTitle := T "post_create_issue" -}}
+{{- $themeTitle := T "ui_theme_toggle" -}}
+{{- $languageTitle := T "ui_language_switch" -}}
+{{- $versionTitle := $p.Site.Params.version_menu | default "Version" -}}
+{{- $githubTitle := "GitHub" -}}
+{{- $actions := slice
+  (dict "id" "copy_markdown" "title" $copyTitle "description" $copyTitle
+    "icon" "fa-regular fa-copy" "keywords" (slice $copyTitle "markdown" "copy")
+    "kind" "copy" "available" (ne $markdownURL "") "disabledReason" (cond (ne $markdownURL "") "" (printf "%s: %s" $copyTitle $unavailable)) "url" $markdownURL
+    "target" "self" "placements" $pageOnly "options" (slice))
+  (dict "id" "view_markdown" "title" $viewTitle "description" $viewTitle
+    "icon" "fa-brands fa-markdown" "keywords" (slice $viewTitle "markdown" "source")
+    "kind" "url" "available" (ne $markdownURL "") "disabledReason" (cond (ne $markdownURL "") "" (printf "%s: %s" $viewTitle $unavailable)) "url" $markdownURL
+    "target" "blank" "placements" $pageOnly "options" (slice))
+  (dict "id" "edit_page" "title" $editTitle "description" $editTitle
+    "icon" "fa-solid fa-pencil" "keywords" (slice $editTitle "edit" "github")
+    "kind" "url" "available" (ne $editURL "") "disabledReason" (cond (ne $editURL "") "" (printf "%s: %s" $editTitle $unavailable)) "url" $editURL
+    "target" "blank" "placements" $pageOnly "options" (slice))
+  (dict "id" "create_issue" "title" $issueTitle "description" $issueTitle
+    "icon" "fa-regular fa-circle-question" "keywords" (slice $issueTitle "issue" "github")
+    "kind" "url" "available" (ne $issueURL "") "disabledReason" (cond (ne $issueURL "") "" (printf "%s: %s" $issueTitle $unavailable)) "url" $issueURL
+    "target" "blank" "placements" $pageOnly "options" (slice))
+  (dict "id" "print" "title" (T "ui_print_page") "description" (T "ui_print_page")
+    "icon" "fa-solid fa-print" "keywords" (slice (T "ui_print_page") "print")
+    "kind" "invoke" "available" true "disabledReason" "" "url" ""
+    "target" "self" "placements" $pageOnly "options" (slice))
+  (dict "id" "switch_theme" "title" $themeTitle "description" $themeTitle
+    "icon" "fa-solid fa-circle-half-stroke" "keywords" (slice $themeTitle (T "ui_theme_light") (T "ui_theme_dark"))
+    "kind" "choice" "available" $darkMode.enable "disabledReason" (cond $darkMode.enable "" (printf "%s: %s" $themeTitle $unavailable)) "url" ""
+    "target" "self" "placements" $paletteOnly "options" (slice
+      (dict "id" "auto" "title" (T "ui_theme_auto") "value" "auto" "available" true "disabledReason" "")
+      (dict "id" "light" "title" (T "ui_theme_light") "value" "light" "available" true "disabledReason" "")
+      (dict "id" "dark" "title" (T "ui_theme_dark") "value" "dark" "available" true "disabledReason" "")))
+  (dict "id" "switch_language" "title" $languageTitle "description" $languageTitle
+    "icon" "fa-solid fa-language" "keywords" (slice $languageTitle "language")
+    "kind" "choice" "available" (gt (len $languageOptions) 1) "disabledReason" (cond (gt (len $languageOptions) 1) "" (printf "%s: %s" $languageTitle $unavailable)) "url" ""
+    "target" "self" "placements" $paletteOnly "options" $languageOptions)
+  (dict "id" "switch_version" "title" $versionTitle
+    "description" $versionTitle "icon" "fa-solid fa-code-branch"
+    "keywords" (slice $versionTitle "version") "kind" "choice"
+    "available" (gt (len $versionOptions) 0) "disabledReason" (cond (gt (len $versionOptions) 0) "" (printf "%s: %s" $versionTitle $unavailable)) "url" ""
+    "target" "self" "placements" $paletteOnly "options" $versionOptions)
+  (dict "id" "open_github" "title" $githubTitle "description" $githubTitle
+    "icon" "fa-brands fa-github" "keywords" (slice "GitHub" "repository" "source")
+    "kind" "url" "available" (ne $projectRepo "") "disabledReason" (cond (ne $projectRepo "") "" (printf "%s: %s" $githubTitle $unavailable)) "url" $projectRepo
+    "target" "blank" "placements" $paletteOnly "options" (slice))
+-}}
+{{- $byID := dict -}}
+{{- range $actions }}{{ $byID = merge $byID (dict .id .) }}{{ end -}}
+{{- return (dict "actions" $actions "byId" $byID "pagePlacement" $pagePlacement "urls" $urls) -}}

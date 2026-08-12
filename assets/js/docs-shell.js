@@ -756,18 +756,15 @@
 
   /* ---------------------------------------------------------- pageContext */
 
-  // LLM and Markdown actions in the TOC rail's action list.
+  // LLM actions in the TOC rail's action list. Page actions use OinkActions.
   function initPageContext() {
     document
       .querySelectorAll('[data-td-page-context]')
       .forEach(function (root) {
-        var status = root.querySelector('[data-td-page-context-status]');
         var openInLinks = root.querySelectorAll('[data-td-page-open-in]');
         var openInPrompt =
           root.dataset.tdPageOpenInPrompt ||
           'Read from %s so I can ask questions about it.';
-        var copyButtons = root.querySelectorAll('[data-td-page-copy]');
-        var cached = new Map();
 
         // Match Nextra's current behavior: use the browser URL at activation
         // time so the deployed host, query string, and current hash survive.
@@ -785,99 +782,6 @@
           syncOpenInLink(link);
           link.addEventListener('click', function () {
             syncOpenInLink(link);
-          });
-        });
-
-        function announce(text) {
-          if (!status) return;
-          status.textContent = '';
-          window.requestAnimationFrame(function () {
-            status.textContent = text;
-          });
-        }
-
-        function fallbackCopy(text) {
-          return new Promise(function (resolve, reject) {
-            var textarea = document.createElement('textarea');
-            textarea.value = text;
-            textarea.setAttribute('readonly', '');
-            textarea.style.position = 'fixed';
-            textarea.style.opacity = '0';
-            document.body.appendChild(textarea);
-            textarea.select();
-            try {
-              if (document.execCommand('copy')) {
-                resolve();
-              } else {
-                reject(new Error('copy failed'));
-              }
-            } catch (error) {
-              reject(error);
-            }
-            textarea.remove();
-          });
-        }
-
-        function writeClipboard(text) {
-          if (navigator.clipboard && navigator.clipboard.writeText) {
-            return navigator.clipboard.writeText(text);
-          }
-          return fallbackCopy(text);
-        }
-
-        function showCopied(button) {
-          var label = button.querySelector('[data-td-page-copy-label]');
-          button.classList.add('is-copied');
-          if (label && !label.dataset.original)
-            label.dataset.original = label.textContent;
-          if (label)
-            label.textContent = root.dataset.tCopied || label.textContent;
-          announce(root.dataset.tCopied || 'Copied');
-          window.setTimeout(function () {
-            button.classList.remove('is-copied');
-            if (label && label.dataset.original)
-              label.textContent = label.dataset.original;
-          }, 1400);
-        }
-
-        function fetchMarkdown(url) {
-          if (cached.has(url)) return Promise.resolve(cached.get(url));
-          return fetch(url)
-            .then(function (response) {
-              if (!response.ok) throw new Error('Markdown request failed');
-              return response.text();
-            })
-            .then(function (text) {
-              cached.set(url, text);
-              return text;
-            });
-        }
-
-        copyButtons.forEach(function (button) {
-          var url = button.dataset.url;
-          if (!url) return;
-          // Warm the cache on intent rather than on load: most readers never
-          // press this, and an unconditional fetch is a request per page view.
-          ['pointerenter', 'focus'].forEach(function (event) {
-            button.addEventListener(
-              event,
-              function () {
-                fetchMarkdown(url).catch(function () {
-                  /* retry on activation */
-                });
-              },
-              { once: true },
-            );
-          });
-          button.addEventListener('click', function () {
-            fetchMarkdown(url)
-              .then(writeClipboard)
-              .then(function () {
-                showCopied(button);
-              })
-              .catch(function () {
-                announce(root.dataset.tCopyError || 'Copy failed');
-              });
           });
         });
       });

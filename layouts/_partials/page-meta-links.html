@@ -5,58 +5,22 @@
 
 {{ if .File -}}
 {{ $p := . -}}
-{{ $enabled := true -}}
-{{ with $p.Site.Params.ui.page_context_menu -}}
-  {{ if reflect.IsMap . -}}
-    {{ if isset . "enable" }}{{ $enabled = .enable }}{{ end -}}
-  {{ else -}}
-    {{ $enabled = . -}}
-  {{ end -}}
-{{ end -}}
-{{ if isset $p.Params "context_menu" }}{{ $enabled = $p.Params.context_menu }}{{ end -}}
+{{ $actionContext := partial "actions/context.html" $p -}}
+{{ $enabled := $actionContext.pagePlacement -}}
 
 {{ if $enabled -}}
-{{ $markdownURL := "" -}}
-{{ with $p.AlternativeOutputFormats.Get "markdown" }}{{ $markdownURL = .RelPermalink }}{{ end -}}
+{{ $actionURLs := $actionContext.urls -}}
+{{ $markdownURL := $actionURLs.markdown -}}
 {{ $isDocs := eq $p.Section ($p.Site.Params.ui.docs_section | default "docs") -}}
 {{ $llmPromptTemplate := T "ui_open_in_prompt" -}}
 {{ $llmPrompt := printf $llmPromptTemplate $p.Permalink -}}
 {{ $chatgptURL := printf "https://chatgpt.com/?%s" (querify "hints" "search" "prompt" $llmPrompt) -}}
 {{ $claudeURL := printf "https://claude.ai/new?%s" (querify "q" $llmPrompt) -}}
-{{ $printURL := "" -}}
-{{ with $p.CurrentSection.AlternativeOutputFormats.Get "print" }}{{ $printURL = .RelPermalink }}{{ end -}}
-
-{{ $editURL := "" -}}
-{{ $childURL := "" -}}
-{{ $issueURL := "" -}}
-{{ $projectIssueURL := "" -}}
-{{ $ghRepo := $p.Param "github_repo" -}}
-{{ $ghURL := $p.Param "github_url" -}}
-{{ $ghProjectRepo := $p.Param "github_project_repo" -}}
-{{ if $ghURL -}}
-  {{ warnf "Warning: use of `github_url` is deprecated. For details, see https://oink.pgsty.com/docs/content/repository-links/#github_url-optional" -}}
-  {{ $editURL = $ghURL -}}
-{{ else if $ghRepo -}}
-  {{ $path := strings.TrimPrefix (add hugo.WorkingDir "/") $p.File.Filename -}}
-  {{ $ghSubdir := $p.Param "github_subdir" | default "" -}}
-  {{ $ghBranch := $p.Param "github_branch" | default "main" -}}
-  {{ $ghsBase := $p.Param "path_base_for_github_subdir" -}}
-  {{ $ghsRename := "" -}}
-  {{ if reflect.IsMap $ghsBase -}}
-    {{ $ghsRename = $ghsBase.to -}}
-    {{ $ghsBase = $ghsBase.from -}}
-  {{ end -}}
-  {{ with $ghsBase }}{{ $path = replaceRE . $ghsRename $path }}{{ end -}}
-  {{ $repoPath := printf "%s/%s/%s" $ghBranch $ghSubdir $path | replaceRE "//+" "/" -}}
-  {{ $editURL = printf "%s/edit/%s" $ghRepo $repoPath -}}
-  {{/* querify, not safeURL: a title containing &, #, ? or + has to survive as
-       a single query value. */ -}}
-  {{ $issueURL = printf "%s/issues/new?%s" $ghRepo (querify "title" $p.Title) -}}
-  {{ $stub := resources.Get "stubs/new-page-template.md" -}}
-  {{ $childQS := querify "value" $stub.Content "filename" "change-me.md" -}}
-  {{ $childURL = printf "%s/new/%s?%s" $ghRepo (path.Dir $repoPath) $childQS -}}
-  {{ with $ghProjectRepo }}{{ $projectIssueURL = printf "%s/issues/new" . }}{{ end -}}
-{{ end -}}
+{{ $printURL := $actionURLs.printSection -}}
+{{ $editURL := $actionURLs.edit -}}
+{{ $childURL := $actionURLs.createChild -}}
+{{ $issueURL := $actionURLs.createIssue -}}
+{{ $projectIssueURL := $actionURLs.createProjectIssue -}}
 
 {{ $customLinks := slice -}}
 {{ with $p.Site.Params.ui.page_context_menu.links }}{{ $customLinks = . }}{{ end -}}
@@ -72,17 +36,17 @@
   </a>
   {{- end }}
   {{- with $markdownURL }}
-  <button type="button" class="td-page-meta__action" data-td-page-copy data-url="{{ . }}">
+  <button type="button" class="td-page-meta__action" data-oink-action="copy_markdown" data-url="{{ . }}">
     <span class="td-page-meta__icon">{{ partialCached "shell/icon.html" "copy" "copy" }}</span>
     <span class="td-page-meta__icon td-page-meta__icon--done">{{ partialCached "shell/icon.html" "check" "check" }}</span>
     <span data-td-page-copy-label>{{ T "ui_copy_markdown" }}</span>
   </button>
-  <a class="td-page-meta__action td-page-meta__markdown" href="{{ . }}" target="_blank" rel="noopener">
+  <a class="td-page-meta__action td-page-meta__markdown" data-oink-action="view_markdown" href="{{ . }}" target="_blank" rel="noopener">
     {{ partialCached "shell/icon.html" "markdown" "markdown" }}<span>{{ T "post_view_markdown" }}</span>
   </a>
   {{- end }}
   {{- with $editURL }}
-  <a class="td-page-meta__action td-page-meta__edit" href="{{ . }}" target="_blank" rel="noopener">
+  <a class="td-page-meta__action td-page-meta__edit" data-oink-action="edit_page" href="{{ . }}" target="_blank" rel="noopener">
     {{ partialCached "shell/icon.html" "pencil" "pencil" }}<span>{{ T "post_edit_this" }}</span>
   </a>
   {{- end }}
@@ -92,7 +56,7 @@
   </a>
   {{- end }}
   {{- with $issueURL }}
-  <a class="td-page-meta__action td-page-meta__issue" href="{{ . | safeURL }}" target="_blank" rel="noopener">
+  <a class="td-page-meta__action td-page-meta__issue" data-oink-action="create_issue" href="{{ . | safeURL }}" target="_blank" rel="noopener">
     {{ partialCached "shell/icon.html" "circle-help" "circle-help" }}<span>{{ T "post_create_issue" }}</span>
   </a>
   {{- end }}
@@ -101,7 +65,7 @@
     {{ partialCached "shell/icon.html" "circle-alert" "circle-alert" }}<span>{{ T "post_create_project_issue" }}</span>
   </a>
   {{- end }}
-  <button type="button" class="td-page-meta__action" data-td-page-print>
+  <button type="button" class="td-page-meta__action" data-oink-action="print">
     {{ partialCached "shell/icon.html" "printer" "printer" }}<span>{{ T "ui_print_page" }}</span>
   </button>
   {{- with $printURL }}

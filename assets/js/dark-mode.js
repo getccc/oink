@@ -98,6 +98,18 @@
     syncDirectThemeButtons()
   }
 
+  if (window.OinkActions && window.OinkActions.get('switch_theme')) {
+    window.OinkActions.registerExecutor('switch_theme', context => {
+      const value = context && context.value
+      const theme = typeof value === 'string' ? value : value && value.value
+      if (!['auto', 'light', 'dark'].includes(theme)) {
+        return Promise.reject(new Error('Unsupported theme'))
+      }
+      apply(theme)
+      return { theme }
+    })
+  }
+
   window.addEventListener('DOMContentLoaded', () => {
     syncDirectThemeButtons()
 
