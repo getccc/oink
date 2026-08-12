@@ -128,9 +128,7 @@ Theme implementation contracts:
 [Typography tokens](docs/typography-tokens.md) ·
 [PRD 4 contract](docs/prd4-navigation-command-palette-contract.md)
 
-The PRD 4 migration reference is currently an **unreleased development
-draft**. It must not be treated as available in the latest tag until the
-release notes name a containing version:
+Navigation and Command Palette migration reference, released in 0.3.0:
 [English](docs/prd4-migration-guide.md) ·
 [简体中文](docs/prd4-migration-guide.zh.md).
 

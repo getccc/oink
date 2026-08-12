@@ -160,9 +160,24 @@ def main() -> int:
             require(literal in en, f"English reference is missing {literal}")
             require(literal in zh, f"Chinese reference is missing {literal}")
 
+        # Release language gate. Before 0.3.0 this required the references to
+        # carry an "unreleased" warning. Now that the feature set ships, the
+        # same discipline runs the other way: both references must name the
+        # containing version, they must agree, and the changelog must actually
+        # have that section. Deliberately version-agnostic so the next release
+        # does not have to edit this check.
+        en_release = re.search(r"released in OINK (\d+\.\d+\.\d+)", en)
+        zh_release = re.search(r"随 OINK (\d+\.\d+\.\d+) 发布", zh)
+        require(en_release is not None, "English reference does not name a released version")
+        require(zh_release is not None, "Chinese reference does not name a released version")
+        require(
+            en_release.group(1) == zh_release.group(1),
+            "English and Chinese references name different released versions",
+        )
+        released_version = en_release.group(1)
+
         for text, language in ((en, "English"), (zh, "Chinese")):
             lower = text.lower()
-            require("unreleased" in lower or "未发布" in text, f"{language} reference claims release")
             require("1.0" in text and "0.x" in text, f"{language} alias removal window is missing")
             require(
                 "deprecated" in lower or "弃用" in text,
@@ -204,13 +219,13 @@ def main() -> int:
         readme = (ROOT / "README.md").read_text(encoding="utf-8")
         changelog = (ROOT / "CHANGELOG.md").read_text(encoding="utf-8")
         require(
-            "unreleased development" in readme.lower()
+            "prd4-migration-guide.md" in readme
             and "prd4-migration-guide.zh.md" in readme,
-            "README must label and link both unreleased references",
+            "README must link both language references",
         )
         require(
-            "Published availability remains gated" in changelog,
-            "changelog must keep PRD 4 behind a release gate",
+            f"## [{released_version}]" in changelog,
+            f"changelog has no section for the released version {released_version}",
         )
 
         with tempfile.TemporaryDirectory(prefix="oink-prd4-docs-") as temporary:

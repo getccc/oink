@@ -5,6 +5,24 @@ All notable changes to OINK are documented here. The project follows
 
 ## [Unreleased]
 
+## [0.3.0] - 2026-08-12
+
+### Breaking changes
+
+- **Remove jQuery.** The theme no longer loads jQuery on any page. It was
+  previously fetched render-blocking in `<head>` for every request, and the
+  third-party inventory listed it as part of the UI foundation, so a consuming
+  site's own scripts may have relied on the global `$`. Sites that do must now
+  bundle jQuery themselves through project JavaScript. No theme feature
+  requires it.
+- **Remove `static/js/tabpane-persist.js`.** `assets/js/code-tabs.js` took over
+  the legacy persistence contract, keeping the `td-tp-persist` storage key and
+  data attribute, so authored tab content is unaffected. Sites that referenced
+  the published file path directly must drop that reference.
+- **Apply body and heading typography roles directly to content.** Sites that
+  previously restyled raw `body` or heading selectors should move to the
+  corresponding `--td-*-font-family` role or the established Sass variable.
+
 ### Added
 
 - Add one-level Hugo Menu dropdowns on desktop and matching mobile accordions,
@@ -21,12 +39,16 @@ All notable changes to OINK are documented here. The project follows
   text, and `>` command modes, plus quick links, grouped page results,
   context-aware actions, localized safe site commands, choice actions, and a
   shared page-action registry.
-- Add an unreleased bilingual PRD 4 migration reference and machine-checked
-  root/subpath starter fixtures. Published availability remains gated on the
-  owning changes being merged and included in a tagged release.
-- Add validated `badge`, `icon`, `kbd`, `fields`, and `filetree` content
-  primitives with semantic HTML, responsive presentation, and dedicated print
-  and Markdown fallbacks.
+- Add a bilingual PRD 4 migration reference and machine-checked root/subpath
+  starter fixtures.
+- Run the browser runtime tests in CI. `tests/js/` covers the shell, Command
+  Palette, search engine, action registry, and surface coordination; until now
+  no workflow executed it, so the only automated check on that code was that
+  Hugo could bundle it.
+- Add validated `badge`, `kbd`, `fields`, and `filetree` content primitives
+  with semantic HTML, responsive presentation, and dedicated print and Markdown
+  fallbacks. A standalone public `icon` shortcode remains deferred; components
+  may use a private, allowlisted icon registry for their own decoration.
 - Add opt-in native-dialog Image Zoom plus the shared `gallery` primitive,
   with page-level overrides, lazy media metadata, keyboard and focus handling,
   and page-store-driven runtime loading.
@@ -44,9 +66,46 @@ All notable changes to OINK are documented here. The project follows
   default technical appearance.
 - Give code stacks explicit Sarasa and Noto CJK monospace fallbacks instead of
   relying on the browser's generic `monospace` fallback.
-- Apply body and heading roles directly to content. Sites that previously
-  changed only raw `body` or heading selectors should use the corresponding
-  `--td-*-font-family` role or established Sass variable instead.
+- Keep off-site navigation out of `llms.txt`. Menu entries whose host differs
+  from the site's own are navigation chrome rather than content, and listing
+  them diluted an index meant for agents. Page-backed and same-host entries are
+  unchanged.
+
+### Fixed
+
+- Link the `llms.txt` a site actually publishes. The Markdown output advertised
+  the index unconditionally, so a site enabling the `markdown` output format
+  without `LLMS` emitted a dangling link on every Markdown page. Each language
+  now links its own index instead of pointing every translation at the default
+  language's file.
+- Localize the archived-version banner and the giscus `noscript` block, which
+  were hardcoded English on every site. This also closes an unclosed `<p>` the
+  banner emitted whenever `url_latest_version` was unset.
+- Strip single-quoted and bare `data-zoom-src` attributes from print and
+  Markdown output; only double-quoted values were removed before.
+- Percent-encode the query that `search.js` places in the search URL. A query
+  containing `&` was previously truncated at that character.
+
+### Performance
+
+- Read the recorded `tdOutputFormat` page-store value instead of re-deriving the
+  active output format, and cache the shell configuration and search dialog per
+  language. On a 576-page build this cut `shell/config.html` from 151.9ms to
+  22.1ms, `chrome-enabled.html` from 141.9ms to 49.6ms, and removed 3930 calls
+  to `outputformat.html`, which is retained as a deprecated shim for consumer
+  sites. Generated output is byte-identical.
+- Case-fold search fields once when the engine is created rather than on every
+  keystroke. A CJK query previously re-allocated a lowercase copy of the whole
+  corpus per character typed; on an 800-document corpus this is 3.44ms to
+  0.34ms per keystroke.
+- Drop jQuery and the superseded `offline-search.js` runtime, which the Command
+  Palette replaced. A typical documentation page on the project site went from
+  755,512 to 667,729 bytes of CSS and JavaScript.
+
+### Removed
+
+- Remove `assets/js/offline-search.js`. The Command Palette replaced it and the
+  runtime-isolation checks already asserted that it must not be bundled.
 
 ## [0.2.1] - 2026-08-10
 
@@ -141,7 +200,8 @@ All notable changes to OINK are documented here. The project follows
   responsive shell rails, improved footer/hero/blog layouts, and accessibility
   repairs.
 
-[Unreleased]: https://github.com/pgsty/oink/compare/v0.2.1...HEAD
+[Unreleased]: https://github.com/pgsty/oink/compare/v0.3.0...HEAD
+[0.3.0]: https://github.com/pgsty/oink/compare/v0.2.1...v0.3.0
 [0.2.1]: https://github.com/pgsty/oink/compare/v0.2.0...v0.2.1
 [0.2.0]: https://github.com/pgsty/oink/compare/v0.1.0...v0.2.0
 [0.1.0]: https://github.com/pgsty/oink/releases/tag/v0.1.0

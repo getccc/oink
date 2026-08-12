@@ -1,5 +1,11 @@
 # Typography tokens
 
+Status: released in OINK 0.3.0
+
+Scope: typography only. Semantic colour, surface, radius, shadow, density, and
+appearance presets are not part of this interface yet; see the "Scope" section
+below.
+
 OINK exposes font choices as CSS custom properties so a consuming site can
 change typography without copying component selectors. Hugo Extended still
 performs the only asset build: this interface adds no Node.js, npm, PostCSS,

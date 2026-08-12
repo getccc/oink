@@ -1,6 +1,6 @@
 # OINK PRD 4 migration and configuration reference
 
-Status: **unreleased development documentation**
+Status: released in OINK 0.3.0
 
 This reference describes the implementation tracked by
 [pgsty/oink#11](https://github.com/pgsty/oink/issues/11). It is not a statement
@@ -13,10 +13,9 @@ The normative design decisions remain in the
 
 ## Release status {#release-status}
 
-PRD 4 is implemented on a development branch and is not yet released. Keep
-configuration changes on a matching consumer branch until all release gates
-are complete. Do not copy an example into a production site pinned to an older
-tag and assume the older theme will understand it.
+PRD 4 shipped in OINK 0.3.0. A consuming site can adopt the configuration in
+this guide once it pins that tag or newer. Do not copy an example into a site
+still pinned to an older tag and assume the older theme will understand it.
 
 The release sequence is:
 
@@ -467,5 +466,5 @@ publication, consumer deployment, and hosted availability are distinct gates.
 - [ ] Print and search-disabled pages omit Palette runtime.
 - [ ] A network trace confirms no default query or telemetry request.
 - [ ] Hosted keyboard and screen-reader smoke tests pass.
-- [ ] Only after every preceding gate is complete may published docs remove
-      the unreleased warning.
+- [ ] Only after every preceding gate is complete may a consuming site announce
+      these features as available to its readers.

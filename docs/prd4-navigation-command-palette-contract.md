@@ -1,6 +1,6 @@
 # PRD 4 navigation and Command Palette contract
 
-Status: implemented on the development branch; not yet released
+Status: released in OINK 0.3.0
 
 Contract version: 1
 
