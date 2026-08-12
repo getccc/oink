@@ -45,7 +45,7 @@
     ) -}}
   {{- end -}}
 {{- end -}}
-{{- $shellConfig := partial "shell/config.html" $p -}}
+{{- $shellConfig := partialCached "shell/config.html" $p $p.Site.Language.Lang -}}
 {{- $projectRepo := $shellConfig.projectRepo | default "" -}}
 {{- $pageOnly := dict "page" $pagePlacement "palette" true -}}
 {{- $paletteOnly := dict "page" false "palette" true -}}

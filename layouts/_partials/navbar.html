@@ -1,4 +1,4 @@
-{{- $config := partial "shell/config.html" . -}}
+{{- $config := partialCached "shell/config.html" . .Site.Language.Lang -}}
 {{- $darkMode := partialCached "dark-mode-config.html" "dark-mode-global" -}}
 {{- $targets := partial "language-targets.html" . -}}
 {{- $localSearch := partial "shell/search-enabled.html" . -}}

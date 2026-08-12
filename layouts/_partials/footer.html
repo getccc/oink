@@ -2,7 +2,7 @@
        regions of the same site footer; emitting each as its own <footer> gave
        the home page two contentinfo landmarks. */ -}}
 {{- $home := partial "home-data.html" . -}}
-{{- $config := partial "shell/config.html" . -}}
+{{- $config := partialCached "shell/config.html" . .Site.Language.Lang -}}
 {{- $landing := and .IsHome $home.footer -}}
 {{- if $landing -}}
 <footer class="d-print-none">

@@ -1,4 +1,4 @@
-{{- $config := partial "shell/config.html" . -}}
+{{- $config := partialCached "shell/config.html" . .Site.Language.Lang -}}
 {{- $hasAlgolia := and .Site.Params.search (isset .Site.Params.search "algolia") -}}
 {{- $hasOnlineSearch := or .Site.Params.gcs_engine_id $hasAlgolia -}}
 <div class="td-shell-sidebar__panel">

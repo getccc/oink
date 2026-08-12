@@ -32,10 +32,18 @@ def main() -> int:
         coordinator = read("assets/js/surface-coordinator.js")
         base = read("assets/js/base.js")
 
+        # The predicate must combine the site opt-in, the shell surface, and a
+        # print exclusion. How the active format is obtained is an
+        # implementation detail: either the deprecated outputformat partial or
+        # the tdOutputFormat page-store key that every baseof template sets.
+        resolves_format = (
+            'partial "outputformat.html"' in search_enabled
+            or '"tdOutputFormat"' in search_enabled
+        )
         require(
             '.Site.Params.offlineSearch' in search_enabled
             and 'partial "shell/chrome-enabled.html"' in search_enabled
-            and 'partial "outputformat.html"' in search_enabled
+            and resolves_format
             and '(ne $format "print")' in search_enabled,
             "search-enabled.html is not the complete capability predicate",
         )

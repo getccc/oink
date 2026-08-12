@@ -51,7 +51,9 @@
 <link rel="{{ .Rel }}" type="{{ .MediaType.Type }}" href="{{ .Permalink | safeURL }}">
 {{ end -}}
 
-{{ $outputFormat := partial "outputformat.html" . -}}
+{{/* Every baseof template records the format in the page store before head is
+rendered, so read that instead of re-deriving it from the output-format lists. */ -}}
+{{ $outputFormat := lower (.Store.Get "tdOutputFormat" | default "html") -}}
 {{ if and hugo.IsProduction (ne $outputFormat "print") (ne .Site.Language.Name "xx") -}}
 <meta name="robots" content="index, follow">
 {{ else -}}

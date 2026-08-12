@@ -2,7 +2,7 @@
 {{- $cacheSidebar := ge (len .Site.Pages) $sidebarCacheLimit -}}
 {{- $sidebarRoot := cond .Site.Params.ui.sidebar_root_enabled .Site.Home .FirstSection -}}
 {{- $navRoot := $sidebarRoot -}}
-{{- $config := partial "shell/config.html" . -}}
+{{- $config := partialCached "shell/config.html" . .Site.Language.Lang -}}
 {{- $iconPolicy := partial "shell/sidebar-icon-policy.html" . -}}
 
 {{- if .Site.Params.ui.sidebar_root_enabled -}}

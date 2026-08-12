@@ -176,7 +176,7 @@ window.markmap = {
     {{- with $swaggerPreset.Data.Integrity }} integrity="{{ . }}" crossorigin="anonymous"{{ end }}></script>
 {{ end -}}
 
-{{ if $localSearch }}{{ partial "shell/search-dialog.html" . }}{{ end -}}
+{{ if $localSearch }}{{ partialCached "shell/search-dialog.html" . .Site.Language.Lang $localSearch }}{{ end -}}
 {{- if ne (lower (.Page.Store.Get "tdOutputFormat" | default "html")) "markdown" }}
 <script type="application/json" id="oink-action-manifest">{{ partial "actions/manifest.html" . | jsonify | safeJS }}</script>
 {{- end }}

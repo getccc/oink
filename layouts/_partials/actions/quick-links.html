@@ -1,7 +1,7 @@
 {{- /* Resolve the same configured top-level Hugo Menu entries used by the
      shell utility rail into inert Palette rows. */ -}}
 {{- $p := . -}}
-{{- $config := partial "shell/config.html" $p -}}
+{{- $config := partialCached "shell/config.html" $p $p.Site.Language.Lang -}}
 {{- $baseURL := urls.Parse $p.Site.BaseURL -}}
 {{- $links := slice -}}
 {{- range $p.Site.Menus.main -}}

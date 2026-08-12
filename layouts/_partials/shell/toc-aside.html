@@ -5,7 +5,7 @@
 {{- $p := .page -}}
 {{- $hasToc := .hasToc -}}
 {{- $rssURL := .rssURL | default "" -}}
-{{- $config := partial "shell/config.html" $p -}}
+{{- $config := partialCached "shell/config.html" $p $p.Site.Language.Lang -}}
 {{- $baseURL := urls.Parse $p.Site.BaseURL -}}
 {{- $isDocs := eq $p.Section ($p.Site.Params.ui.docs_section | default "docs") -}}
 <aside class="td-shell-toc d-print-none" aria-label="{{ T "toc_on_this_page" }}">

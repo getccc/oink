@@ -4,7 +4,7 @@
 {{- if .Site.Params.ui.sidebar_root_menu -}}
 {{- $roots := where .Site.Pages "Params.sidebar_root_for" "self" -}}
 {{- if gt (len $roots) 0 -}}
-  {{- $config := partial "shell/config.html" . -}}
+  {{- $config := partialCached "shell/config.html" . .Site.Language.Lang -}}
   {{- $docsRoot := .Site.GetPage (printf "/%s" $config.docsSection) -}}
   {{- $entries := slice -}}
   {{- with $docsRoot }}{{ $entries = $entries | append . }}{{ end -}}

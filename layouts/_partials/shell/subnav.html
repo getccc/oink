@@ -1,4 +1,4 @@
-{{- $config := partial "shell/config.html" . -}}
+{{- $config := partialCached "shell/config.html" . .Site.Language.Lang -}}
 <header class="td-shell-subnav d-md-none d-print-none">
   <a class="td-shell-subnav__brand" href="{{ .Site.Home.RelPermalink }}" aria-label="{{ $config.brandName }} home">
     {{- if $config.wordmarkURL }}

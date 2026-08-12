@@ -1,4 +1,12 @@
-{{/* Return the current page outputformat */}}
+{{/* Return the current page outputformat.
+
+Deprecated: the theme now records the active format in the page store under
+`tdOutputFormat` (set by every baseof template) and reads that instead. This
+partial is retained only so consumer sites that call it keep working; it will
+be removed in a future release. Prefer:
+
+    {{ $format := lower (.Store.Get "tdOutputFormat" | default "html") }}
+*/}}
 {{ $alts := newScratch }}
 {{ $format := "unknown" }}
 {{ range .AlternativeOutputFormats }}
