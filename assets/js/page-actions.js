@@ -22,6 +22,11 @@
     }, 1400);
   }
 
+  function syncUrl(control, id) {
+    var url = window.OinkActions.resolveUrl(id);
+    if (url) control.setAttribute('href', url);
+  }
+
   document.querySelectorAll('[data-oink-action]').forEach(function (control) {
     var id = control.dataset.oinkAction;
     var action = window.OinkActions.get(id);
@@ -45,6 +50,13 @@
       control.addEventListener('click', function () {
         window.OinkActions.run(id, { source: 'page' });
       });
+    } else if (
+      (id === 'open_chatgpt' || id === 'open_claude') &&
+      action.kind === 'url' &&
+      control.tagName === 'A'
+    ) {
+      syncUrl(control, id);
+      control.addEventListener('click', function () { syncUrl(control, id); });
     }
   });
 })();

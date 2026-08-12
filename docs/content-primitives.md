@@ -138,7 +138,7 @@ The existing Page Store key `tdOutputFormat` is authoritative:
 | --- | --- |
 | `html` | Normal interactive HTML page. |
 | `print` | Section print output. |
-| `markdown` | Pure Markdown output such as Copy Markdown. |
+| `markdown` | Pure Markdown output such as Copy text. |
 | `rss` | Static HTML embedded in a feed. |
 
 Base templates set the key before rendering content. A shortcode may default

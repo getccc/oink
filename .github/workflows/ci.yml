@@ -46,6 +46,9 @@ jobs:
       - name: Check translation key parity
         run: python3 scripts/check-i18n.py
 
+      - name: Verify vendored dependency inventory
+        run: python3 scripts/check-vendor.py
+
       - name: Check typography token boundaries
         run: python3 scripts/check-font-tokens.py
 

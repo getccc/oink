@@ -1,6 +1,6 @@
 # PRD 4 navigation and Command Palette contract
 
-Status: released in OINK 0.3.0
+Version: included in OINK 0.3.0
 
 Contract version: 1
 
@@ -102,14 +102,15 @@ but cannot remove the measured budget gate.
 
 ## Command registry contract
 
-The built-in action IDs are copy_markdown, view_markdown, edit_page,
-create_issue, print, switch_theme, switch_language, switch_version, and
-open_github.
+The built-in action IDs are copy_markdown, open_chatgpt, open_claude,
+view_markdown, view_history, edit_page, create_issue, print, switch_theme,
+switch_language, switch_version, and open_github.
 
 Corresponding PRD 4 page and Palette actions share internal descriptors and URL
-resolution. Copy Markdown and Print also share their registry executors;
-theme controls call the same theme application function. Historical rail-only
-compatibility actions outside the PRD 4 built-in set remain out of scope.
+resolution. Copy text and Print also share their registry executors; assistant
+actions resolve the browser URL at activation time, and theme controls call the
+same theme application function. Historical rail-only compatibility actions
+outside the PRD 4 built-in set remain out of scope.
 Availability, title, description, icon, keywords, execution kind, URL, and
 disabled reason are data rather than duplicated behavior.
 
@@ -131,9 +132,11 @@ a second modal.
 
 The first version does not add @docs or @blog scopes.
 
-Cmd/Ctrl-K, keyboard result navigation, Escape, focus restoration, live-region
-announcements, reduced motion, and mobile interaction remain part of the
-existing dialog's accessibility contract.
+Cmd/Ctrl-K, `/` outside editable controls, keyboard result navigation, Escape,
+focus restoration, live-region announcements, reduced motion, and mobile
+interaction remain part of the existing dialog's accessibility contract. The
+slash shortcut opens directly in command-only mode and yields to inputs,
+textareas, selects, and contenteditable regions.
 
 ## Runtime contract
 
@@ -146,7 +149,9 @@ The local Palette capability is true only when all of these conditions hold:
 When the capability is false, the build omits the dialog, local index, Lunr,
 and Palette controller. Print follows the same omission rule.
 
-No default telemetry request is allowed.
+No default telemetry request or assistant URL handoff is allowed. Built-in
+assistant links are an explicit site opt-in because activation sends the full
+browser URL, including query and fragment, to the selected third party.
 
 The runtime-isolation implementation in
 [pgsty/oink#13](https://github.com/pgsty/oink/issues/13) makes the capability
@@ -156,9 +161,10 @@ and the Palette controller.
 ## Compatibility and non-goals
 
 Existing flat Hugo menus remain valid without configuration changes. PRD 4
-does not include AI or semantic search, a remote search replacement, browsing
-history, personalized recommendations, arbitrary-depth flyouts, a second
-navigation authority, or default query upload.
+does not include AI-powered or semantic search, a remote search replacement,
+personalized recommendations, arbitrary-depth flyouts, a second navigation
+authority, or default query upload. Optional assistant handoff links are page
+actions, not search or autonomous AI behavior.
 
 ## Characterization matrix
 

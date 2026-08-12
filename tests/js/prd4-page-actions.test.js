@@ -5,12 +5,14 @@ const fs = require('node:fs');
 const path = require('node:path');
 const vm = require('node:vm');
 
-function control(id, root) {
+function control(id, root, tagName = 'BUTTON') {
   const listeners = new Map();
   const label = { textContent: 'Copy Markdown', dataset: {} };
   const classes = new Set();
+  const attributes = new Map();
   return {
     dataset: { oinkAction: id },
+    tagName,
     listeners,
     label,
     classList: {
@@ -27,6 +29,8 @@ function control(id, root) {
     addEventListener(name, handler, options) {
       listeners.set(name, { handler, options });
     },
+    setAttribute(name, value) { attributes.set(name, String(value)); },
+    getAttribute(name) { return attributes.get(name) || null; },
   };
 }
 
@@ -40,16 +44,24 @@ function control(id, root) {
   };
   const copy = control('copy_markdown', root);
   const print = control('print', root);
-  const events = { preload: [], run: [], timers: [] };
+  const chatgpt = control('open_chatgpt', root, 'A');
+  const claude = control('open_claude', root, 'A');
+  const events = { preload: [], run: [], resolve: [], timers: [], current: 'initial' };
   const actions = {
     copy_markdown: { id: 'copy_markdown', available: true, url: '/page.md' },
     print: { id: 'print', available: true },
+    open_chatgpt: { id: 'open_chatgpt', kind: 'url', available: true },
+    open_claude: { id: 'open_claude', kind: 'url', available: true },
   };
   const fakeWindow = {
     OinkActions: {
       get(id) { return actions[id] || null; },
       preloadMarkdown(url) { events.preload.push(url); return Promise.resolve(); },
       run(id, context) { events.run.push({ id, context }); return Promise.resolve(); },
+      resolveUrl(id) {
+        events.resolve.push({ id, current: events.current });
+        return `https://assistant.example/${id}?page=${events.current}`;
+      },
     },
     requestAnimationFrame(callback) { callback(); },
     setTimeout(callback) { events.timers.push(callback); },
@@ -57,7 +69,7 @@ function control(id, root) {
   const fakeDocument = {
     querySelectorAll(selector) {
       assert.equal(selector, '[data-oink-action]');
-      return [copy, print];
+      return [copy, print, chatgpt, claude];
     },
   };
   const source = fs.readFileSync(
@@ -69,6 +81,21 @@ function control(id, root) {
     document: fakeDocument,
     Promise,
   });
+
+  assert.equal(
+    chatgpt.getAttribute('href'),
+    'https://assistant.example/open_chatgpt?page=initial',
+  );
+  assert.equal(
+    claude.getAttribute('href'),
+    'https://assistant.example/open_claude?page=initial',
+  );
+  events.current = 'query-and-hash';
+  chatgpt.listeners.get('click').handler();
+  assert.equal(
+    chatgpt.getAttribute('href'),
+    'https://assistant.example/open_chatgpt?page=query-and-hash',
+  );
 
   copy.listeners.get('pointerenter').handler();
   copy.listeners.get('focus').handler();
@@ -90,6 +117,11 @@ function control(id, root) {
   print.listeners.get('click').handler();
   assert.equal(events.run[1].id, 'print');
   assert.equal(events.run[1].context.source, 'page');
+  assert.deepEqual(events.resolve, [
+    { id: 'open_chatgpt', current: 'initial' },
+    { id: 'open_claude', current: 'initial' },
+    { id: 'open_chatgpt', current: 'query-and-hash' },
+  ]);
 
   console.log('PRD 4 page action DOM binding checks passed');
 })().catch((error) => {

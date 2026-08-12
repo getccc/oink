@@ -1,7 +1,12 @@
 {
   "schema": 1,
-  "generated": "2026-08-10",
+  "generated": "2026-08-12",
   "hash": "sha256",
+  "trees": [
+    {"path": "assets/third_party", "files": 228, "sha256": "794a5f82ea3a650bba7341a8ef0def0c408fc47d0701ad4fc3c04f714853e5a4"},
+    {"path": "assets/js/third_party", "files": 1, "sha256": "ac21e64c5c17db79d37d0a3149cdc4489879e730e3cb360180eb8cf7b0041d27"},
+    {"path": "static/webfonts", "files": 30, "sha256": "41e4fc358e77d4d6e542c97db9a71cfe475911c5a63ade9998f6c7f7db3e2738"}
+  ],
   "dependencies": [
     {
       "name": "bootstrap",

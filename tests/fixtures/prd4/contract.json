@@ -80,7 +80,10 @@
   "commands": {
     "builtin_action_ids": [
       "copy_markdown",
+      "open_chatgpt",
+      "open_claude",
       "view_markdown",
+      "view_history",
       "edit_page",
       "create_issue",
       "print",

@@ -7,11 +7,11 @@
 {{ $p := . -}}
 {{ $actionContext := partial "actions/context.html" $p -}}
 {{ $enabled := $actionContext.pagePlacement -}}
+{{ $assistantLinks := $actionContext.assistantLinks -}}
 
 {{ if $enabled -}}
 {{ $actionURLs := $actionContext.urls -}}
 {{ $markdownURL := $actionURLs.markdown -}}
-{{ $llmPromptTemplate := T "ui_open_in_prompt" -}}
 {{ $byID := $actionContext.byId -}}
 {{ $chatgptURL := $byID.open_chatgpt.url -}}
 {{ $claudeURL := $byID.open_claude.url -}}
@@ -25,8 +25,8 @@
 {{ $customLinks := slice -}}
 {{ with $p.Site.Params.ui.page_context_menu.links }}{{ $customLinks = . }}{{ end -}}
 
-<div class="td-page-meta" data-td-page-context data-td-page-open-in-prompt="{{ $llmPromptTemplate }}"
-  data-t-copied="{{ T "ui_copy_success" }}" data-t-copy-error="{{ T "ui_copy_error" }}">
+<div class="td-page-meta" data-td-page-context data-t-copied="{{ T "ui_copy_success" }}"
+  data-t-copy-error="{{ T "ui_copy_error" }}">
   {{- with $markdownURL }}
   <button type="button" class="td-page-meta__action" data-oink-action="copy_markdown" data-url="{{ . }}">
     <span class="td-page-meta__icon">{{ partialCached "shell/icon.html" "copy" "copy" }}</span>
@@ -34,12 +34,14 @@
     <span data-td-page-copy-label>{{ T "ui_copy_markdown" }}</span>
   </button>
   {{- end }}
+  {{- if $assistantLinks }}
   <a class="td-page-meta__action" data-oink-action="open_chatgpt" href="{{ $chatgptURL | safeURL }}" data-td-page-open-in="chatgpt" target="_blank" rel="noopener noreferrer">
     {{ partialCached "shell/icon.html" "chatgpt" "chatgpt" }}<span>{{ T "ui_open_in_chatgpt" }}</span>
   </a>
   <a class="td-page-meta__action" data-oink-action="open_claude" href="{{ $claudeURL | safeURL }}" data-td-page-open-in="claude" target="_blank" rel="noopener noreferrer">
     {{ partialCached "shell/icon.html" "claude" "claude" }}<span>{{ T "ui_open_in_claude" }}</span>
   </a>
+  {{- end }}
   {{- with $markdownURL }}
   <a class="td-page-meta__action td-page-meta__markdown" data-oink-action="view_markdown" href="{{ . }}" target="_blank" rel="noopener">
     {{ partialCached "shell/icon.html" "markdown" "markdown" }}<span>{{ T "post_view_markdown" }}</span>

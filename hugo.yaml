@@ -47,9 +47,12 @@ params:
     sidebar_item_overflow: ellipsis
     page_context_menu:
       enable: true
-      # Optional external actions, including AI tools. URLs may use the
-      # placeholders {url}, {title}, and {markdown_url}. No links are enabled
-      # by default, so page content is never sent to a third party implicitly.
+      # Opt in before exposing the built-in ChatGPT and Claude actions. When a
+      # reader activates one, the full browser URL (including query and hash)
+      # is sent to that third party; the page body is not uploaded.
+      assistant_links: false
+      # Optional external actions may use the placeholders {url}, {title}, and
+      # {markdown_url}. No custom links are enabled by default.
       links: []
     ul_show: 2
     scrollSpy:

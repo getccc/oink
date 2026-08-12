@@ -10,7 +10,10 @@
 
   var BUILTINS = new Set([
     'copy_markdown',
+    'open_chatgpt',
+    'open_claude',
     'view_markdown',
+    'view_history',
     'edit_page',
     'create_issue',
     'print',
@@ -155,9 +158,28 @@
         : fallbackCopy(text);
     }
 
-    function openUrl(action, value) {
+    function resolveUrl(actionOrId, value) {
+      var action = typeof actionOrId === 'string' ? get(actionOrId) : actionOrId;
+      if (!action || action.available === false) return null;
+      if (action.id === 'open_chatgpt' || action.id === 'open_claude') {
+        if (
+          typeof action.promptTemplate !== 'string' ||
+          action.promptTemplate.indexOf('%s') < 0
+        ) return null;
+        var prompt = action.promptTemplate.replace('%s', function () {
+          return windowObject.location.href;
+        });
+        var assistantUrl = action.id === 'open_chatgpt'
+          ? 'https://chatgpt.com/?hints=search&prompt=' + encodeURIComponent(prompt)
+          : 'https://claude.ai/new?q=' + encodeURIComponent(prompt);
+        return safeUrl(assistantUrl, windowObject.location.href);
+      }
       var target = value && value.url ? value.url : action.url;
-      var url = safeUrl(target, windowObject.location.href);
+      return safeUrl(target, windowObject.location.href);
+    }
+
+    function openUrl(action, value) {
+      var url = resolveUrl(action, value);
       if (!url) return Promise.reject(failure('unsafe_url', action));
       if (action.target === 'blank' || (value && value.target === 'blank')) {
         windowObject.open(url, '_blank', 'noopener,noreferrer');
@@ -242,6 +264,7 @@
       registerExecutor: registerExecutor,
       preloadMarkdown: fetchMarkdown,
       invalidateMarkdown: invalidateMarkdown,
+      resolveUrl: function (id, value) { return resolveUrl(id, value); },
       safeUrl: function (value) { return safeUrl(value, windowObject.location.href); },
     });
   }

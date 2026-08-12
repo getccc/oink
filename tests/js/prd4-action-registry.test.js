@@ -9,7 +9,10 @@ const registryModule = require(
 
 const builtinIds = [
   'copy_markdown',
+  'open_chatgpt',
+  'open_claude',
   'view_markdown',
+  'view_history',
   'edit_page',
   'create_issue',
   'print',
@@ -99,34 +102,49 @@ function harness({ actions, commands = [], fetchImpl, clipboard = true } = {}) {
     fetch: fetchApi,
     manifest: { version: 1, actions: actions || [], commands },
   });
-  return { registry, events };
+  return { registry, events, window: fakeWindow };
 }
 
 (async () => {
   const actions = builtinIds.map((id) => descriptor(id));
-  actions[0] = descriptor('copy_markdown', {
+  function replace(id, values) {
+    actions[builtinIds.indexOf(id)] = descriptor(id, values);
+  }
+  replace('copy_markdown', {
     kind: 'copy',
     url: '/preview/en/docs/page/index.md',
   });
-  actions[1] = descriptor('view_markdown', {
+  replace('open_chatgpt', {
+    kind: 'url',
+    url: 'https://chatgpt.com/?prompt=build-time',
+    promptTemplate: 'Read from %s so I can ask questions about it.',
+    target: 'blank',
+  });
+  replace('open_claude', {
+    kind: 'url',
+    url: 'https://claude.ai/new?q=build-time',
+    promptTemplate: 'Read from %s so I can ask questions about it.',
+    target: 'blank',
+  });
+  replace('view_markdown', {
     kind: 'url',
     url: '/preview/en/docs/page/index.md',
     target: 'blank',
   });
-  actions[2] = descriptor('edit_page', {
+  replace('edit_page', {
     kind: 'url',
     available: false,
     disabledReason: 'Repository unavailable',
   });
-  actions[5] = descriptor('switch_theme', {
+  replace('switch_theme', {
     kind: 'choice',
     options: [{ id: 'dark', title: 'Dark', value: 'dark', available: true }],
   });
-  actions[6] = descriptor('switch_language', {
+  replace('switch_language', {
     kind: 'choice',
     options: [{ id: 'zh', title: '中文', url: '/zh/', available: true }],
   });
-  actions[7] = descriptor('switch_version', {
+  replace('switch_version', {
     kind: 'choice',
     options: [{ id: 'v2', title: 'Version 2', url: 'https://v2.example.com/', available: true }],
   });
@@ -144,7 +162,7 @@ function harness({ actions, commands = [], fetchImpl, clipboard = true } = {}) {
     { id: 'unsafe', kind: 'url', url: 'javascript:alert(1)' },
     { id: 'unknown', kind: 'builtin', action: 'not_real' },
   ];
-  const { registry, events } = harness({ actions, commands });
+  const { registry, events, window: fakeWindow } = harness({ actions, commands });
 
   assert.deepEqual(registry.list().map((action) => action.id), builtinIds);
   assert.deepEqual(
@@ -174,11 +192,27 @@ function harness({ actions, commands = [], fetchImpl, clipboard = true } = {}) {
     target: '_blank',
     features: 'noopener,noreferrer',
   });
+  fakeWindow.location.href =
+    'https://example.org/preview/en/docs/page/?mode=review&marker=$&#current-heading';
+  const expectedPrompt =
+    'Read from https://example.org/preview/en/docs/page/?mode=review&marker=$&#current-heading ' +
+    'so I can ask questions about it.';
+  const chatgptUrl = new URL(registry.resolveUrl('open_chatgpt'));
+  assert.equal(chatgptUrl.origin, 'https://chatgpt.com');
+  assert.equal(chatgptUrl.searchParams.get('hints'), 'search');
+  assert.equal(chatgptUrl.searchParams.get('prompt'), expectedPrompt);
+  const claudeUrl = new URL(registry.resolveUrl('open_claude'));
+  assert.equal(claudeUrl.origin, 'https://claude.ai');
+  assert.equal(claudeUrl.searchParams.get('q'), expectedPrompt);
+  await registry.run('open_chatgpt');
+  await registry.run('open_claude');
+  assert.equal(events.opened[1].url, chatgptUrl.href);
+  assert.equal(events.opened[2].url, claudeUrl.href);
   await registry.run('print');
   await registry.runCommand('print_now');
   assert.equal(events.printed, 2);
   await registry.runCommand('status');
-  assert.equal(events.opened[1].url, 'https://status.example.com/');
+  assert.equal(events.opened[3].url, 'https://status.example.com/');
   for (const [command, action] of [
     ['theme_now', 'switch_theme'],
     ['language_now', 'switch_language'],
@@ -195,6 +229,11 @@ function harness({ actions, commands = [], fetchImpl, clipboard = true } = {}) {
     assert.equal(error.message, 'Repository unavailable');
     return true;
   });
+  assert.equal(
+    registry.resolveUrl('edit_page'),
+    null,
+    'unavailable action resolved a destination URL',
+  );
   await assert.rejects(registry.run('not_real'), { code: 'unsupported_action' });
   await assert.rejects(registry.runCommand('unsafe'), {
     code: 'unsupported_command',
@@ -247,6 +286,33 @@ function harness({ actions, commands = [], fetchImpl, clipboard = true } = {}) {
   await fallbackHarness.registry.run('copy_markdown');
   assert.deepEqual(fallbackHarness.events.execCommands, ['copy']);
   assert.deepEqual(fallbackHarness.events.fallbackText, ['# Page']);
+
+  const malformedAssistant = harness({
+    actions: [descriptor('open_chatgpt', {
+      kind: 'url',
+      url: 'https://chatgpt.com/?prompt=stale',
+      target: 'blank',
+    })],
+  });
+  assert.equal(malformedAssistant.registry.resolveUrl('open_chatgpt'), null);
+  await assert.rejects(malformedAssistant.registry.run('open_chatgpt'), {
+    code: 'unsafe_url',
+  });
+
+  const disabledAssistant = harness({
+    actions: [descriptor('open_chatgpt', {
+      kind: 'url',
+      available: false,
+      disabledReason: 'Site policy disabled assistant handoff',
+      url: '',
+      promptTemplate: 'Read from %s so I can ask questions about it.',
+      target: 'blank',
+    })],
+  });
+  assert.equal(disabledAssistant.registry.resolveUrl('open_chatgpt'), null);
+  await assert.rejects(disabledAssistant.registry.run('open_chatgpt'), {
+    code: 'unavailable',
+  });
 
   console.log('PRD 4 action registry behavior checks passed');
 })().catch((error) => {

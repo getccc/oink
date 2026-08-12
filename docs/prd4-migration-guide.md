@@ -1,6 +1,6 @@
 # OINK PRD 4 migration and configuration reference
 
-Status: released in OINK 0.3.0
+Version: included in OINK 0.3.0
 
 This reference describes the implementation tracked by
 [pgsty/oink#11](https://github.com/pgsty/oink/issues/11). It is not a statement
@@ -13,9 +13,10 @@ The normative design decisions remain in the
 
 ## Release status {#release-status}
 
-PRD 4 shipped in OINK 0.3.0. A consuming site can adopt the configuration in
-this guide once it pins that tag or newer. Do not copy an example into a site
-still pinned to an older tag and assume the older theme will understand it.
+The implementation in this checkout is assigned to OINK 0.3.0. A consuming
+site can adopt the configuration in this guide once the public tag resolves and
+the site pins that tag or newer. Do not copy an example into a site still pinned
+to an older tag and assume the older theme will understand it.
 
 The release sequence is:
 
@@ -268,7 +269,10 @@ session.
 | ID | Kind | Typical availability |
 | --- | --- | --- |
 | `copy_markdown` | Invoke | Current page has a Markdown output. |
+| `open_chatgpt` | URL | `page_context_menu.assistant_links` is true; uses the current browser URL at activation. |
+| `open_claude` | URL | `page_context_menu.assistant_links` is true; uses the current browser URL at activation. |
 | `view_markdown` | URL | Current page has a Markdown output. |
+| `view_history` | URL | Repository path can be resolved from `github_repo`. |
 | `edit_page` | URL | Repository/edit URL can be resolved. |
 | `create_issue` | URL | Repository is configured. |
 | `print` | Invoke | Interactive HTML output. |
@@ -278,11 +282,28 @@ session.
 | `open_github` | URL | Project repository is configured. |
 
 The corresponding PRD 4 page and Palette actions share descriptors and URL
-resolution. Copy Markdown shares one pending/success cache, Print calls the
-shared print executor, and theme controls call the same theme application
-function. PRD 4 URL actions remain real anchors whose href matches the shared
-descriptor, preserving no-JavaScript navigation. Historical rail-only actions
-outside the PRD 4 built-in set remain separate compatibility features.
+resolution. Copy text shares one pending/success cache, Print calls the shared
+print executor, and theme controls call the same theme application function.
+The assistant actions start with real no-JavaScript fallback anchors, then
+resolve the deployed host, query string, and fragment from the browser URL at
+activation time. Other PRD 4 URL actions keep an href that matches the shared
+descriptor. Historical rail-only actions outside the PRD 4 built-in set remain
+separate compatibility features.
+
+Assistant links are disabled by default because activation sends the full
+browser URL to a third party. A site that opts in must avoid secrets in query
+strings and fragments, disclose the outbound boundary, and may override the
+choice per page with boolean `assistant_links` front matter.
+
+```yaml
+params:
+  ui:
+    page_context_menu:
+      assistant_links: true
+```
+
+To disable the handoff on a sensitive page while leaving the site-wide opt-in
+enabled, set `assistant_links: false` in that page's front matter.
 
 ### Custom commands and localization {#custom-commands-and-localization}
 
@@ -362,6 +383,7 @@ link semantics.
 | Key or action | Result |
 | --- | --- |
 | Cmd/Ctrl-K | Open or close the Palette. |
+| `/` outside an editable control | Open the Palette directly in command mode. |
 | ArrowUp/ArrowDown | Move the active listbox option. |
 | Cmd/Ctrl-Home or Cmd/Ctrl-End | Move to the first or last option. |
 | Enter | Activate the current option once. |
@@ -392,9 +414,10 @@ exist because progressive page actions are independent of search.
 
 Empty and `>` modes do not fetch the index. Normal text fetches only the active
 language's same-origin generated JSON. OINK sends no default telemetry, query
-upload, analytics event, or remote-search request. A consumer's explicitly
-configured analytics, comments, hosted search, or external command URL is a
-separate site policy and must be disclosed by that site.
+upload, analytics event, remote-search request, or assistant URL. A consumer's
+explicitly enabled assistant links, analytics, comments, hosted search, or
+external command URL are separate site policy and must be disclosed by that
+site.
 
 ## Compatibility window {#compatibility-window}
 
@@ -405,6 +428,8 @@ separate site policy and must be disclosed by that site.
 - `exclude_search` and `excludeSearch` remain search-exclusion aliases
   throughout 0.x and can be removed no earlier than 1.0.
 - Cmd/Ctrl-K stays the Palette shortcut and ordinary text remains page search.
+- `/` opens command mode only when focus is outside an input, textarea, select,
+  or contenteditable region.
 - No migration adds a second navigation authority or default network service.
 
 Any alias removal or default change requires a future major-release migration
@@ -444,8 +469,8 @@ evidence that a later delivery layer passed.
 
 | Gate | Current evidence | Release state |
 | --- | --- | --- |
-| Contract/runtime/navigation/search/actions/Palette | Focused results in [theme #18](https://github.com/pgsty/oink/issues/18#issuecomment-5263306916) and owning issues | Local pass; merge CI pending |
-| Consumer root/subpath, EN/ZH, browser and axe | [Consumer #3 evidence](https://github.com/pgsty/oink.pgsty.com/issues/3#issuecomment-5263727126) | Local pass; consumer CI pending |
+| Contract/runtime/navigation/search/actions/Palette | Focused results in [theme #18](https://github.com/pgsty/oink/issues/18#issuecomment-5263306916) and owning issues; rerun for the release candidate | Prior local pass; current candidate must pass again |
+| Consumer root/subpath, EN/ZH, browser and axe | [Consumer #3 evidence](https://github.com/pgsty/oink.pgsty.com/issues/3#issuecomment-5263727126); rerun for the release candidate | Prior local pass; current candidate must pass again |
 | Minimum/current Hugo matrix | [Theme CI workflow](../.github/workflows/ci.yml) | Must pass on the merged commit |
 | Tagged theme artifact | Release page and checksum for the containing tag | Pending |
 | Consumer version pin and deploy | Consumer commit and deployment run | Pending |

@@ -754,39 +754,6 @@
     paint();
   }
 
-  /* ---------------------------------------------------------- pageContext */
-
-  // LLM actions in the TOC rail's action list. Page actions use OinkActions.
-  function initPageContext() {
-    document
-      .querySelectorAll('[data-td-page-context]')
-      .forEach(function (root) {
-        var openInLinks = root.querySelectorAll('[data-td-page-open-in]');
-        var openInPrompt =
-          root.dataset.tdPageOpenInPrompt ||
-          'Read from %s so I can ask questions about it.';
-
-        // Match Nextra's current behavior: use the browser URL at activation
-        // time so the deployed host, query string, and current hash survive.
-        function syncOpenInLink(link) {
-          var service = link.dataset.tdPageOpenIn;
-          var prompt = openInPrompt.replace('%s', window.location.href);
-          var query = encodeURIComponent(prompt);
-          link.href =
-            service === 'chatgpt'
-              ? 'https://chatgpt.com/?hints=search&prompt=' + query
-              : 'https://claude.ai/new?q=' + query;
-        }
-
-        openInLinks.forEach(function (link) {
-          syncOpenInLink(link);
-          link.addEventListener('click', function () {
-            syncOpenInLink(link);
-          });
-        });
-      });
-  }
-
   /* ----------------------------------------------------------------- boot */
 
   initRootMenu();
@@ -801,7 +768,6 @@
   // built where it will actually live.
   initAsideRelocate();
   initToc();
-  initPageContext();
 
   // Restore transitions after the first painted frame.
   window.requestAnimationFrame(function () {

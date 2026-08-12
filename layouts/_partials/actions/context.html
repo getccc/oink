@@ -2,14 +2,29 @@
      construction in Hugo so the page rail and Command Palette share it. */ -}}
 {{- $p := . -}}
 {{- $pagePlacement := true -}}
+{{- $assistantLinks := false -}}
 {{- with $p.Site.Params.ui.page_context_menu -}}
   {{- if reflect.IsMap . -}}
     {{- if isset . "enable" }}{{ $pagePlacement = .enable }}{{ end -}}
+    {{- if isset . "assistant_links" -}}
+      {{- if ne (printf "%T" .assistant_links) "bool" -}}
+        {{- errorf "params.ui.page_context_menu.assistant_links must be a boolean" -}}
+      {{- end -}}
+      {{- $assistantLinks = .assistant_links -}}
+    {{- end -}}
   {{- else -}}
     {{- $pagePlacement = . -}}
   {{- end -}}
 {{- end -}}
 {{- if isset $p.Params "context_menu" }}{{ $pagePlacement = $p.Params.context_menu }}{{ end -}}
+{{- if isset $p.Params "assistant_links" -}}
+  {{- if ne (printf "%T" $p.Params.assistant_links) "bool" -}}
+    {{- errorf "front matter assistant_links must be a boolean at %s" $p.Path -}}
+  {{- end -}}
+  {{- /* Page front matter may narrow the site policy for sensitive URLs, but
+         it cannot opt a site into a third-party handoff on its own. */ -}}
+  {{- $assistantLinks = and $assistantLinks $p.Params.assistant_links -}}
+{{- end -}}
 
 {{- $urls := partial "actions/page-urls.html" $p -}}
 {{- $markdownURL := $urls.markdown -}}
@@ -56,6 +71,10 @@
 {{- $shellConfig := partialCached "shell/config.html" $p $p.Site.Language.Lang -}}
 {{- $projectRepo := $shellConfig.projectRepo | default "" -}}
 {{- $pageOnly := dict "page" $pagePlacement "palette" true -}}
+{{- $assistantPlacements := dict
+  "page" (and $pagePlacement $assistantLinks)
+  "palette" $assistantLinks
+-}}
 {{- $paletteOnly := dict "page" false "palette" true -}}
 {{- $copyTitle := T "ui_copy_markdown" -}}
 {{- $viewTitle := T "post_view_markdown" -}}
@@ -76,12 +95,14 @@
     "target" "self" "placements" $pageOnly "options" (slice))
   (dict "id" "open_chatgpt" "title" $chatgptTitle "description" $chatgptTitle
     "icon" "chatgpt" "keywords" (slice $chatgptTitle $askKeyword "chatgpt" "gpt" "ai" "llm")
-    "kind" "url" "available" true "disabledReason" "" "url" $chatgptURL
-    "target" "blank" "placements" $pageOnly "options" (slice))
+    "kind" "url" "available" $assistantLinks "disabledReason" (cond $assistantLinks "" (printf "%s: %s" $chatgptTitle $unavailable))
+    "url" (cond $assistantLinks $chatgptURL "") "promptTemplate" (T "ui_open_in_prompt")
+    "target" "blank" "placements" $assistantPlacements "options" (slice))
   (dict "id" "open_claude" "title" $claudeTitle "description" $claudeTitle
     "icon" "claude" "keywords" (slice $claudeTitle $askKeyword "claude" "anthropic" "ai" "llm")
-    "kind" "url" "available" true "disabledReason" "" "url" $claudeURL
-    "target" "blank" "placements" $pageOnly "options" (slice))
+    "kind" "url" "available" $assistantLinks "disabledReason" (cond $assistantLinks "" (printf "%s: %s" $claudeTitle $unavailable))
+    "url" (cond $assistantLinks $claudeURL "") "promptTemplate" (T "ui_open_in_prompt")
+    "target" "blank" "placements" $assistantPlacements "options" (slice))
   (dict "id" "view_markdown" "title" $viewTitle "description" $viewTitle
     "icon" "fa-brands fa-markdown" "keywords" (slice $viewTitle "markdown" "source")
     "kind" "url" "available" (ne $markdownURL "") "disabledReason" (cond (ne $markdownURL "") "" (printf "%s: %s" $viewTitle $unavailable)) "url" $markdownURL
@@ -125,4 +146,10 @@
 -}}
 {{- $byID := dict -}}
 {{- range $actions }}{{ $byID = merge $byID (dict .id .) }}{{ end -}}
-{{- return (dict "actions" $actions "byId" $byID "pagePlacement" $pagePlacement "urls" $urls) -}}
+{{- return (dict
+  "actions" $actions
+  "byId" $byID
+  "pagePlacement" $pagePlacement
+  "assistantLinks" $assistantLinks
+  "urls" $urls
+) -}}

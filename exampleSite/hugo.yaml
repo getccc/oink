@@ -16,6 +16,8 @@ params:
   ui:
     quick_links: [docs, blog]
     sidebar_icon_policy: groups
+    page_context_menu:
+      assistant_links: true
     image_zoom:
       enable: true
     feedback:

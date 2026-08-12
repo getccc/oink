@@ -431,6 +431,7 @@ function setup({ controlledAnimationFrame = false } = {}) {
       {
         key: '', metaKey: false, ctrlKey: false, altKey: false,
         isComposing: false, keyCode: 0, target: harness.root,
+        currentTarget: global.document,
         preventDefault() { this.defaultPrevented = true; },
       },
       values,
@@ -450,6 +451,11 @@ function setup({ controlledAnimationFrame = false } = {}) {
   assert.equal(slash.input.selectionStart, 1, 'caret was not placed after the prefix');
 
   slash.controller.close();
+  assert.equal(
+    global.document.activeElement,
+    slash.opener,
+    'slash close did not restore focus to the pre-shortcut element',
+  );
   const field = new Element('input');
   const ignoredField = pressKey(slash, { key: '/', target: field });
   assert.equal(slash.controller.isOpen(), false, 'slash opened while typing in a field');

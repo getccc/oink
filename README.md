@@ -66,11 +66,11 @@ params:
       enable: true
 ```
 
-`markdown` enables Copy Markdown, `LLMS` emits `llms.txt`, and `print` enables
-section print views. Offline search, the theme menu, and native image previews
-are opt-in; the theme supplies their implementation but does not silently
-enable site policy. A page can override Image Zoom with the same nested
-`params.ui.image_zoom.enable` front matter key.
+`markdown` enables Copy text and View source, `LLMS` emits `llms.txt`, and
+`print` enables section print views. Offline search, assistant handoff links,
+the theme menu, and native image previews are opt-in; the theme supplies their
+implementation but does not silently enable site policy. A page can override
+Image Zoom with the same nested `params.ui.image_zoom.enable` front matter key.
 
 Then preview the site:
 
@@ -128,7 +128,7 @@ Theme implementation contracts:
 [Typography tokens](docs/typography-tokens.md) ·
 [PRD 4 contract](docs/prd4-navigation-command-palette-contract.md)
 
-Navigation and Command Palette migration reference, released in 0.3.0:
+Navigation and Command Palette migration reference, included in 0.3.0:
 [English](docs/prd4-migration-guide.md) ·
 [简体中文](docs/prd4-migration-guide.zh.md).
 

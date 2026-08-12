@@ -1,6 +1,6 @@
 # OINK PRD 4 迁移与配置参考
 
-状态：随 OINK 0.3.0 发布
+版本归属：纳入 OINK 0.3.0
 
 本文描述 [pgsty/oink#11](https://github.com/pgsty/oink/issues/11) 跟踪的实现，
 不表示 OINK 最新标签已经包含这些功能。只有当主题改动合并、某个发布标签明确
@@ -12,8 +12,9 @@
 
 ## 发布状态 {#release-status}
 
-PRD 4 已随 OINK 0.3.0 发布。消费站固定到该标签或更新版本后即可采用本文的配置。
-不要把示例复制到仍固定旧标签的生产站点，并假定旧主题能够理解这些配置。
+当前 checkout 中的实现归入 OINK 0.3.0。只有当公开标签能够解析，且消费站固定到
+该标签或更新版本后，才可采用本文的配置。不要把示例复制到仍固定旧标签的生产
+站点，并假定旧主题能够理解这些配置。
 
 发布顺序如下：
 
@@ -250,7 +251,10 @@ front matter 规则覆盖继承值。
 | ID | 类型 | 通常可用条件 |
 | --- | --- | --- |
 | `copy_markdown` | Invoke | 当前页存在 Markdown output。 |
+| `open_chatgpt` | URL | `page_context_menu.assistant_links` 为 true；激活时使用当前浏览器 URL。 |
+| `open_claude` | URL | `page_context_menu.assistant_links` 为 true；激活时使用当前浏览器 URL。 |
 | `view_markdown` | URL | 当前页存在 Markdown output。 |
+| `view_history` | URL | 能从 `github_repo` 解析仓库路径。 |
 | `edit_page` | URL | 能解析仓库/edit URL。 |
 | `create_issue` | URL | 已配置仓库。 |
 | `print` | Invoke | 交互式 HTML output。 |
@@ -259,11 +263,26 @@ front matter 规则覆盖继承值。
 | `switch_version` | Choice | 存在版本条目。 |
 | `open_github` | URL | 已配置项目仓库。 |
 
-对应的 PRD 4 页面与 Palette actions 共享 descriptor 和 URL 解析。Copy
-Markdown 共享 pending/success cache；Print 调用共享 print executor；主题控件
-调用同一个 theme apply 函数。PRD 4 URL actions 保留 href 与共享 descriptor
-一致的真实 anchor，确保无 JavaScript 时仍可导航。PRD 4 内置集合之外的历史
-rail-only actions 继续作为独立兼容功能。
+对应的 PRD 4 页面与 Palette actions 共享 descriptor 和 URL 解析。“复制文本”
+共享 pending/success cache；Print 调用共享 print executor；主题控件调用同一个
+theme apply 函数。助手 actions 先提供无 JavaScript 可用的真实 fallback anchor，
+激活时再从浏览器 URL 解析实际部署域名、查询参数与片段。其他 PRD 4 URL actions
+的 href 与共享 descriptor 保持一致。PRD 4 内置集合之外的历史 rail-only actions
+继续作为独立兼容功能。
+
+助手链接默认关闭，因为激活会把完整浏览器 URL 发送给第三方。站点选择启用时，
+必须避免在 query string 与 fragment 中放置秘密信息、披露该出站边界，并可用布尔型
+`assistant_links` front matter 按页面覆盖。
+
+```yaml
+params:
+  ui:
+    page_context_menu:
+      assistant_links: true
+```
+
+如果站点已经全局启用，但某个页面包含敏感 URL，请在该页 front matter 中设置
+`assistant_links: false`，单独关闭助手入口。
 
 ### 自定义命令与本地化 {#custom-commands-and-localization}
 
@@ -338,6 +357,7 @@ pattern，而不是 ARIA application menu，因此 child links 保留原生链�
 | 按键或动作 | 结果 |
 | --- | --- |
 | Cmd/Ctrl-K | 打开或关闭 Palette。 |
+| 在可编辑控件外按 `/` | 直接以命令模式打开 Palette。 |
 | ArrowUp/ArrowDown | 移动 active listbox option。 |
 | Cmd/Ctrl-Home 或 Cmd/Ctrl-End | 移到第一项或最后一项。 |
 | Enter | 只执行一次当前 option。 |
@@ -364,9 +384,9 @@ model 与 Palette controller。Print output 同样省略这些 runtime。Action 
 与共享页面动作 registry 可能仍存在，因为 progressive page actions 独立于搜索。
 
 空查询与 `>` 模式不获取索引；普通文本只获取当前语言、同源生成的 JSON。
-OINK 默认不发送 telemetry、query upload、analytics event 或 remote-search
-request。消费站显式配置的 analytics、评论、托管搜索或外部命令 URL 属于另一项
-站点策略，必须由消费站自行披露。
+OINK 默认不发送 telemetry、query upload、analytics event、remote-search
+request 或助手 URL。消费站显式启用的助手链接、analytics、评论、托管搜索或外部
+命令 URL 属于另一项站点策略，必须由消费站自行披露。
 
 ## 兼容窗口 {#compatibility-window}
 
@@ -376,6 +396,7 @@ request。消费站显式配置的 analytics、评论、托管搜索或外部命
 - `exclude_search` 与 `excludeSearch` 在整个 0.x 期间保留，最早只能在 1.0
   删除。
 - Cmd/Ctrl-K 继续作为 Palette 快捷键，普通文本继续搜索页面。
+- `/` 仅在焦点不位于 input、textarea、select 或 contenteditable 区域时打开命令模式。
 - 迁移不会增加第二套导航权威源或默认网络服务。
 
 任何别名删除或默认值变更都需要未来 major release 的迁移条目与更新后的
@@ -412,8 +433,8 @@ home/docs/blog/plain/print surface、CJK 排序、registry 安全、Palette 状�
 
 | 门禁 | 当前证据 | 发布状态 |
 | --- | --- | --- |
-| 契约/runtime/导航/搜索/actions/Palette | [主题 #18](https://github.com/pgsty/oink/issues/18#issuecomment-5263306916) 与各 owning issue 的专项结果 | 本地通过；merge CI 待完成 |
-| 消费站 root/subpath、EN/ZH、浏览器与 axe | [消费站 #3 证据](https://github.com/pgsty/oink.pgsty.com/issues/3#issuecomment-5263727126) | 本地通过；消费站 CI 待完成 |
+| 契约/runtime/导航/搜索/actions/Palette | [主题 #18](https://github.com/pgsty/oink/issues/18#issuecomment-5263306916) 与各 owning issue 的专项结果；发布候选需重跑 | 既往本地通过；当前候选必须重新通过 |
+| 消费站 root/subpath、EN/ZH、浏览器与 axe | [消费站 #3 证据](https://github.com/pgsty/oink.pgsty.com/issues/3#issuecomment-5263727126)；发布候选需重跑 | 既往本地通过；当前候选必须重新通过 |
 | 最低/当前 Hugo 矩阵 | [主题 CI workflow](../.github/workflows/ci.yml) | 必须在合并 commit 上通过 |
 | 带标签主题产物 | 包含该功能的 release 页面与 checksum | 待完成 |
 | 消费站版本固定与部署 | 消费站 commit 与 deployment run | 待完成 |

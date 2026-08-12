@@ -1,6 +1,6 @@
 # Typography tokens
 
-Status: released in OINK 0.3.0
+Version: included in OINK 0.3.0
 
 Scope: typography only. Semantic colour, surface, radius, shadow, density, and
 appearance presets are not part of this interface yet; see the "Scope" section

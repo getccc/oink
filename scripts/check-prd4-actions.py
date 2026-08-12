@@ -87,6 +87,8 @@ def action_config(helper: Any, subpath: bool, offline_search: bool = True) -> st
     config = config.replace(
         "    feedback:\n      enable: false\n",
         "    showLightDarkModeMenu: true\n"
+        "    page_context_menu:\n"
+        "      assistant_links: true\n"
         "    feedback:\n      enable: false\n",
     )
     en_commands = (
@@ -140,13 +142,50 @@ def build(
     workspace: Path,
     name: str,
     config: str,
+    page_front_matter: str = "",
 ) -> tuple[Path, str]:
     site = workspace / f"site-{name}"
     output = workspace / f"public-{name}"
     shutil.copytree(helper.SITE_FIXTURE_PATH, site)
     (site / "hugo.yaml").write_text(config, encoding="utf-8")
+    if page_front_matter:
+        page = site / "content" / "docs" / "guides" / "tutorial.md"
+        source = page.read_text(encoding="utf-8")
+        marker = "\n---\n\n"
+        require(marker in source, "action fixture has no closing front matter marker")
+        page.write_text(
+            source.replace(
+                marker,
+                f"\n{page_front_matter.rstrip()}\n---\n\n",
+                1,
+            ),
+            encoding="utf-8",
+        )
     log = helper.run_hugo(site, output, workspace / "cache")
     return output, log
+
+
+def validate_assistant_off(output: Path, label: str) -> None:
+    html = (
+        output / "en" / "docs" / "guides" / "tutorial" / "index.html"
+    ).read_text(encoding="utf-8")
+    actions = map_by_id(manifest_from(html)["actions"])
+    for action_id in ("open_chatgpt", "open_claude"):
+        action = actions[action_id]
+        require(
+            action["available"] is False
+            and action["url"] == ""
+            and action["placements"] == {"page": False, "palette": False},
+            f"{label} still exposes {action_id}",
+        )
+        require(
+            f'data-oink-action="{action_id}"' not in html,
+            f"{label} still renders {action_id}",
+        )
+    require(
+        'data-oink-action="copy_markdown"' in html,
+        f"{label} removed unrelated page actions",
+    )
 
 
 def manifest_from(html: str) -> dict[str, Any]:
@@ -199,11 +238,26 @@ def validate_manifest(
     require(by_id["copy_markdown"]["url"] == markdown, f"{lang} copy URL is not subpath safe")
     require(by_id["view_markdown"]["url"] == markdown, f"{lang} view URL diverges from copy")
     require(by_id["copy_markdown"]["available"] is True, f"{lang} copy is unavailable")
+    for action_id, host in (("open_chatgpt", "chatgpt.com"), ("open_claude", "claude.ai")):
+        require(
+            by_id[action_id].get("promptTemplate", "").count("%s") == 1,
+            f"{lang}/{action_id} omitted its runtime URL placeholder",
+        )
+        require(
+            by_id[action_id]["url"].startswith(f"https://{host}/"),
+            f"{lang}/{action_id} fallback URL changed",
+        )
     require(
         by_id["edit_page"]["url"]
         == "https://github.com/acme/docs/edit/release/website/content/docs/guides/tutorial."
         + ("zh.md" if lang == "zh" else "md"),
         f"{lang} edit URL changed: {by_id['edit_page']['url']}",
+    )
+    require(
+        by_id["view_history"]["url"]
+        == "https://github.com/acme/docs/commits/release/website/content/docs/guides/tutorial."
+        + ("zh.md" if lang == "zh" else "md"),
+        f"{lang} history URL changed: {by_id['view_history']['url']}",
     )
     expected_title = "First+Tutorial" if lang == "en" else "%E7%AC%AC%E4%B8%80%E4%B8%AA%E6%95%99%E7%A8%8B"
     require(
@@ -324,7 +378,16 @@ def main() -> int:
                     html = path.read_text(encoding="utf-8")
                     manifest = manifest_from(html)
                     validate_manifest(manifest, lang, prefix)
-                    for action_id in ("copy_markdown", "view_markdown", "edit_page", "create_issue", "print"):
+                    for action_id in (
+                        "copy_markdown",
+                        "open_chatgpt",
+                        "open_claude",
+                        "view_markdown",
+                        "view_history",
+                        "edit_page",
+                        "create_issue",
+                        "print",
+                    ):
                         require(
                             html.count(f'data-oink-action="{action_id}"') == 1,
                             f"{deployment}/{lang} page action {action_id} is missing or duplicated",
@@ -333,7 +396,14 @@ def main() -> int:
                     require("data-td-page-print" not in html, "legacy print controller remains")
                     require("</script><script>alert(1)</script>" not in html, "command title escaped inert JSON")
                     by_id = map_by_id(manifest["actions"])
-                    for action_id in ("view_markdown", "edit_page", "create_issue"):
+                    for action_id in (
+                        "open_chatgpt",
+                        "open_claude",
+                        "view_markdown",
+                        "view_history",
+                        "edit_page",
+                        "create_issue",
+                    ):
                         require(
                             attribute(html, action_id, "href") == by_id[action_id]["url"],
                             f"{deployment}/{lang} no-JS {action_id} link diverges from descriptor",
@@ -402,6 +472,39 @@ def main() -> int:
                 any("data-oink-action" in source for source in search_off_bundles),
                 "search-off page omitted the page-action controller",
             )
+
+            assistant_off_config = action_config(helper, True).replace(
+                "      assistant_links: true\n",
+                "      assistant_links: false\n",
+            )
+            output, _ = build(
+                helper,
+                workspace,
+                "assistant-off",
+                assistant_off_config,
+            )
+            validate_assistant_off(output, "site assistant opt-out")
+
+            output, _ = build(
+                helper,
+                workspace,
+                "assistant-page-cannot-opt-in",
+                assistant_off_config,
+                "assistant_links: true",
+            )
+            validate_assistant_off(
+                output,
+                "page assistant override without site opt-in",
+            )
+
+            output, _ = build(
+                helper,
+                workspace,
+                "assistant-page-opt-out",
+                action_config(helper, True),
+                "assistant_links: false",
+            )
+            validate_assistant_off(output, "page assistant opt-out")
 
             invalid_cases = {
                 "unknown": (

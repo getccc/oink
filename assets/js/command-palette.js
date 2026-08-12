@@ -174,9 +174,15 @@
       session += 1;
       var openSession = session;
       logicalOpen = true;
-      var opener = event && event.currentTarget
-        ? event.currentTarget
+      var eventOpener = event && event.currentTarget;
+      function canRestoreFocus(candidate) {
+        return candidate && candidate !== document &&
+          typeof candidate.focus === 'function';
+      }
+      var opener = canRestoreFocus(eventOpener)
+        ? eventOpener
         : document.activeElement;
+      if (!canRestoreFocus(opener)) opener = null;
       if (
         opener && opener.closest &&
         opener.closest('#td-shell-sidebar') &&
@@ -239,6 +245,7 @@
       if (!preservePending) clearPending();
       if (
         restoreFocus !== false && lastOpener &&
+        typeof lastOpener.focus === 'function' &&
         root.contains(document.activeElement)
       ) lastOpener.focus();
       var reducedMotion = global.matchMedia &&

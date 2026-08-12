@@ -11,6 +11,8 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 I18N = ROOT / "i18n"
 KEY = re.compile(r"^([A-Za-z0-9_]+):")
+BRACED_PLACEHOLDER = re.compile(r"\{[A-Za-z_][A-Za-z0-9_]*\}")
+PRINTF_PLACEHOLDER = re.compile(r"(?<!%)%(?:[0-9]+\$)?[A-Za-z]")
 
 
 def translation_blocks(path: Path) -> tuple[list[str], dict[str, str]]:
@@ -27,6 +29,15 @@ def translation_blocks(path: Path) -> tuple[list[str], dict[str, str]]:
         end = starts[offset + 1][0] if offset + 1 < len(starts) else len(lines)
         blocks[key] = "".join(lines[start:end])
     return order, blocks
+
+
+def placeholders(block: str) -> tuple[list[str], list[str]]:
+    """Return the runtime placeholders used by a translation block."""
+
+    return (
+        sorted(BRACED_PLACEHOLDER.findall(block)),
+        sorted(PRINTF_PLACEHOLDER.findall(block)),
+    )
 
 
 def sync_fallbacks() -> None:
@@ -56,11 +67,11 @@ def sync_fallbacks() -> None:
 
 
 def check() -> int:
-    english_order, _ = translation_blocks(I18N / "en.yaml")
+    english_order, english_blocks = translation_blocks(I18N / "en.yaml")
     english = set(english_order)
     failed = False
     for path in sorted(I18N.glob("*.yaml")):
-        order, _ = translation_blocks(path)
+        order, blocks = translation_blocks(path)
         keys = set(order)
         missing = sorted(english - keys)
         extra = sorted(keys - english)
@@ -74,6 +85,16 @@ def check() -> int:
                 print(f"  extra: {', '.join(extra)}")
             if duplicates:
                 print(f"  duplicate: {', '.join(duplicates)}")
+        for key in sorted(english & keys):
+            expected = placeholders(english_blocks[key])
+            actual = placeholders(blocks[key])
+            if actual != expected:
+                failed = True
+                print(path.relative_to(ROOT))
+                print(
+                    f"  placeholder mismatch for {key}: "
+                    f"expected {expected}, found {actual}"
+                )
     if failed:
         return 1
     print(f"i18n key parity OK: {len(list(I18N.glob('*.yaml')))} locales, {len(english)} keys")

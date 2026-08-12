@@ -148,6 +148,9 @@ def main() -> int:
             "excludeSearch",
             "offlineSearchIndex",
             "copy_markdown",
+            "open_chatgpt",
+            "open_claude",
+            "view_history",
             "switch_theme",
             "switch_language",
             "switch_version",
@@ -160,19 +163,18 @@ def main() -> int:
             require(literal in en, f"English reference is missing {literal}")
             require(literal in zh, f"Chinese reference is missing {literal}")
 
-        # Release language gate. Before 0.3.0 this required the references to
-        # carry an "unreleased" warning. Now that the feature set ships, the
-        # same discipline runs the other way: both references must name the
-        # containing version, they must agree, and the changelog must actually
-        # have that section. Deliberately version-agnostic so the next release
-        # does not have to edit this check.
-        en_release = re.search(r"released in OINK (\d+\.\d+\.\d+)", en)
-        zh_release = re.search(r"随 OINK (\d+\.\d+\.\d+) 发布", zh)
-        require(en_release is not None, "English reference does not name a released version")
-        require(zh_release is not None, "Chinese reference does not name a released version")
+        # Version-language gate. The references name the version containing the
+        # implementation without claiming that its public tag already exists.
+        # Both languages must agree, and the changelog must have that section.
+        # Deliberately version-agnostic so the next release does not have to
+        # edit this check.
+        en_release = re.search(r"included in OINK (\d+\.\d+\.\d+)", en)
+        zh_release = re.search(r"纳入 OINK (\d+\.\d+\.\d+)", zh)
+        require(en_release is not None, "English reference does not name its containing version")
+        require(zh_release is not None, "Chinese reference does not name its containing version")
         require(
             en_release.group(1) == zh_release.group(1),
-            "English and Chinese references name different released versions",
+            "English and Chinese references name different containing versions",
         )
         released_version = en_release.group(1)
 
@@ -209,12 +211,14 @@ def main() -> int:
 
         en_yaml = code_blocks(en, "yaml")
         zh_yaml = code_blocks(zh, "yaml")
-        require(len(en_yaml) == len(zh_yaml) == 5, "bilingual YAML example coverage changed")
+        require(len(en_yaml) == len(zh_yaml), "bilingual YAML example coverage differs")
+        require(len(en_yaml) >= 5, "bilingual YAML example coverage regressed")
         for blocks, language in ((en_yaml, "English"), (zh_yaml, "Chinese")):
             combined = "\n".join(blocks)
             require("parent: docs" in combined, f"{language} nested menu example is missing")
             require("search_keywords:" in combined, f"{language} search metadata example is missing")
             require("command_palette:" in combined, f"{language} command example is missing")
+            require("assistant_links: true" in combined, f"{language} assistant-link opt-in example is missing")
 
         readme = (ROOT / "README.md").read_text(encoding="utf-8")
         changelog = (ROOT / "CHANGELOG.md").read_text(encoding="utf-8")

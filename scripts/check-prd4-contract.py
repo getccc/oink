@@ -224,7 +224,10 @@ def validate_contract(contract: dict[str, Any]) -> None:
         commands.get("builtin_action_ids")
         == [
             "copy_markdown",
+            "open_chatgpt",
+            "open_claude",
             "view_markdown",
+            "view_history",
             "edit_page",
             "create_issue",
             "print",
@@ -317,6 +320,9 @@ def validate_contract_doc(contract: dict[str, Any]) -> None:
         "exclude_search",
         "excludeSearch",
         "copy_markdown",
+        "open_chatgpt",
+        "open_claude",
+        "view_history",
         "view_markdown",
         "noopener noreferrer",
         "No default telemetry request",

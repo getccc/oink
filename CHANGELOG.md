@@ -39,6 +39,15 @@ All notable changes to OINK are documented here. The project follows
   text, and `>` command modes, plus quick links, grouped page results,
   context-aware actions, localized safe site commands, choice actions, and a
   shared page-action registry.
+- Add `/` as a command-first Palette shortcut outside editable controls. It
+  opens with the `>` prefix, preserves the existing Cmd/Ctrl-K entry point,
+  and returns focus to the pre-shortcut element when closed.
+- Complete the shared page-action set with Open in ChatGPT, Open in Claude, and
+  View edit history. Assistant prompts resolve the current browser URL at
+  activation time, including its deployed host, query string, and fragment;
+  repository history uses the same source path as Edit this page. The outbound
+  assistant actions are disabled by default and require
+  `params.ui.page_context_menu.assistant_links: true`.
 - Add a bilingual PRD 4 migration reference and machine-checked root/subpath
   starter fixtures.
 - Run the browser runtime tests in CI. `tests/js/` covers the shell, Command
@@ -58,9 +67,16 @@ All notable changes to OINK are documented here. The project follows
   seed the new roles, and the system preset does not request OINK brand fonts.
 - Add a typography-token boundary check and representative docs, blog, and
   print fixtures to the minimal example site.
+- Add enhanced fenced code surfaces with filenames, language labels, copy,
+  wrapping, long-block collapse, and deterministic transcript-command copying;
+  add `code-group` for synchronized, deep-linkable alternatives while retaining
+  legacy `tabpane` persistence.
 
 ### Changed
 
+- Rename the reader-facing Copy Markdown and View Markdown actions to Copy text
+  and View source. Their stable action IDs and Markdown-output requirements do
+  not change.
 - Route landing, shell, navigation, footer, content-card, search, print, and
   Asciinema font choices through semantic typography roles while preserving the
   default technical appearance.
@@ -85,6 +101,10 @@ All notable changes to OINK are documented here. The project follows
   Markdown output; only double-quoted values were removed before.
 - Percent-encode the query that `search.js` places in the search URL. A query
   containing `&` was previously truncated at that character.
+- Wait for the Asciinema terminal font before fitting terminal output, avoiding
+  incorrect geometry when the custom font finishes loading after the player.
+- Resolve product roots by content type when docs and blog share a type, and
+  keep configured internal command URLs under the active deployment subpath.
 
 ### Performance
 
@@ -99,8 +119,9 @@ All notable changes to OINK are documented here. The project follows
   corpus per character typed; on an 800-document corpus this is 3.44ms to
   0.34ms per keystroke.
 - Drop jQuery and the superseded `offline-search.js` runtime, which the Command
-  Palette replaced. A typical documentation page on the project site went from
-  755,512 to 667,729 bytes of CSS and JavaScript.
+  Palette replaced. On the measured project-site snapshot this removed about
+  88 KB from a typical documentation page's combined CSS and JavaScript; exact
+  totals vary as later candidate assets change.
 
 ### Removed
 
