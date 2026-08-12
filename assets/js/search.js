@@ -14,26 +14,18 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-(function ($) {
+(function () {
   'use strict';
 
-  var Search = {
-    init: function () {
-      $(document).ready(function () {
-        $(document).on('keypress', '.td-search input', function (e) {
-          if (e.keyCode !== 13) {
-            return;
-          }
+  var searchPage = '{{ "search/" | absURL }}';
 
-          var query = $(this).val();
-          var searchPage = '{{ "search/" | absURL }}?q=' + query;
-          document.location = searchPage;
-
-          return false;
-        });
-      });
-    },
-  };
-
-  Search.init();
-})(jQuery);
+  // Delegated so the handler also covers search inputs added after load.
+  document.addEventListener('keypress', function (event) {
+    if (event.key !== 'Enter') return;
+    var input = event.target;
+    if (!input || typeof input.matches !== 'function') return;
+    if (!input.matches('.td-search input')) return;
+    event.preventDefault();
+    document.location = searchPage + '?q=' + encodeURIComponent(input.value);
+  });
+})();

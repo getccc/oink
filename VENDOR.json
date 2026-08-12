@@ -74,16 +74,6 @@
       ]
     },
     {
-      "name": "jquery",
-      "version": "3.7.1",
-      "source": "https://registry.npmjs.org/jquery/-/jquery-3.7.1.tgz",
-      "license": "MIT",
-      "licenseFiles": ["assets/third_party/jquery/LICENSE.txt"],
-      "artifacts": [
-        {"path": "assets/js/third_party/jquery.min.js", "sha256": "fc9a93dd241f6b045cbff0481cf4e1901becd0e12fb45166a8f17f95823f0b1a"}
-      ]
-    },
-    {
       "name": "lunr",
       "version": "2.3.9",
       "source": "https://registry.npmjs.org/lunr/-/lunr-2.3.9.tgz",

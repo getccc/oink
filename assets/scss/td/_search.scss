@@ -102,24 +102,3 @@
   }
 }
 
-.td-offline-search-results {
-  max-width: 90%;
-
-  .card {
-    margin-bottom: $spacer * 0.5;
-
-    .card-header {
-      font-weight: bold;
-    }
-  }
-
-  &__close-button {
-    // cursor: pointer;
-    float: right;
-
-    &::after {
-      @extend .fas;
-      content: fa-content($fa-var-times);
-    }
-  }
-}

@@ -1,6 +1,6 @@
 {{ with .Site.Params.plantuml }}
 {{ if .enable }}
-(function($) {
+(function () {
     'use strict';
 
     function encode6bit(value) {
@@ -39,15 +39,25 @@
     }
 
     const imageURL = {{ .svg_image_url | jsonify | safeJS }};
-    $('.language-plantuml').parent().replaceWith(function() {
-        const source = new TextEncoder().encode($(this).text());
-        const encoded = encode64(pako.deflateRaw(source, { level: 9 }));
-        {{ if .svg }}
-        return $('<svg>').attr('data-src', imageURL + encoded);
-        {{ else }}
-        return $('<img>').attr({ src: imageURL + encoded, alt: 'PlantUML diagram' });
-        {{ end }}
-    });
-})(jQuery);
+    Array.prototype.forEach.call(
+        document.querySelectorAll('.language-plantuml'),
+        function (code) {
+            const pre = code.parentNode;
+            if (!pre || !pre.parentNode) return;
+            const source = new TextEncoder().encode(pre.textContent);
+            const encoded = encode64(pako.deflateRaw(source, { level: 9 }));
+            {{ if .svg }}
+            // Matches the element the vendored SVG loader looks for.
+            const rendered = document.createElement('svg');
+            rendered.setAttribute('data-src', imageURL + encoded);
+            {{ else }}
+            const rendered = document.createElement('img');
+            rendered.setAttribute('src', imageURL + encoded);
+            rendered.setAttribute('alt', 'PlantUML diagram');
+            {{ end }}
+            pre.parentNode.replaceChild(rendered, pre);
+        },
+    );
+})();
 {{ end }}
 {{ end }}
