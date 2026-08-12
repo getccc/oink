@@ -1,0 +1,47 @@
+{{- /* One top-level Hugo Menu item. Leaves keep the historical link path;
+     parents add a separate disclosure and one dropdown/accordion panel. */ -}}
+{{- $page := .page -}}
+{{- $entry := .entry -}}
+{{- $mode := .mode -}}
+{{- $index := .index -}}
+{{- $hasChildren := $entry.HasChildren -}}
+{{- $key := $entry.Identifier | default $entry.Name | urlize -}}
+{{- $panelID := printf "td-navbar-%s-%s-%d" $mode $key $index -}}
+{{- $expandLabel := printf "%s: %s" (T "ui_sidebar_expand_section") ($entry.Name | plainify) -}}
+{{- $collapseLabel := printf "%s: %s" (T "ui_sidebar_collapse_section") ($entry.Name | plainify) -}}
+
+{{- if not $hasChildren -}}
+  {{- if eq $mode "desktop" -}}
+    {{ partial "navbar-entry-link.html" (dict "page" $page "entry" $entry "class" "nav-link") }}
+  {{- else -}}
+    {{ partial "navbar-entry-link.html" (dict "page" $page "entry" $entry "class" "mobile-menu-link") }}
+  {{- end -}}
+{{- else if eq $mode "desktop" -}}
+<div class="nav-menu" data-td-navbar-menu>
+  <div class="nav-menu__parent">
+    {{ partial "navbar-entry-link.html" (dict "page" $page "entry" $entry "class" "nav-link nav-menu__parent-link") }}
+    <button type="button" class="nav-menu__toggle" data-td-navbar-toggle
+      aria-controls="{{ $panelID }}" aria-expanded="false"
+      aria-label="{{ $expandLabel }}" data-label-expand="{{ $expandLabel }}" data-label-collapse="{{ $collapseLabel }}">
+      {{- partialCached "shell/icon.html" "chevron-down" "navbar-chevron" -}}
+    </button>
+  </div>
+  <div class="nav-menu__panel" id="{{ $panelID }}" data-td-navbar-panel hidden>
+    {{ partial "navbar-group-items.html" (dict "page" $page "items" $entry.Children "mode" "desktop" "top" $entry "depth" 1) }}
+  </div>
+</div>
+{{- else -}}
+<div class="mobile-menu-section" data-td-navbar-accordion>
+  <div class="mobile-menu-parent">
+    {{ partial "navbar-entry-link.html" (dict "page" $page "entry" $entry "class" "mobile-menu-link mobile-menu-parent-link") }}
+    <button type="button" class="mobile-menu-disclosure" data-td-navbar-accordion-toggle
+      aria-controls="{{ $panelID }}" aria-expanded="false"
+      aria-label="{{ $expandLabel }}" data-label-expand="{{ $expandLabel }}" data-label-collapse="{{ $collapseLabel }}">
+      {{- partialCached "shell/icon.html" "chevron-down" "mobile-navbar-chevron" -}}
+    </button>
+  </div>
+  <div class="mobile-menu-children" id="{{ $panelID }}" data-td-navbar-accordion-panel hidden>
+    {{ partial "navbar-group-items.html" (dict "page" $page "items" $entry.Children "mode" "mobile" "top" $entry "depth" 1) }}
+  </div>
+</div>
+{{- end -}}

@@ -18,6 +18,7 @@ import shutil
 import subprocess
 import sys
 import tempfile
+from html.parser import HTMLParser
 from pathlib import Path
 from typing import Any
 
@@ -401,10 +402,10 @@ def config_text(
                 "        icon: fa-solid fa-route",
                 "        description: Task-oriented tutorials",
                 "    - identifier: tutorial",
-                "      parent: guides",
+                "      parent: docs",
                 "      name: First Tutorial",
                 "      pageRef: /docs/guides/tutorial",
-                "      weight: 10",
+                "      weight: 15",
                 "    - identifier: reference",
                 "      parent: docs",
                 "      name: Reference",
@@ -432,7 +433,7 @@ def config_text(
                     "    - identifier: advanced",
                     "      parent: tutorial",
                     "      name: Advanced Topic",
-                    "      pageRef: /docs/guides/tutorial",
+                    "      pageRef: /docs/guides/advanced",
                     "      weight: 10",
                 ]
             )
@@ -490,14 +491,44 @@ def read_output(output: Path, pattern: str, lang: str) -> str:
         ) from exc
 
 
-def normalize_navigation(html: str) -> dict[str, list[dict[str, Any]]]:
-    anchors = re.findall(
-        r'<a\b(?P<attrs>[^>]*\bclass="[^"]*'
-        r'(?:nav-link|mobile-menu-link)[^"]*"[^>]*)>'
-        r'(?P<body>.*?)</a>',
-        html,
-        flags=re.DOTALL,
-    )
+class NavigationParser(HTMLParser):
+    def __init__(self) -> None:
+        super().__init__(convert_charrefs=True)
+        self.links: list[dict[str, Any]] = []
+        self.controls: list[dict[str, str]] = []
+        self.panels: list[str] = []
+        self._current: dict[str, Any] | None = None
+
+    def handle_starttag(
+        self, tag: str, attrs: list[tuple[str, str | None]]
+    ) -> None:
+        attributes = {name: value or "" for name, value in attrs}
+        if tag == "a" and "data-td-navbar-region" in attributes:
+            self._current = {"attrs": attributes, "text": []}
+        elif tag == "button" and (
+            "data-td-navbar-toggle" in attributes
+            or "data-td-navbar-accordion-toggle" in attributes
+        ):
+            self.controls.append(attributes)
+        elif (
+            "data-td-navbar-panel" in attributes
+            or "data-td-navbar-accordion-panel" in attributes
+        ) and attributes.get("id"):
+            self.panels.append(attributes["id"])
+
+    def handle_data(self, data: str) -> None:
+        if self._current is not None:
+            self._current["text"].append(data)
+
+    def handle_endtag(self, tag: str) -> None:
+        if tag == "a" and self._current is not None:
+            self.links.append(self._current)
+            self._current = None
+
+
+def normalize_navigation(html: str) -> dict[str, Any]:
+    parser = NavigationParser()
+    parser.feed(html)
     ignored = {
         "GitHub",
         "Language",
@@ -508,17 +539,17 @@ def normalize_navigation(html: str) -> dict[str, list[dict[str, Any]]]:
         "Search",
         "搜索",
     }
-    normalized: dict[str, list[dict[str, Any]]] = {"desktop": [], "mobile": []}
-    for attrs_text, body in anchors:
-        attrs = {
-            name.lower(): value
-            for name, _, value in re.findall(
-                r'([:\w-]+)\s*=\s*(["\x27])(.*?)\2', attrs_text, re.DOTALL
-            )
-        }
+    normalized: dict[str, Any] = {
+        "desktop": [],
+        "mobile": [],
+        "controls": [],
+        "panels": sorted(parser.panels),
+    }
+    for parsed in parser.links:
+        attrs = parsed["attrs"]
         classes = set(attrs.get("class", "").split())
-        region = "desktop" if "nav-link" in classes else "mobile"
-        text = re.sub(r"<[^>]+>", " ", body)
+        region = attrs["data-td-navbar-region"]
+        text = attrs.get("data-td-navbar-label") or " ".join(parsed["text"])
         text = " ".join(text.split())
         if text in ignored:
             continue
@@ -526,11 +557,28 @@ def normalize_navigation(html: str) -> dict[str, list[dict[str, Any]]]:
             {
                 "href": attrs.get("href", ""),
                 "active": "active" in classes,
+                "current": attrs.get("aria-current", ""),
+                "external": attrs.get("data-td-navbar-external") == "true",
+                "kind": attrs.get("data-td-navbar-kind", ""),
+                "level": int(attrs.get("data-td-navbar-level", "0")),
                 "target": attrs.get("target", ""),
                 "rel": sorted(attrs.get("rel", "").split()),
                 "text": text,
             }
         )
+    for attrs in parser.controls:
+        normalized["controls"].append(
+            {
+                "controls": attrs.get("aria-controls", ""),
+                "expanded": attrs.get("aria-expanded", ""),
+                "mode": (
+                    "desktop"
+                    if "data-td-navbar-toggle" in attrs
+                    else "mobile"
+                ),
+            }
+        )
+    normalized["controls"].sort(key=lambda item: (item["mode"], item["controls"]))
     return normalized
 
 
@@ -588,6 +636,12 @@ def observe_variant(
     for lang in LANGUAGES:
         navbar_html = read_output(output, SURFACES["plain"], lang)
         observation["navigation"][lang] = normalize_navigation(navbar_html)
+        docs_html = read_output(
+            output, "{lang}/docs/guides/nav-active/index.html", lang
+        )
+        observation["navigation"][lang]["docs_active"] = normalize_navigation(
+            docs_html
+        )
         observation["runtime"][lang] = {}
         observation["indexes"][lang] = any(
             output.glob(f"offline-search-index.{lang}*.json")
@@ -623,11 +677,24 @@ def build_observation() -> dict[str, Any]:
                     observation, log = observe_variant(
                         workspace, variant, offline_search, subpath=subpath
                     )
-                    require(
-                        "WARN" not in log,
-                        f"current {deployment}/{variant}/{state} fixture "
-                        f"emitted an unexpected warning:\n{log}",
-                    )
+                    warnings = [line for line in log.splitlines() if "WARN" in line]
+                    if variant == "deep":
+                        require(
+                            warnings
+                            and all(
+                                "supports one interactive child level" in warning
+                                and "rendered as a flat group heading" in warning
+                                for warning in warnings
+                            ),
+                            f"current {deployment}/{variant}/{state} fixture "
+                            f"did not emit only the expected deep-menu warning:\n{log}",
+                        )
+                    else:
+                        require(
+                            not warnings,
+                            f"current {deployment}/{variant}/{state} fixture "
+                            f"emitted an unexpected warning:\n{log}",
+                        )
                     result["deployments"][deployment][variant][state] = {
                         "navigation": observation["navigation"],
                         "runtime": observation["runtime"],
@@ -646,18 +713,77 @@ def validate_observation(
     observation: dict[str, Any], contract: dict[str, Any]
 ) -> None:
     deployments = observation["deployments"]
+    flat_legacy = [
+        {
+            "text": "Docs",
+            "href_suffix": "/docs/",
+            "active": False,
+            "target": "",
+            "rel": [],
+        },
+        {
+            "text": "Blog",
+            "href_suffix": "/blog/",
+            "active": False,
+            "target": "",
+            "rel": [],
+        },
+        {
+            "text": "Project",
+            "href_suffix": "/project/",
+            "active": True,
+            "target": "",
+            "rel": [],
+        },
+        {
+            "text": "Status",
+            "href_suffix": "https://status.example.com/",
+            "active": False,
+            "target": "_blank",
+            "rel": ["noopener", "noreferrer"],
+        },
+    ]
     for deployment in ("root", "subpath"):
         for variant in VARIANTS:
             for state in ("search_off", "search_on"):
                 build = deployments[deployment][variant][state]
                 for lang in LANGUAGES:
+                    expected_text = {
+                        "flat": ["Docs", "Blog", "Project", "Status"],
+                        "nested": [
+                            "Docs",
+                            "Guides",
+                            "First Tutorial",
+                            "Reference",
+                            "Blog",
+                            "Project",
+                            "Status",
+                        ],
+                        "deep": [
+                            "Docs",
+                            "Guides",
+                            "First Tutorial",
+                            "Advanced Topic",
+                            "Reference",
+                            "Blog",
+                            "Project",
+                            "Status",
+                        ],
+                    }[variant]
+                    expected_levels = {
+                        "flat": [0, 0, 0, 0],
+                        "nested": [0, 1, 1, 1, 0, 0, 0],
+                        "deep": [0, 1, 1, 2, 1, 0, 0, 0],
+                    }[variant]
+                    navigation = build["navigation"][lang]
                     for region in ("desktop", "mobile"):
-                        links = build["navigation"][lang][region]
+                        links = navigation[region]
                         require(
-                            [link["text"] for link in links]
-                            == ["Docs", "Blog", "Project", "Status"],
+                            [link["text"] for link in links] == expected_text
+                            and [link["level"] for link in links]
+                            == expected_levels,
                             f"{deployment}/{variant}/{state}/{lang}/{region} "
-                            "navigation characterization changed",
+                            "navigation hierarchy changed",
                         )
                         prefix = (
                             f"/preview/{lang}/"
@@ -667,7 +793,7 @@ def validate_observation(
                         require(
                             all(
                                 link["href"].startswith(prefix)
-                                for link in links[:3]
+                                for link in links[:-1]
                             ),
                             f"{deployment}/{variant}/{state}/{lang}/{region} "
                             "internal menu prefix changed",
@@ -675,11 +801,85 @@ def validate_observation(
                         external = links[-1]
                         require(
                             external["href"] == "https://status.example.com/"
+                            and external["external"] is True
                             and external["target"] == "_blank"
                             and external["rel"] == ["noopener", "noreferrer"],
                             f"{deployment}/{variant}/{state}/{lang}/{region} "
                             "external-link safety changed",
                         )
+                        project = next(
+                            link for link in links if link["text"] == "Project"
+                        )
+                        require(
+                            project["active"] is True
+                            and project["current"] == "page",
+                            f"{deployment}/{variant}/{state}/{lang}/{region} "
+                            "current top-level item state changed",
+                        )
+                        if variant == "flat":
+                            legacy_projection = [
+                                {
+                                    "text": link["text"],
+                                    "href_suffix": (
+                                        link["href"]
+                                        if link["external"]
+                                        else "/" + "/".join(
+                                            link["href"].strip("/").split("/")[-1:]
+                                        ) + "/"
+                                    ),
+                                    "active": link["active"],
+                                    "target": link["target"],
+                                    "rel": link["rel"],
+                                }
+                                for link in links
+                            ]
+                            require(
+                                legacy_projection == flat_legacy,
+                                f"{deployment}/{state}/{lang}/{region} flat "
+                                "legacy link projection changed",
+                            )
+                        docs_parent = navigation["docs_active"][region][0]
+                        require(
+                            docs_parent["text"] == "Docs"
+                            and docs_parent["active"] is True,
+                            f"{deployment}/{variant}/{state}/{lang}/{region} "
+                            "parent does not reflect its active descendant",
+                        )
+                    controls = navigation["controls"]
+                    panels = navigation["panels"]
+                    expected_control_count = 0 if variant == "flat" else 2
+                    require(
+                        len(controls) == expected_control_count
+                        and len(panels) == expected_control_count
+                        and len(panels) == len(set(panels))
+                        and all(
+                            control["expanded"] == "false"
+                            and control["controls"] in panels
+                            for control in controls
+                        ),
+                        f"{deployment}/{variant}/{state}/{lang} disclosure "
+                        "ARIA relationship changed",
+                    )
+                    if variant == "deep":
+                        for region in ("desktop", "mobile"):
+                            links = navigation[region]
+                            group = next(
+                                link
+                                for link in links
+                                if link["text"] == "First Tutorial"
+                            )
+                            advanced = next(
+                                link
+                                for link in links
+                                if link["text"] == "Advanced Topic"
+                            )
+                            require(
+                                group["kind"] == "group"
+                                and advanced["kind"] == "link"
+                                and advanced["level"] == 2,
+                                f"{deployment}/{state}/{lang}/{region} deep "
+                                "menu did not flatten under a group heading",
+                            )
                     require(
                         build["indexes"][lang] is (state == "search_on"),
                         f"{deployment}/{variant}/{state}/{lang} index emission changed",
@@ -721,14 +921,12 @@ def validate_observation(
                                 "emits Palette runtime outside its capability",
                             )
 
-        flat = deployments[deployment]["flat"]["search_off"]["navigation"]
-        for variant in ("nested", "deep"):
-            require(
-                flat
-                == deployments[deployment][variant]["search_off"]["navigation"],
-                f"the current {deployment}/{variant} menu gap changed; move "
-                "this assertion with the navbar implementation issue",
-            )
+        flat_off = deployments[deployment]["flat"]["search_off"]["navigation"]
+        flat_on = deployments[deployment]["flat"]["search_on"]["navigation"]
+        require(
+            flat_off == flat_on,
+            f"{deployment} flat navigation changed with search capability",
+        )
 
     for lang in LANGUAGES:
         sizes = observation["index_sizes"][lang]
@@ -810,11 +1008,15 @@ def compact_snapshot(observation: dict[str, Any]) -> dict[str, Any]:
                 navigation = build["navigation"][LANGUAGES[0]]
                 for lang in LANGUAGES[1:]:
                     normalized = json.loads(format_json(build["navigation"][lang]))
-                    for region in ("desktop", "mobile"):
-                        for link in normalized[region]:
-                            link["href"] = link["href"].replace(
-                                f"/{lang}/", f"/{LANGUAGES[0]}/"
-                            )
+                    navigation_regions = [normalized]
+                    if "docs_active" in normalized:
+                        navigation_regions.append(normalized["docs_active"])
+                    for navigation_region in navigation_regions:
+                        for region in ("desktop", "mobile"):
+                            for link in navigation_region[region]:
+                                link["href"] = link["href"].replace(
+                                    f"/{lang}/", f"/{LANGUAGES[0]}/"
+                                )
                     require(
                         normalized == navigation,
                         f"{deployment}/{variant}/{state} navigation differs "

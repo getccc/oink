@@ -56,6 +56,13 @@ function classList() {
     contains(value) {
       return values.has(value);
     },
+    toggle(value, force) {
+      if (force === true) values.add(value);
+      else if (force === false) values.delete(value);
+      else if (values.has(value)) values.delete(value);
+      else values.add(value);
+      return values.has(value);
+    },
   };
 }
 
@@ -87,6 +94,9 @@ function element(overrides = {}) {
       getAttribute(name) {
         return attributes.get(name) || null;
       },
+      hasAttribute(name) {
+        return attributes.has(name);
+      },
       querySelector() {
         return null;
       },
@@ -103,6 +113,188 @@ function element(overrides = {}) {
     },
     overrides,
   );
+}
+
+function keyboardEvent(key) {
+  return {
+    key,
+    defaultPrevented: false,
+    preventDefault() {
+      this.defaultPrevented = true;
+    },
+  };
+}
+
+function navbarSection(active = false) {
+  const panel = element({
+    hidden: true,
+    querySelectorAll() {
+      return [];
+    },
+  });
+  const toggle = element({
+    dataset: {
+      labelExpand: 'Expand',
+      labelCollapse: 'Collapse',
+    },
+  });
+  const parent = element();
+  if (active) parent.classList.add('active');
+  const section = element({
+    querySelector(selector) {
+      return {
+        '[data-td-navbar-accordion-toggle]': toggle,
+        '[data-td-navbar-accordion-panel]': panel,
+        '.mobile-menu-parent-link': parent,
+      }[selector];
+    },
+  });
+  return { panel, parent, section, toggle };
+}
+
+function testNavbarDisclosureAndAccordion() {
+  const documentListeners = new Map();
+  const first = element();
+  const second = element();
+  const panel = element({
+    hidden: true,
+    querySelectorAll() {
+      return [first, second];
+    },
+  });
+  const toggle = element({
+    dataset: {
+      labelExpand: 'Expand Docs',
+      labelCollapse: 'Collapse Docs',
+    },
+  });
+  const menu = element({
+    contains(candidate) {
+      return candidate === toggle || candidate === panel;
+    },
+    querySelector(selector) {
+      return {
+        '[data-td-navbar-toggle]': toggle,
+        '[data-td-navbar-panel]': panel,
+      }[selector];
+    },
+  });
+  const registered = new Map();
+  const coordinated = [];
+  global.document = {
+    activeElement: null,
+    addEventListener(type, callback) {
+      const callbacks = documentListeners.get(type) || [];
+      callbacks.push(callback);
+      documentListeners.set(type, callbacks);
+    },
+    querySelector() {
+      return null;
+    },
+    querySelectorAll(selector) {
+      return selector === '[data-td-navbar-menu]' ? [menu] : [];
+    },
+  };
+  global.window = {
+    requestAnimationFrame(callback) {
+      callback();
+    },
+    OinkSurfaceCoordinator: {
+      closeOthers(name) {
+        coordinated.push(name);
+      },
+      register(name, close) {
+        registered.set(name, close);
+      },
+    },
+  };
+
+  load('assets/js/navbar-menu.js');
+  toggle.dispatch('click');
+  assert.equal(panel.hidden, false);
+  assert.equal(toggle.getAttribute('aria-expanded'), 'true');
+  assert.equal(toggle.getAttribute('aria-label'), 'Collapse Docs');
+  assert.deepEqual(coordinated, ['navbar-menu-0']);
+
+  const down = keyboardEvent('ArrowDown');
+  toggle.dispatch('keydown', down);
+  assert.equal(down.defaultPrevented, true);
+  assert.equal(document.activeElement, first);
+
+  const next = keyboardEvent('ArrowDown');
+  panel.dispatch('keydown', next);
+  assert.equal(document.activeElement, second);
+
+  const escape = keyboardEvent('Escape');
+  panel.dispatch('keydown', escape);
+  assert.equal(panel.hidden, true);
+  assert.equal(document.activeElement, toggle);
+  assert.equal(toggle.getAttribute('aria-expanded'), 'false');
+
+  toggle.dispatch('click');
+  (documentListeners.get('pointerdown') || [])[0]({ target: element() });
+  assert.equal(panel.hidden, true);
+  toggle.dispatch('click');
+  registered.get('navbar-menu-0')(false);
+  assert.equal(panel.hidden, true);
+
+  function runAccordions(singleOpen) {
+    const a = navbarSection();
+    const b = navbarSection();
+    const root = element({
+      dataset: { accordionSingleOpen: singleOpen ? 'true' : 'false' },
+      querySelectorAll() {
+        return [a.section, b.section];
+      },
+    });
+    global.document = {
+      activeElement: null,
+      addEventListener() {},
+      querySelector(selector) {
+        return selector === '[data-mobile-menu]' ? root : null;
+      },
+      querySelectorAll() {
+        return [];
+      },
+    };
+    global.window = { requestAnimationFrame(callback) { callback(); } };
+    load('assets/js/navbar-menu.js');
+    a.toggle.dispatch('click');
+    b.toggle.dispatch('click');
+    return { a, b };
+  }
+
+  const multiple = runAccordions(false);
+  assert.equal(multiple.a.panel.hidden, false);
+  assert.equal(multiple.b.panel.hidden, false);
+  multiple.a.parent.dispatch('click');
+  assert.equal(multiple.a.panel.hidden, false, 'parent link must not toggle');
+
+  const single = runAccordions(true);
+  assert.equal(single.a.panel.hidden, true);
+  assert.equal(single.b.panel.hidden, false);
+
+  const active = navbarSection(true);
+  const activeRoot = element({
+    dataset: { accordionSingleOpen: 'false' },
+    querySelectorAll() {
+      return [active.section];
+    },
+  });
+  global.document = {
+    activeElement: null,
+    addEventListener() {},
+    querySelector(selector) {
+      return selector === '[data-mobile-menu]' ? activeRoot : null;
+    },
+    querySelectorAll() {
+      return [];
+    },
+  };
+  global.window = { requestAnimationFrame(callback) { callback(); } };
+  load('assets/js/navbar-menu.js');
+  assert.equal(active.panel.hidden, false);
+  assert.equal(active.toggle.getAttribute('aria-expanded'), 'true');
 }
 
 function testPaletteFocusFromDrawer() {
@@ -214,4 +406,5 @@ function testPaletteFocusFromDrawer() {
 
 testCoordinatorCompatibility();
 testPaletteFocusFromDrawer();
+testNavbarDisclosureAndAccordion();
 console.log('PRD 4 surface behavior checks passed');
