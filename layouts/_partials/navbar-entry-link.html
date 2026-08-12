@@ -1,0 +1,38 @@
+{{- /* Render one resolved Hugo Menu link for the top navbar.
+
+Input keys: page, entry, class, level, kind. The caller owns surrounding
+dropdown or accordion semantics; this partial keeps URL, active, icon, and
+external-link behavior identical at every rendered level. */ -}}
+{{- $page := .page -}}
+{{- $entry := .entry -}}
+{{- $class := .class -}}
+{{- $level := .level | default 0 -}}
+{{- $kind := .kind | default "link" -}}
+{{- $showDescription := .showDescription | default false -}}
+{{- $region := cond (strings.Contains $class "mobile-menu") "mobile" "desktop" -}}
+{{- $baseURL := urls.Parse $page.Site.BaseURL -}}
+{{- $target := urls.Parse $entry.URL -}}
+{{- $external := and $target.Host (ne $baseURL.Host $target.Host) -}}
+{{- $current := $page.IsMenuCurrent "main" $entry -}}
+{{- $active := or $current ($page.HasMenuCurrent "main" $entry) -}}
+{{- if and (eq $entry.Identifier "docs") (eq $page.Type "docs") -}}
+  {{- $active = true -}}
+{{- else if and (eq $entry.Identifier "blog") (eq $page.Type "blog") -}}
+  {{- $active = true -}}
+{{- end -}}
+{{- $href := $entry.URL -}}
+{{- if not $external }}{{ $href = $entry.URL | relLangURL }}{{ end -}}
+{{- with $entry.Page -}}
+  {{- $current = eq $page.RelPermalink .RelPermalink -}}
+  {{- $active = or $active ($page.IsDescendant .) -}}
+  {{- $href = .RelPermalink -}}
+{{- end -}}
+<a class="{{ $class }}{{ if $active }} active{{ end }}" href="{{ $href }}"
+  data-td-navbar-level="{{ $level }}" data-td-navbar-kind="{{ $kind }}"
+  data-td-navbar-region="{{ $region }}" data-td-navbar-label="{{ $entry.Name | plainify }}"
+  data-td-navbar-external="{{ if $external }}true{{ else }}false{{ end }}"{{ if $current }} aria-current="page"{{ end }}{{ if $external }} target="_blank" rel="noopener noreferrer"{{ end }}>
+  <i class="{{ partial "menu-icon.html" $entry }}" aria-hidden="true"></i>
+  <span class="td-navbar-entry__label">{{ $entry.Name }}</span>
+  {{- if $showDescription }}{{ with $entry.Params.description }}<small class="td-navbar-entry__description">{{ . }}</small>{{ end }}{{ end -}}
+  {{- if $external }}<span class="td-navbar-entry__external">{{ partialCached "shell/icon.html" "external-link" "navbar-external-link" }}</span>{{ end -}}
+</a>

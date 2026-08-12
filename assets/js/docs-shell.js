@@ -3,8 +3,8 @@
  *
  * Modules: rootMenu (root switcher), drawer (mobile navigation), collapse
  * (desktop sidebar and hover overlay), resize, treeScroll, toc (SVG track,
- * clip-path highlight, and moving dot), and search (command dialog with a
- * CJK substring fallback for lunr).
+ * clip-path highlight, and moving dot). The local search/Palette controller
+ * lives in command-palette.js so it can be omitted independently.
  *
  * The theme keeps the `td-color-theme` localStorage key and
  * <html data-bs-theme>. The collapsed sidebar state is stored under
@@ -127,18 +127,24 @@
     if (!root) return;
     var btn = root.querySelector('[data-td-shell-root-toggle]');
     var pop = root.querySelector('.td-shell-root__pop');
+    var closeTimer = 0;
     if (!btn || !pop) return;
 
-    function close() {
+    function close(restoreFocus) {
       if (pop.hidden) return;
+      window.clearTimeout(closeTimer);
       pop.classList.remove('is-open');
       btn.setAttribute('aria-expanded', 'false');
-      window.setTimeout(function () {
+      closeTimer = window.setTimeout(function () {
         pop.hidden = true;
       }, 100);
+      if (restoreFocus === true) btn.focus();
       document.removeEventListener('pointerdown', onOutside, true);
     }
     function open() {
+      window.clearTimeout(closeTimer);
+      if (window.OinkSurfaceCoordinator)
+        window.OinkSurfaceCoordinator.closeOthers('root-menu', ['drawer']);
       pop.hidden = false;
       btn.setAttribute('aria-expanded', 'true');
       window.requestAnimationFrame(function () {
@@ -146,18 +152,22 @@
       });
       document.addEventListener('pointerdown', onOutside, true);
     }
+    if (window.OinkSurfaceCoordinator)
+      window.OinkSurfaceCoordinator.register('root-menu', function (restoreFocus) {
+        close(restoreFocus);
+      });
     function onOutside(e) {
-      if (!root.contains(e.target)) close();
+      if (!root.contains(e.target)) close(false);
     }
     btn.addEventListener('click', function () {
       if (pop.hidden) {
         open();
       } else {
-        close();
+        close(false);
       }
     });
     document.addEventListener('keydown', function (e) {
-      if (e.key === 'Escape' && !pop.hidden) close();
+      if (e.key === 'Escape' && !pop.hidden) close(true);
     });
   }
 
@@ -172,6 +182,8 @@
     );
     var lastOpener = null;
     function open(event) {
+      if (window.OinkSurfaceCoordinator)
+        window.OinkSurfaceCoordinator.closeOthers('drawer');
       lastOpener = event.currentTarget;
       html.setAttribute('data-td-shell-drawer', 'open');
       openers.forEach(function (el) {
@@ -182,6 +194,8 @@
           closeButton.focus();
         });
     }
+    if (window.OinkSurfaceCoordinator)
+      window.OinkSurfaceCoordinator.register('drawer', close);
     function close(restoreFocus) {
       var wasOpen = html.hasAttribute('data-td-shell-drawer');
       html.removeAttribute('data-td-shell-drawer');
@@ -742,18 +756,15 @@
 
   /* ---------------------------------------------------------- pageContext */
 
-  // LLM and Markdown actions in the TOC rail's action list.
+  // LLM actions in the TOC rail's action list. Page actions use OinkActions.
   function initPageContext() {
     document
       .querySelectorAll('[data-td-page-context]')
       .forEach(function (root) {
-        var status = root.querySelector('[data-td-page-context-status]');
         var openInLinks = root.querySelectorAll('[data-td-page-open-in]');
         var openInPrompt =
           root.dataset.tdPageOpenInPrompt ||
           'Read from %s so I can ask questions about it.';
-        var copyButtons = root.querySelectorAll('[data-td-page-copy]');
-        var cached = new Map();
 
         // Match Nextra's current behavior: use the browser URL at activation
         // time so the deployed host, query string, and current hash survive.
@@ -773,427 +784,7 @@
             syncOpenInLink(link);
           });
         });
-
-        function announce(text) {
-          if (!status) return;
-          status.textContent = '';
-          window.requestAnimationFrame(function () {
-            status.textContent = text;
-          });
-        }
-
-        function fallbackCopy(text) {
-          return new Promise(function (resolve, reject) {
-            var textarea = document.createElement('textarea');
-            textarea.value = text;
-            textarea.setAttribute('readonly', '');
-            textarea.style.position = 'fixed';
-            textarea.style.opacity = '0';
-            document.body.appendChild(textarea);
-            textarea.select();
-            try {
-              if (document.execCommand('copy')) {
-                resolve();
-              } else {
-                reject(new Error('copy failed'));
-              }
-            } catch (error) {
-              reject(error);
-            }
-            textarea.remove();
-          });
-        }
-
-        function writeClipboard(text) {
-          if (navigator.clipboard && navigator.clipboard.writeText) {
-            return navigator.clipboard.writeText(text);
-          }
-          return fallbackCopy(text);
-        }
-
-        function showCopied(button) {
-          var label = button.querySelector('[data-td-page-copy-label]');
-          button.classList.add('is-copied');
-          if (label && !label.dataset.original)
-            label.dataset.original = label.textContent;
-          if (label)
-            label.textContent = root.dataset.tCopied || label.textContent;
-          announce(root.dataset.tCopied || 'Copied');
-          window.setTimeout(function () {
-            button.classList.remove('is-copied');
-            if (label && label.dataset.original)
-              label.textContent = label.dataset.original;
-          }, 1400);
-        }
-
-        function fetchMarkdown(url) {
-          if (cached.has(url)) return Promise.resolve(cached.get(url));
-          return fetch(url)
-            .then(function (response) {
-              if (!response.ok) throw new Error('Markdown request failed');
-              return response.text();
-            })
-            .then(function (text) {
-              cached.set(url, text);
-              return text;
-            });
-        }
-
-        copyButtons.forEach(function (button) {
-          var url = button.dataset.url;
-          if (!url) return;
-          // Warm the cache on intent rather than on load: most readers never
-          // press this, and an unconditional fetch is a request per page view.
-          ['pointerenter', 'focus'].forEach(function (event) {
-            button.addEventListener(
-              event,
-              function () {
-                fetchMarkdown(url).catch(function () {
-                  /* retry on activation */
-                });
-              },
-              { once: true },
-            );
-          });
-          button.addEventListener('click', function () {
-            fetchMarkdown(url)
-              .then(writeClipboard)
-              .then(function () {
-                showCopied(button);
-              })
-              .catch(function () {
-                announce(root.dataset.tCopyError || 'Copy failed');
-              });
-          });
-        });
       });
-  }
-
-  /* --------------------------------------------------------------- search */
-
-  function initSearch() {
-    var root = document.getElementById('td-shell-search');
-    if (!root) return;
-    var input = root.querySelector('.td-shell-search__input');
-    var list = root.querySelector('.td-shell-search__list');
-    var panel = root.querySelector('.td-shell-search__panel');
-    var status = root.querySelector('[data-td-shell-search-status]');
-    if (!input || !list || !panel || !status) return;
-
-    var CJK = /[぀-ヿ㐀-䶿一-鿿豈-﫿]/;
-    var index = null;
-    var docs = null;
-    var docByRef = new Map();
-    var loading = false;
-    var results = [];
-    var selected = 0;
-    var hideTimer = 0;
-    var maxResults = parseInt(root.dataset.maxResults, 10);
-    if (!Number.isFinite(maxResults) || maxResults < 1) maxResults = 10;
-    var openers = document.querySelectorAll('[data-td-shell-search-open]');
-    var lastOpener = null;
-
-    function isOpen() {
-      return root.classList.contains('is-open');
-    }
-
-    function open(event) {
-      lastOpener =
-        event && event.currentTarget
-          ? event.currentTarget
-          : document.activeElement;
-      window.clearTimeout(hideTimer);
-      root.hidden = false;
-      html.setAttribute('data-td-shell-lock', '');
-      openers.forEach(function (el) {
-        el.setAttribute('aria-expanded', 'true');
-      });
-      input.setAttribute('aria-expanded', 'true');
-      window.requestAnimationFrame(function () {
-        root.classList.add('is-open');
-      });
-      input.focus();
-      input.select();
-      ensureIndex();
-    }
-    function close() {
-      root.classList.remove('is-open');
-      html.removeAttribute('data-td-shell-lock');
-      openers.forEach(function (el) {
-        el.setAttribute('aria-expanded', 'false');
-      });
-      input.setAttribute('aria-expanded', 'false');
-      input.removeAttribute('aria-activedescendant');
-      if (lastOpener && root.contains(document.activeElement))
-        lastOpener.focus();
-      hideTimer = window.setTimeout(function () {
-        root.hidden = true;
-      }, 240);
-    }
-
-    function announce(text) {
-      status.textContent = '';
-      window.requestAnimationFrame(function () {
-        status.textContent = text;
-      });
-    }
-
-    function message(text) {
-      list.textContent = '';
-      input.removeAttribute('aria-activedescendant');
-      var el = document.createElement('div');
-      el.className = 'td-shell-search__empty';
-      el.textContent = text;
-      list.appendChild(el);
-      announce(text);
-    }
-
-    function ensureIndex() {
-      if (index || loading) return;
-      loading = true;
-      list.setAttribute('aria-busy', 'true');
-      if (!docs) message(root.dataset.tLoading || '…');
-      fetch(root.dataset.indexSrc)
-        .then(function (r) {
-          return r.json();
-        })
-        .then(function (data) {
-          docs = data;
-          data.forEach(function (d) {
-            docByRef.set(d.ref, d);
-          });
-          index = lunr(function () {
-            this.ref('ref');
-            this.field('title', { boost: 5 });
-            this.field('categories', { boost: 3 });
-            this.field('tags', { boost: 3 });
-            this.field('headings', { boost: 3 });
-            this.field('description', { boost: 2 });
-            this.field('body');
-            data.forEach(function (d) {
-              this.add(d);
-            }, this);
-          });
-          loading = false;
-          list.removeAttribute('aria-busy');
-          render(input.value);
-        })
-        .catch(function () {
-          loading = false;
-          list.removeAttribute('aria-busy');
-          message(root.dataset.tEmpty || 'No results');
-        });
-    }
-
-    // lunr cannot tokenize CJK reliably, so scan the indexed text for substrings.
-    function queryCjk(q) {
-      var hits = [];
-      var needle = q.toLowerCase();
-      docs.forEach(function (d) {
-        var titleAt = (d.title || '').toLowerCase().indexOf(needle);
-        var headingAt = (d.headings || '').toLowerCase().indexOf(needle);
-        var descAt = (d.description || '').toLowerCase().indexOf(needle);
-        var bodyAt = (d.body || '').toLowerCase().indexOf(needle);
-        var score =
-          (titleAt >= 0 ? 100 : 0) +
-          (headingAt >= 0 ? 50 : 0) +
-          (descAt >= 0 ? 30 : 0) +
-          (bodyAt >= 0 ? 10 : 0);
-        if (!score) return;
-        var excerpt = d.excerpt || '';
-        if (bodyAt >= 0) {
-          var start = Math.max(0, bodyAt - 24);
-          excerpt =
-            (start > 0 ? '…' : '') + d.body.slice(start, bodyAt + 56) + '…';
-        } else if (descAt >= 0) {
-          excerpt = d.description;
-        }
-        hits.push({ doc: d, score: score, excerpt: excerpt });
-      });
-      hits.sort(function (a, b) {
-        return b.score - a.score;
-      });
-      return hits.slice(0, maxResults);
-    }
-
-    // Latin queries retain exact, wildcard, and edit-distance matching.
-    function queryLatin(q) {
-      var found = index.query(function (builder) {
-        lunr.tokenizer(q.toLowerCase()).forEach(function (token) {
-          var term = token.toString();
-          builder.term(term, { boost: 100 });
-          builder.term(term, {
-            wildcard:
-              lunr.Query.wildcard.LEADING | lunr.Query.wildcard.TRAILING,
-            boost: 10,
-          });
-          builder.term(term, { editDistance: 2 });
-        });
-      });
-      return found
-        .slice(0, maxResults)
-        .map(function (r) {
-          var doc = docByRef.get(r.ref);
-          return doc
-            ? { doc: doc, excerpt: doc.excerpt || doc.description || '' }
-            : null;
-        })
-        .filter(Boolean);
-    }
-
-    function highlight(text, q) {
-      var fragment = document.createDocumentFragment();
-      var at = q ? text.toLowerCase().indexOf(q.toLowerCase()) : -1;
-      if (at < 0) {
-        fragment.appendChild(document.createTextNode(text));
-        return fragment;
-      }
-      fragment.appendChild(document.createTextNode(text.slice(0, at)));
-      var mark = document.createElement('mark');
-      mark.textContent = text.slice(at, at + q.length);
-      fragment.appendChild(mark);
-      fragment.appendChild(document.createTextNode(text.slice(at + q.length)));
-      return fragment;
-    }
-
-    function select(i) {
-      var options = Array.prototype.slice.call(
-        list.querySelectorAll('[role="option"]'),
-      );
-      if (!options.length) {
-        input.removeAttribute('aria-activedescendant');
-        return;
-      }
-      selected = Math.max(0, Math.min(i, options.length - 1));
-      options.forEach(function (row, n) {
-        row.setAttribute('aria-selected', n === selected ? 'true' : 'false');
-      });
-      var row = options[selected];
-      input.setAttribute('aria-activedescendant', row.id);
-      row.scrollIntoView({ block: 'nearest' });
-    }
-
-    function render(q) {
-      q = (q || '').trim();
-      if (!docs || !index) return;
-      list.textContent = '';
-      results = [];
-      selected = 0;
-      input.removeAttribute('aria-activedescendant');
-      if (!q) {
-        status.textContent = '';
-        return;
-      }
-
-      try {
-        results = CJK.test(q) ? queryCjk(q) : queryLatin(q);
-      } catch (e) {
-        results = [];
-      }
-      if (!results.length) {
-        message(root.dataset.tEmpty || 'No results');
-        return;
-      }
-      results.forEach(function (r, i) {
-        var row = document.createElement('a');
-        row.className = 'td-shell-search__item';
-        row.id = 'td-shell-search-option-' + i;
-        row.setAttribute('role', 'option');
-        row.setAttribute('aria-selected', 'false');
-        row.setAttribute('tabindex', '-1');
-        row.href = r.doc.ref;
-
-        var title = document.createElement('div');
-        title.className = 'td-shell-search__item-title';
-        title.appendChild(highlight(r.doc.title || r.doc.ref, q));
-        row.appendChild(title);
-
-        var ref = document.createElement('div');
-        ref.className = 'td-shell-search__item-ref';
-        ref.textContent = r.doc.ref;
-        row.appendChild(ref);
-
-        if (r.excerpt) {
-          var excerpt = document.createElement('div');
-          excerpt.className = 'td-shell-search__item-excerpt';
-          excerpt.appendChild(highlight(r.excerpt, q));
-          row.appendChild(excerpt);
-        }
-
-        row.addEventListener('pointermove', function () {
-          if (selected !== i) select(i);
-        });
-        list.appendChild(row);
-      });
-      select(0);
-      announce(
-        (root.dataset.tResults || '{count} results').replace(
-          '{count}',
-          String(results.length),
-        ),
-      );
-    }
-
-    var debounce = 0;
-    input.addEventListener('input', function () {
-      window.clearTimeout(debounce);
-      debounce = window.setTimeout(function () {
-        render(input.value);
-      }, 80);
-    });
-    input.addEventListener('keydown', function (e) {
-      if (e.key === 'ArrowDown') {
-        e.preventDefault();
-        if (results.length) select(Math.min(selected + 1, results.length - 1));
-      } else if (e.key === 'ArrowUp') {
-        e.preventDefault();
-        if (results.length) select(Math.max(selected - 1, 0));
-      } else if (e.key === 'Home') {
-        e.preventDefault();
-        if (results.length) select(0);
-      } else if (e.key === 'End') {
-        e.preventDefault();
-        if (results.length) select(results.length - 1);
-      } else if (e.key === 'Enter') {
-        var row = list.querySelectorAll('[role="option"]')[selected];
-        if (row && row.href) window.location.href = row.href;
-      }
-    });
-
-    document.addEventListener('keydown', tabTrap(panel, isOpen), true);
-
-    document.addEventListener('keydown', function (e) {
-      if ((e.metaKey || e.ctrlKey) && String(e.key).toLowerCase() === 'k') {
-        e.preventDefault();
-        if (isOpen()) {
-          close();
-        } else {
-          open();
-        }
-      } else if (e.key === 'Escape' && isOpen()) {
-        close();
-      }
-    });
-    openers.forEach(function (el) {
-      el.addEventListener('click', open);
-    });
-    root
-      .querySelectorAll('[data-td-shell-search-close]')
-      .forEach(function (el) {
-        el.addEventListener('click', close);
-      });
-
-    // Show Ctrl instead of the Command badge on non-Apple platforms.
-    var apple = /Mac|iPhone|iPad|iPod/.test(
-      navigator.platform || navigator.userAgent,
-    );
-    if (!apple) {
-      document
-        .querySelectorAll('[data-td-shell-meta-key]')
-        .forEach(function (el) {
-          el.textContent = 'Ctrl';
-        });
-    }
   }
 
   /* ----------------------------------------------------------------- boot */
@@ -1211,7 +802,6 @@
   initAsideRelocate();
   initToc();
   initPageContext();
-  initSearch();
 
   // Restore transitions after the first painted frame.
   window.requestAnimationFrame(function () {

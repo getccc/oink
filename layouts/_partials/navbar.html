@@ -1,6 +1,4 @@
 {{- $config := partial "shell/config.html" . -}}
-{{- $baseURL := urls.Parse .Site.BaseURL -}}
-{{- $page := . -}}
 {{- $darkMode := partialCached "dark-mode-config.html" "dark-mode-global" -}}
 {{- $targets := partial "language-targets.html" . -}}
 {{- $localSearch := partial "shell/search-enabled.html" . -}}
@@ -17,26 +15,9 @@
       </a>
 
       <div class="nav-links">
-        {{- range .Site.Menus.main -}}
+        {{- range $index, $entry := .Site.Menus.main -}}
           {{- if ne .Identifier "github" -}}
-            {{- $target := urls.Parse .URL -}}
-            {{- $external := and $target.Host (ne $baseURL.Host $target.Host) -}}
-            {{- $active := or ($page.IsMenuCurrent "main" .) ($page.HasMenuCurrent "main" .) -}}
-            {{- if and (eq .Identifier "docs") (eq $page.Type "docs") -}}
-              {{- $active = true -}}
-            {{- else if and (eq .Identifier "blog") (eq $page.Type "blog") -}}
-              {{- $active = true -}}
-            {{- end -}}
-            {{- $href := .URL -}}
-            {{- if not $external }}{{ $href = .URL | relLangURL }}{{ end -}}
-            {{- with .Page -}}
-              {{- $active = or $active ($page.IsDescendant .) -}}
-              {{- $href = .RelPermalink -}}
-            {{- end }}
-        <a class="nav-link{{ if $active }} active{{ end }}" href="{{ $href }}"{{ if $external }} target="_blank" rel="noopener noreferrer"{{ end }}>
-          <i class="{{ partial "menu-icon.html" . }}" aria-hidden="true"></i>
-          <span>{{ .Name }}</span>
-        </a>
+            {{- partial "navbar-item.html" (dict "page" $ "entry" $entry "mode" "desktop" "index" $index) -}}
           {{- end -}}
         {{- end }}
         {{- if .Site.Params.versions }}
@@ -80,27 +61,11 @@
   </div>
 </header>
 
-<div class="mobile-menu d-print-none" id="mobile-site-menu" data-mobile-menu>
-  {{- range .Site.Menus.main -}}
+<div class="mobile-menu d-print-none" id="mobile-site-menu" data-mobile-menu
+  data-accordion-single-open="{{ if .Site.Params.ui.navbar_accordion_single_open }}true{{ else }}false{{ end }}">
+  {{- range $index, $entry := .Site.Menus.main -}}
     {{- if ne .Identifier "github" -}}
-      {{- $target := urls.Parse .URL -}}
-      {{- $external := and $target.Host (ne $baseURL.Host $target.Host) -}}
-      {{- $active := or ($page.IsMenuCurrent "main" .) ($page.HasMenuCurrent "main" .) -}}
-      {{- if and (eq .Identifier "docs") (eq $page.Type "docs") -}}
-        {{- $active = true -}}
-      {{- else if and (eq .Identifier "blog") (eq $page.Type "blog") -}}
-        {{- $active = true -}}
-      {{- end -}}
-      {{- $href := .URL -}}
-      {{- if not $external }}{{ $href = .URL | relLangURL }}{{ end -}}
-      {{- with .Page -}}
-        {{- $active = or $active ($page.IsDescendant .) -}}
-        {{- $href = .RelPermalink -}}
-      {{- end }}
-  <a class="mobile-menu-link{{ if $active }} active{{ end }}" href="{{ $href }}"{{ if $external }} target="_blank" rel="noopener noreferrer"{{ end }}>
-    <i class="{{ partial "menu-icon.html" . }}" aria-hidden="true"></i>
-    <span>{{ .Name }}</span>
-  </a>
+      {{- partial "navbar-item.html" (dict "page" $ "entry" $entry "mode" "mobile" "index" $index) -}}
     {{- end -}}
   {{- end }}
   {{- if $localSearch }}

@@ -16,6 +16,17 @@ ui_search_results: '找到 {count} 条结果'
 ui_search_nav: 选择
 ui_search_open: 打开
 ui_search_close: 关闭
+ui_palette_empty_query: 快速链接与操作
+ui_palette_actions: 操作
+ui_palette_page_actions: 页面操作
+ui_palette_preferences: 偏好设置
+ui_palette_commands: 命令
+ui_palette_quick_links: 快速链接
+ui_palette_no_commands: 未找到匹配命令
+ui_palette_choose: 请选择一项
+ui_palette_action_failed: 无法完成此操作
+ui_palette_pages: 页面
+ui_palette_index_unavailable: 页面索引暂不可用，操作仍可使用
 ui_sidebar_nav: 章节导航
 ui_main_nav: 主导航
 ui_home: 首页
@@ -56,6 +67,7 @@ ui_code_collapse: 收起代码
 ui_code_group_label: 代码示例
 ui_kbd_with: 加
 ui_field_required: 必填
+ui_action_unavailable: 暂不可用
 ui_field_default: 默认值
 ui_image_zoom_dialog: 图片预览
 ui_image_zoom_open: 打开图片预览

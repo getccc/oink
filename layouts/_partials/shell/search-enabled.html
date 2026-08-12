@@ -1,2 +1,3 @@
 {{- $surface := or .IsHome (partial "shell/chrome-enabled.html" .) -}}
-{{- return and $surface .Site.Params.offlineSearch -}}
+{{- $format := partial "outputformat.html" . -}}
+{{- return and .Site.Params.offlineSearch $surface (ne $format "print") -}}

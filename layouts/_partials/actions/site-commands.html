@@ -1,0 +1,91 @@
+{{- /* Compile localized site commands into inert data. Configuration can
+     reference a built-in action or a safe URL, never executable code. */ -}}
+{{- $allowedActions := slice "copy_markdown" "view_markdown" "edit_page" "create_issue" "print" "switch_theme" "switch_language" "switch_version" "open_github" -}}
+{{- $allowedKeys := slice "id" "title" "description" "icon" "keywords" "url" "action" -}}
+{{- $defaultSite := site -}}
+{{- range hugo.Sites -}}
+  {{- if .IsDefault }}{{ $defaultSite = . }}{{ end -}}
+{{- end -}}
+{{- $defaultCommands := slice -}}
+{{- with $defaultSite.Params.ui.command_palette }}{{ with .commands }}{{ $defaultCommands = . }}{{ end }}{{ end -}}
+{{- $currentCommands := slice -}}
+{{- $languageParams := site.Language.Params | default dict -}}
+{{- with $languageParams.ui }}{{ with .command_palette }}{{ with .commands }}{{ $currentCommands = . }}{{ end }}{{ end }}{{ end -}}
+{{- if not $currentCommands }}{{ with site.Params.ui.command_palette }}{{ with .commands }}{{ $currentCommands = . }}{{ end }}{{ end }}{{ end -}}
+{{- if and $defaultCommands (not (reflect.IsSlice $defaultCommands)) }}{{ errorf "params.ui.command_palette.commands must be an array" }}{{ end -}}
+{{- if and $currentCommands (not (reflect.IsSlice $currentCommands)) }}{{ errorf "params.ui.command_palette.commands must be an array" }}{{ end -}}
+{{- $records := dict -}}
+{{- $order := slice -}}
+{{- range $defaultCommands -}}
+  {{- $validated := partial "actions/validate-command.html" (dict "record" . "scope" "command") -}}
+  {{- $id := .id | default "" | printf "%v" -}}
+  {{- if not (findRE `^[a-z][a-z0-9_-]*$` $id) }}{{ errorf "invalid command id %q" $id }}{{ end -}}
+  {{- if isset $records $id }}{{ errorf "duplicate command id %q" $id }}{{ end -}}
+  {{- $records = merge $records (dict $id .) -}}
+  {{- $order = $order | append $id -}}
+{{- end -}}
+{{- if ne site.Language.Lang $defaultSite.Language.Lang -}}
+  {{- $localizedSeen := dict -}}
+  {{- range $currentCommands -}}
+    {{- $validated := partial "actions/validate-command.html" (dict "record" . "scope" "localized command") -}}
+    {{- $id := .id | default "" | printf "%v" -}}
+    {{- if not (findRE `^[a-z][a-z0-9_-]*$` $id) }}{{ errorf "invalid command id %q" $id }}{{ end -}}
+    {{- if isset $localizedSeen $id }}{{ errorf "duplicate localized command id %q" $id }}{{ end -}}
+    {{- $localizedSeen = merge $localizedSeen (dict $id true) -}}
+    {{- $base := index $records $id | default dict -}}
+    {{- if not (isset $records $id) }}{{ $order = $order | append $id }}{{ end -}}
+    {{- $merged := merge $base . -}}
+    {{- range $key, $value := . -}}
+      {{- $scratch := collections.NewScratch -}}
+      {{- range $baseKey, $baseValue := $merged }}{{ $scratch.Set $baseKey $baseValue }}{{ end -}}
+      {{- $scratch.Set $key $value -}}
+      {{- $merged = $scratch.Values -}}
+    {{- end -}}
+    {{- $recordScratch := collections.NewScratch -}}
+    {{- range $existingID, $existingRecord := $records }}{{ $recordScratch.Set $existingID $existingRecord }}{{ end -}}
+    {{- $recordScratch.Set $id $merged -}}
+    {{- $records = $recordScratch.Values -}}
+  {{- end -}}
+{{- end -}}
+{{- $commands := slice -}}
+{{- range $order -}}
+  {{- $id := . -}}
+  {{- $record := index $records $id -}}
+  {{- range $key, $_ := $record -}}
+    {{- if not (in $allowedKeys $key) }}{{ errorf "command %q uses unsupported key %q" $id $key }}{{ end -}}
+  {{- end -}}
+  {{- if in $allowedActions $id }}{{ errorf "command id %q is reserved by a built-in action" $id }}{{ end -}}
+  {{- $rawURL := $record.url | default "" | printf "%v" -}}
+  {{- $url := strings.TrimSpace $rawURL -}}
+  {{- $action := $record.action | default "" | printf "%v" | strings.TrimSpace -}}
+  {{- if eq (ne $url "") (ne $action "") }}{{ errorf "command %q must define exactly one of url or action" $id }}{{ end -}}
+  {{- if and $action (not (in $allowedActions $action)) }}{{ errorf "command %q references unsupported action %q" $id $action }}{{ end -}}
+  {{- if $url -}}
+    {{- $parsed := urls.Parse $url -}}
+    {{- $scheme := lower $parsed.Scheme -}}
+    {{- if or (ne $rawURL $url) (findRE `[\x00-\x20\x7f]` $url) (strings.HasPrefix $url "//") (findRE `\\` $url) (and $scheme (not (in (slice "http" "https") $scheme))) -}}
+      {{- errorf "command %q uses unsafe URL %q" $id $url -}}
+    {{- end -}}
+    {{- if not (or $parsed.Scheme $parsed.Host) -}}
+      {{- if strings.HasPrefix $url "#" -}}
+        {{- /* A fragment remains relative to the current page. */ -}}
+      {{- else -}}
+        {{- $url = strings.TrimPrefix "/" $url | relLangURL -}}
+      {{- end -}}
+    {{- end -}}
+  {{- end -}}
+  {{- $keywords := $record.keywords | default (slice) -}}
+  {{- $normalizedKeywords := slice -}}
+  {{- range $keywords }}{{ $normalizedKeywords = $normalizedKeywords | append (printf "%v" .) }}{{ end -}}
+  {{- $target := "self" -}}
+  {{- if $url }}{{ with urls.Parse $url }}{{ if or .Scheme .Host }}{{ $target = "blank" }}{{ end }}{{ end }}{{ end -}}
+  {{- $commands = $commands | append (dict
+    "id" $id "title" ($record.title | default $id | printf "%v")
+    "description" ($record.description | default "" | printf "%v")
+    "icon" ($record.icon | default "fa-solid fa-link" | printf "%v")
+    "keywords" $normalizedKeywords "kind" (cond (ne $url "") "url" "builtin")
+    "url" $url "action" $action "target" $target "available" true
+    "disabledReason" "" "placements" (dict "page" false "palette" true)
+  ) -}}
+{{- end -}}
+{{- return $commands -}}

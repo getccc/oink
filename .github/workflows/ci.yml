@@ -36,6 +36,27 @@ jobs:
       - name: Check content primitive contract
         run: python3 scripts/check-content-primitives-contract.py
 
+      - name: Check PRD 4 contracts and characterization
+        run: python3 scripts/check-prd4-contract.py
+
+      - name: Check PRD 4 runtime isolation
+        run: python3 scripts/check-prd4-runtime.py
+
+      - name: Check sidebar icon density policies
+        run: python3 scripts/check-sidebar-icons.py
+
+      - name: Check search metadata and ranking
+        run: python3 scripts/check-prd4-search.py
+
+      - name: Check action registry and command manifest
+        run: python3 scripts/check-prd4-actions.py
+
+      - name: Check Command Palette modes and behavior
+        run: python3 scripts/check-prd4-palette.py
+
+      - name: Check PRD 4 bilingual migration and starter guidance
+        run: python3 scripts/check-prd4-docs.py
+
       - name: Build the example site without warnings
         working-directory: exampleSite
         run: hugo --printPathWarnings --panicOnWarning

@@ -6,7 +6,7 @@
 {{- if $page.Site.Params.version_menu_pagelinks }}{{ $path = $page.Page.RelPermalink }}{{ end -}}
 {{- $baseURL := strings.TrimSuffix "/" $page.Site.BaseURL -}}
 
-<div class="td-version-menu dropdown{{ if $dropup }} dropup{{ end }}">
+<div class="td-version-menu dropdown{{ if $dropup }} dropup{{ end }}" data-td-version-menu>
   <button class="td-version-menu__title" type="button" data-bs-toggle="dropdown"
     aria-haspopup="true" aria-expanded="false" aria-label="{{ $menuName | plainify }}">
     <i class="fa-solid fa-code-branch" aria-hidden="true"></i>

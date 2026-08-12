@@ -36,11 +36,19 @@ limitations under the License.
         if (!toggle || !menu) return;
 
         function setOpen(open) {
+            if (open && window.OinkSurfaceCoordinator) {
+                window.OinkSurfaceCoordinator.closeOthers('mobile-menu');
+            }
             menu.classList.toggle('active', open);
             toggle.classList.toggle('active', open);
             toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
             const label = open ? toggle.dataset.labelClose : toggle.dataset.labelOpen;
             if (label) toggle.setAttribute('aria-label', label);
+        }
+        if (window.OinkSurfaceCoordinator) {
+            window.OinkSurfaceCoordinator.register('mobile-menu', function() {
+                setOpen(false);
+            });
         }
 
         toggle.addEventListener('click', function() {
@@ -65,14 +73,22 @@ limitations under the License.
     }
 
     function initLanguageMenus() {
-        document.querySelectorAll('.td-language-selector--menu').forEach(function(menu) {
+        document.querySelectorAll('.td-language-selector--menu').forEach(function(menu, index) {
             const trigger = menu.querySelector('.td-language-selector__trigger');
+            const surfaceName = 'language-menu-' + index;
             let closeTimer = 0;
 
             function open() {
+                if (window.OinkSurfaceCoordinator) {
+                    const keep = menu.closest('#td-shell-sidebar') ? ['drawer'] : [];
+                    window.OinkSurfaceCoordinator.closeOthers(surfaceName, keep);
+                }
                 window.clearTimeout(closeTimer);
                 menu.classList.add('is-open');
                 if (trigger) trigger.setAttribute('aria-expanded', 'true');
+            }
+            if (window.OinkSurfaceCoordinator) {
+                window.OinkSurfaceCoordinator.register(surfaceName, close);
             }
 
             function close() {
@@ -98,8 +114,30 @@ limitations under the License.
         });
     }
 
+    function initVersionMenus() {
+        document.querySelectorAll('[data-td-version-menu]').forEach(function(menu, index) {
+            const trigger = menu.querySelector('[data-bs-toggle="dropdown"]');
+            const surfaceName = 'version-menu-' + index;
+            if (!trigger || !window.bootstrap || !bootstrap.Dropdown) return;
+            const dropdown = bootstrap.Dropdown.getOrCreateInstance(trigger);
+
+            menu.addEventListener('show.bs.dropdown', function() {
+                if (window.OinkSurfaceCoordinator) {
+                    const keep = menu.closest('#td-shell-sidebar') ? ['drawer'] : [];
+                    window.OinkSurfaceCoordinator.closeOthers(surfaceName, keep);
+                }
+            });
+            if (window.OinkSurfaceCoordinator) {
+                window.OinkSurfaceCoordinator.register(surfaceName, function() {
+                    dropdown.hide();
+                });
+            }
+        });
+    }
+
     initHeaderScroll();
     initMobileMenu();
     initLanguageMenus();
+    initVersionMenus();
 
 }());

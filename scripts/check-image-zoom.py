@@ -291,8 +291,9 @@ def check_template_contracts() -> list[str]:
             " ARG ",
             bundle.group(2),
         )
+        placeholders = len(re.findall(r"%(?:v|s)", bundle.group(1)))
         arguments = re.findall(r"\$[A-Za-z][A-Za-z0-9]*|\.[A-Za-z][A-Za-z0-9_.]*|\bARG\b", expression)
-        require(bundle.group(1).count("%v") == len(arguments), "bundle key format/argument count diverged", errors)
+        require(placeholders == len(arguments), "bundle key format/argument count diverged", errors)
         require("$hasImageZoom" in bundle.group(2), "bundle key omits the Zoom variant", errors)
 
     require('resources.Get "js/image-zoom.js"' in scripts, "scripts.html does not append Zoom", errors)

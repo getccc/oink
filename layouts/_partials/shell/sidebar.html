@@ -3,6 +3,7 @@
 {{- $sidebarRoot := cond .Site.Params.ui.sidebar_root_enabled .Site.Home .FirstSection -}}
 {{- $navRoot := $sidebarRoot -}}
 {{- $config := partial "shell/config.html" . -}}
+{{- $iconPolicy := partial "shell/sidebar-icon-policy.html" . -}}
 
 {{- if .Site.Params.ui.sidebar_root_enabled -}}
   {{- if and .IsSection (eq .Params.sidebar_root_for "self") -}}
@@ -35,6 +36,7 @@
   "cacheSidebar" $cacheSidebar
   "sidebarRoot" $sidebarRoot
   "sidebarRootID" $sidebarRoot.RelPermalink
+  "iconPolicy" $iconPolicy
 -}}
 {{- $docsNav := index hugo.Data "docs_nav" | default dict -}}
 {{- $tree := "shell/sidebar-tree.html" -}}

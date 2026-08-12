@@ -1,6 +1,7 @@
 {{/* cSpell:ignore docsearch markmap plantuml katex hasmermaid */ -}}
 {{ $shell := partial "shell/chrome-enabled.html" . -}}
 {{ $localSearch := partial "shell/search-enabled.html" . -}}
+{{ $hasGoogleSearch := ne (.Site.Params.gcs_engine_id | default "") "" -}}
 {{ $hasMarkmap := and .Site.Params.markmap.enable (.Page.Store.Get "hasMarkmap") -}}
 {{ $hasPlantuml := and .Site.Params.plantuml.enable (.Page.Store.Get "hasPlantuml") -}}
 {{ $hasGiscus := .Page.Store.Get "hasGiscus" | default false -}}
@@ -91,19 +92,23 @@ window.markmap = {
 {{ end -}}
 
 {{ $jsBs := resources.Get "third_party/bootstrap/dist/js/bootstrap.bundle.js" -}}
+{{ $jsSurfaces := resources.Get "js/surface-coordinator.js" -}}
 {{ $jsBase := resources.Get "js/base.js" -}}
+{{ $jsNavbar := resources.Get "js/navbar-menu.js" -}}
 {{ $jsSidebarNav := resources.Get "js/sidebar-nav.js" -}}
+{{ $jsActions := resources.Get "js/action-registry.js" -}}
+{{ $jsPageActions := resources.Get "js/page-actions.js" -}}
+{{ $jsPaletteModel := resources.Get "js/palette-model.js" -}}
+{{ $jsPalette := resources.Get "js/command-palette.js" -}}
+{{ $jsSearchEngine := resources.Get "js/search-engine.js" -}}
 {{ $jsSearch := resources.Get "js/search.js" | resources.ExecuteAsTemplate "js/search.js" .Site.Home -}}
 {{ $jsMarkmap := resources.Get "js/markmap.js" | resources.ExecuteAsTemplate "js/markmap.js" . -}}
 {{ $jsPlantuml := resources.Get "js/plantuml.js" | resources.ExecuteAsTemplate "js/plantuml.js" . -}}
 {{ $jsDrawio := resources.Get "js/drawio.js" | resources.ExecuteAsTemplate "js/drawio.js" . -}}
 {{ $jsPako := resources.Get "third_party/pako/pako_deflate.min.js" -}}
 {{ $jsSvgLoader := resources.Get "third_party/external-svg-loader/svg-loader.min.js" -}}
-{{ if .Site.Params.offlineSearch -}}
-  {{ $jsSearch = resources.Get "js/offline-search.js" -}}
-{{ end -}}
 
-{{ $jsArray := slice $jsBs $jsBase $jsSidebarNav (resources.Get "js/authored-a11y.js") -}}
+{{ $jsArray := slice $jsBs $jsSurfaces $jsBase $jsNavbar $jsSidebarNav $jsActions $jsPageActions (resources.Get "js/authored-a11y.js") -}}
 {{ if $hasPlantuml -}}
   {{ $jsArray = $jsArray | append $jsPako -}}
   {{ if .Site.Params.plantuml.svg }}{{ $jsArray = $jsArray | append $jsSvgLoader }}{{ end -}}
@@ -133,12 +138,11 @@ window.markmap = {
 {{ end -}}
 {{ if $shell -}}
   {{ $jsArray = $jsArray | append (resources.Get "js/docs-shell.js") -}}
-  {{ if .Site.Params.gcs_engine_id }}{{ $jsArray = $jsArray | append $jsSearch }}{{ end -}}
-{{ else if $localSearch -}}
-  {{ $jsArray = $jsArray | append (resources.Get "js/docs-shell.js") -}}
-{{ else -}}
+  {{ if $hasGoogleSearch }}{{ $jsArray = $jsArray | append $jsSearch }}{{ end -}}
+{{ else if $hasGoogleSearch -}}
   {{ $jsArray = $jsArray | append $jsSearch -}}
 {{ end -}}
+{{ if $localSearch }}{{ $jsArray = $jsArray | append $jsSearchEngine $jsPaletteModel $jsPalette }}{{ end -}}
 
 {{ if .Page.Store.Get "hasmermaid" -}}
   {{ partial "scripts/mermaid.html" . -}}
@@ -173,6 +177,9 @@ window.markmap = {
 {{ end -}}
 
 {{ if $localSearch }}{{ partial "shell/search-dialog.html" . }}{{ end -}}
+{{- if ne (lower (.Page.Store.Get "tdOutputFormat" | default "html")) "markdown" }}
+<script type="application/json" id="oink-action-manifest">{{ partial "actions/manifest.html" . | jsonify | safeJS }}</script>
+{{- end }}
 
 {{- $darkMode := partialCached "dark-mode-config.html" "dark-mode-global" -}}
 {{ if $darkMode.enable -}}
@@ -200,8 +207,8 @@ window.markmap = {
   {{ $jsArray = $jsArray | append $jsScrollSpyPatch -}}
 {{ end -}}
 
-{{ $bundleKey := printf "%v-%v-%v-%v-%v-%v-%v-%v-%v-%v-%v-%v-%v-%v-%v-%v"
-  $shell $localSearch .Site.Params.offlineSearch $hasMarkmap
+{{ $bundleKey := printf "%v-%v-%v-%s-%v-%v-%v-%v-%v-%v-%v-%v-%v-%v-%v-%v-%v"
+  $shell $localSearch $hasGoogleSearch .Site.Language.Lang $hasMarkmap
   $hasPlantuml .Site.Params.drawio.enable
   $hasAsciinema $hasEcharts $hasInfographic $hasDocCarousel $hasGiscus $hasFeedback
   $hasCodeRuntime $hasTabRuntime $hasImageZoom (not (.Param "ui.scrollSpy.disable")) | md5 -}}

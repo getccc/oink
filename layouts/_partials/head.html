@@ -78,7 +78,7 @@
 {{ if hugo.IsProduction }}{{ $jquery = $jquery | fingerprint }}{{ end -}}
 <script src="{{ $jquery.RelPermalink }}"
   {{- with $jquery.Data.Integrity }} integrity="{{ . }}" crossorigin="anonymous"{{ end }}></script>
-{{ if .Site.Params.offlineSearch -}}
+{{ if partial "shell/search-enabled.html" . -}}
 {{ $lunr := resources.Get "js/third_party/lunr.min.js" -}}
 {{ if hugo.IsProduction }}{{ $lunr = $lunr | fingerprint }}{{ end -}}
 <script defer src="{{ $lunr.RelPermalink }}"

@@ -1,0 +1,27 @@
+{{- /* Reject malformed configuration before normalization can stringify it
+     into apparently valid command data. Localized records may remain partial. */ -}}
+{{- $record := .record -}}
+{{- $scope := .scope | default "command" -}}
+{{- if not (reflect.IsMap $record) -}}
+  {{- errorf "%s must be a map" $scope -}}
+{{- end -}}
+{{- range slice "id" "title" "description" "icon" "url" "action" -}}
+  {{- if isset $record . -}}
+    {{- $value := index $record . -}}
+    {{- if ne (printf "%T" $value) "string" -}}
+      {{- errorf "%s field %q must be a string" $scope . -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+{{- if isset $record "keywords" -}}
+  {{- $keywords := index $record "keywords" -}}
+  {{- if not (reflect.IsSlice $keywords) -}}
+    {{- errorf "%s field %q must be an array of strings" $scope "keywords" -}}
+  {{- end -}}
+  {{- range $keywords -}}
+    {{- if ne (printf "%T" .) "string" -}}
+      {{- errorf "%s field %q must be an array of strings" $scope "keywords" -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+{{- return true -}}

@@ -1,0 +1,9 @@
+{{- $context := partial "actions/context.html" . -}}
+{{- return (dict
+  "version" 1
+  "language" .Site.Language.Lang
+  "actions" $context.actions
+  "commands" (partial "actions/site-commands.html" .)
+  "quickLinks" (partial "actions/quick-links.html" .)
+  "rootOrder" (partial "actions/root-order.html" .)
+) -}}
