@@ -125,7 +125,14 @@ Sites can locally host their own faces and override the documented
 Theme implementation contracts:
 [Content primitives](docs/content-primitives.md) ·
 [Enhanced code blocks](docs/enhanced-code-blocks.md) ·
-[Typography tokens](docs/typography-tokens.md)
+[Typography tokens](docs/typography-tokens.md) ·
+[PRD 4 contract](docs/prd4-navigation-command-palette-contract.md)
+
+The PRD 4 migration reference is currently an **unreleased development
+draft**. It must not be treated as available in the latest tag until the
+release notes name a containing version:
+[English](docs/prd4-migration-guide.md) ·
+[简体中文](docs/prd4-migration-guide.zh.md).
 
 ## Localization status
 

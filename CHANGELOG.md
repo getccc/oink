@@ -7,6 +7,23 @@ All notable changes to OINK are documented here. The project follows
 
 ### Added
 
+- Add one-level Hugo Menu dropdowns on desktop and matching mobile accordions,
+  preserving independent parent navigation, keyboard operation, active paths,
+  external-link safety, and flat-menu compatibility.
+- Add `all`, `groups`, and `none` sidebar icon-density policies. The absent
+  compatibility default remains `all`; the starter example opts into
+  `groups`.
+- Add local-search keywords, positive boost multipliers, canonical exclusion,
+  root/section/type grouping metadata, deterministic breadcrumbs and icons,
+  language-separated size budgets, and identical boost behavior in Lunr and
+  CJK substring ranking.
+- Upgrade the existing local-search dialog to a Command Palette with empty,
+  text, and `>` command modes, plus quick links, grouped page results,
+  context-aware actions, localized safe site commands, choice actions, and a
+  shared page-action registry.
+- Add an unreleased bilingual PRD 4 migration reference and machine-checked
+  root/subpath starter fixtures. Published availability remains gated on the
+  owning changes being merged and included in a tagged release.
 - Add validated `badge`, `icon`, `kbd`, `fields`, and `filetree` content
   primitives with semantic HTML, responsive presentation, and dedicated print
   and Markdown fallbacks.

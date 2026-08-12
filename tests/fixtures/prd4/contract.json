@@ -33,6 +33,7 @@
       "none"
     ],
     "compatibility_default": "all",
+    "compatibility_default_change_earliest": "1.0",
     "starter_default": "groups"
   },
   "search": {
@@ -45,6 +46,8 @@
       "exclude_search",
       "excludeSearch"
     ],
+    "exclude_alias_removal_earliest": "1.0",
+    "exclude_alias_status": "deprecated_for_new_content",
     "exclude_resolution": "any_true_excludes",
     "default_boost": 1.0,
     "invalid_boost": "warn_and_use_default",

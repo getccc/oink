@@ -144,6 +144,7 @@ def validate_contract(contract: dict[str, Any]) -> None:
     )
     require(
         sidebar.get("compatibility_default") == "all"
+        and sidebar.get("compatibility_default_change_earliest") == "1.0"
         and sidebar.get("starter_default") == "groups",
         "sidebar compatibility and starter defaults are distinct",
     )
@@ -157,6 +158,11 @@ def validate_contract(contract: dict[str, Any]) -> None:
     require(
         search.get("exclude_aliases") == ["exclude_search", "excludeSearch"],
         "legacy exclude aliases must remain supported",
+    )
+    require(
+        search.get("exclude_alias_removal_earliest") == "1.0"
+        and search.get("exclude_alias_status") == "deprecated_for_new_content",
+        "legacy exclude aliases cannot be removed before 1.0",
     )
     require(
         search.get("exclude_resolution") == "any_true_excludes",
@@ -324,8 +330,25 @@ def validate_contract_doc(contract: dict[str, Any]) -> None:
 
     require(
         contract["search"]["exclude_resolution"] == "any_true_excludes"
-        and "any canonical or compatibility exclusion flag is true" in doc,
+        and re.search(
+            r"any canonical or compatibility\s+exclusion flag is true",
+            lower_doc,
+        )
+        is not None,
         "exclude alias precedence is not documented",
+    )
+    require(
+        re.search(
+            r"historical rail-only\s+compatibility actions",
+            lower_doc,
+        )
+        is not None,
+        "action registry scope is overstated in the normative contract",
+    )
+    require(
+        re.search(r"cannot be\s+removed before 1.0", lower_doc) is not None
+        and "absent setting remains all before 1.0" in lower_doc,
+        "compatibility removal/default windows are not documented",
     )
 
 

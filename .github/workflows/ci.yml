@@ -54,6 +54,9 @@ jobs:
       - name: Check Command Palette modes and behavior
         run: python3 scripts/check-prd4-palette.py
 
+      - name: Check PRD 4 bilingual migration and starter guidance
+        run: python3 scripts/check-prd4-docs.py
+
       - name: Build the example site without warnings
         working-directory: exampleSite
         run: hugo --printPathWarnings --panicOnWarning

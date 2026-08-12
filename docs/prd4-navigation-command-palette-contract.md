@@ -1,6 +1,6 @@
 # PRD 4 navigation and Command Palette contract
 
-Status: accepted implementation contract
+Status: implemented on the development branch; not yet released
 
 Contract version: 1
 
@@ -8,12 +8,15 @@ Tracking issue: [pgsty/oink#11](https://github.com/pgsty/oink/issues/11)
 
 This document freezes the public decisions that later PRD 4 changes must
 preserve. The machine-readable companion is
-tests/fixtures/prd4/contract.json; CI checks that the two stay aligned.
+tests/fixtures/prd4/contract.json; CI checks that the two stay aligned. The
+release-facing migration reference is available in
+[English](prd4-migration-guide.md) and
+[Simplified Chinese](prd4-migration-guide.zh.md).
 
-The contract deliberately separates the target behavior from the current
-characterization. scripts/check-prd4-contract.py records today's rendered
-behavior as observations, including known gaps. A feature PR moves an
-observation to its target only when it also updates the relevant assertions.
+The contract deliberately separates public decisions from rendered
+observations. scripts/check-prd4-contract.py records the implementation across
+the complete fixture matrix. A change to an observation must update the
+relevant assertion and explain whether it is a compatible change.
 
 ## Authority boundaries
 
@@ -58,9 +61,10 @@ params.ui.sidebar_icon_policy accepts:
 - groups: roots and nodes with children show icons, ordinary leaves do not;
 - none: sidebar item icons are omitted.
 
-An absent setting remains all until a future major release. New starter sites
-explicitly choose groups. Invalid input warns and falls back to the
-compatibility default.
+An absent setting remains all before 1.0. Version 1.0 is the earliest release
+that may reconsider this default; it does not imply that 1.0 will change it.
+New starter sites explicitly choose groups. Invalid input warns and falls back
+to the compatibility default.
 
 ## Search schema and ranking contract
 
@@ -70,10 +74,11 @@ Canonical front matter:
 - search_boost: a finite positive multiplier, default 1.0;
 - search_exclude: the canonical exclusion flag.
 
-exclude_search and excludeSearch remain compatibility aliases through the next
-major release. If any canonical or compatibility exclusion flag is true, the
-page is excluded. A false canonical value does not override a true legacy
-alias.
+exclude_search and excludeSearch are deprecated for new content and cannot be
+removed before 1.0. Version 1.0 is the earliest release that may remove them,
+with a major-release migration notice. If any canonical or compatibility
+exclusion flag is true, the page is excluded. A false canonical value does not
+override a true legacy alias.
 
 Every indexed document keeps the existing fields and adds root, section, type,
 keywords, boost, breadcrumb, and icon. Missing metadata uses deterministic
@@ -101,9 +106,12 @@ The built-in action IDs are copy_markdown, view_markdown, edit_page,
 create_issue, print, switch_theme, switch_language, switch_version, and
 open_github.
 
-Existing page-action controls and the Command Palette call the same internal
-registry entry. Availability, title, description, icon, keywords, execution
-kind, URL, and disabled reason are data rather than duplicated click handlers.
+Corresponding PRD 4 page and Palette actions share internal descriptors and URL
+resolution. Copy Markdown and Print also share their registry executors;
+theme controls call the same theme application function. Historical rail-only
+compatibility actions outside the PRD 4 built-in set remain out of scope.
+Availability, title, description, icon, keywords, execution kind, URL, and
+disabled reason are data rather than duplicated behavior.
 
 Configured commands may reference a built-in action ID or a URL. Configuration
 cannot inject a JavaScript callback. Localized command titles and keywords live
@@ -155,9 +163,9 @@ navigation authority, or default query upload.
 ## Characterization matrix
 
 scripts/check-prd4-contract.py builds temporary bilingual sites with local
-search off and on. It covers both root deployment and a /preview/ subpath. It normalizes the
-desktop and mobile menu into link records and records runtime markers for these
-surfaces:
+search off and on. It covers both root deployment and a /preview/ subpath. It
+normalizes the desktop and mobile menu into link records and records runtime
+markers for these surfaces:
 
 | Surface | Representative output |
 | --- | --- |
@@ -167,8 +175,7 @@ surfaces:
 | Plain project | localized non-shell page |
 | Print | localized docs print output |
 
-The flat menu snapshot is a compatibility guard. The nested entries also
-characterize the pre-PRD 4 gap: Hugo recognizes the parent/child structure, but
-the current navbar renders only the top-level parent. The deep fixture exists
-so the navbar implementation can add and test its warning/degradation contract
-without inventing a new test site later.
+The flat menu snapshot is a compatibility guard. Nested fixtures verify the
+split parent link/disclosure behavior on desktop and mobile. The deep fixture
+verifies the warning and static-group degradation contract without creating a
+third-level flyout.
