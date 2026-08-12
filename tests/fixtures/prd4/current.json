@@ -1,0 +1,353 @@
+{
+  "matrix": {
+    "root/deep/search_off": "profile_1",
+    "root/deep/search_on": "profile_2",
+    "root/flat/search_off": "profile_1",
+    "root/flat/search_on": "profile_2",
+    "root/nested/search_off": "profile_1",
+    "root/nested/search_on": "profile_2",
+    "subpath/deep/search_off": "profile_3",
+    "subpath/deep/search_on": "profile_4",
+    "subpath/flat/search_off": "profile_3",
+    "subpath/flat/search_on": "profile_4",
+    "subpath/nested/search_off": "profile_3",
+    "subpath/nested/search_on": "profile_4"
+  },
+  "profiles": {
+    "profile_1": {
+      "indexes": [],
+      "navigation_en": {
+        "desktop": [
+          {
+            "active": false,
+            "href": "/en/docs/",
+            "rel": [],
+            "target": "",
+            "text": "Docs"
+          },
+          {
+            "active": false,
+            "href": "/en/blog/",
+            "rel": [],
+            "target": "",
+            "text": "Blog"
+          },
+          {
+            "active": true,
+            "href": "/en/project/",
+            "rel": [],
+            "target": "",
+            "text": "Project"
+          },
+          {
+            "active": false,
+            "href": "https://status.example.com/",
+            "rel": [
+              "noopener",
+              "noreferrer"
+            ],
+            "target": "_blank",
+            "text": "Status"
+          }
+        ],
+        "mobile": [
+          {
+            "active": false,
+            "href": "/en/docs/",
+            "rel": [],
+            "target": "",
+            "text": "Docs"
+          },
+          {
+            "active": false,
+            "href": "/en/blog/",
+            "rel": [],
+            "target": "",
+            "text": "Blog"
+          },
+          {
+            "active": true,
+            "href": "/en/project/",
+            "rel": [],
+            "target": "",
+            "text": "Project"
+          },
+          {
+            "active": false,
+            "href": "https://status.example.com/",
+            "rel": [
+              "noopener",
+              "noreferrer"
+            ],
+            "target": "_blank",
+            "text": "Status"
+          }
+        ]
+      },
+      "runtime_patterns": {
+        "{\"dialog\": false, \"index_reference\": false, \"lunr\": false, \"opener\": false, \"palette_controller\": false}": [
+          "home",
+          "plain",
+          "print"
+        ],
+        "{\"dialog\": false, \"index_reference\": false, \"lunr\": false, \"opener\": false, \"palette_controller\": true}": [
+          "docs",
+          "blog"
+        ]
+      }
+    },
+    "profile_2": {
+      "indexes": [
+        "en",
+        "zh"
+      ],
+      "navigation_en": {
+        "desktop": [
+          {
+            "active": false,
+            "href": "/en/docs/",
+            "rel": [],
+            "target": "",
+            "text": "Docs"
+          },
+          {
+            "active": false,
+            "href": "/en/blog/",
+            "rel": [],
+            "target": "",
+            "text": "Blog"
+          },
+          {
+            "active": true,
+            "href": "/en/project/",
+            "rel": [],
+            "target": "",
+            "text": "Project"
+          },
+          {
+            "active": false,
+            "href": "https://status.example.com/",
+            "rel": [
+              "noopener",
+              "noreferrer"
+            ],
+            "target": "_blank",
+            "text": "Status"
+          }
+        ],
+        "mobile": [
+          {
+            "active": false,
+            "href": "/en/docs/",
+            "rel": [],
+            "target": "",
+            "text": "Docs"
+          },
+          {
+            "active": false,
+            "href": "/en/blog/",
+            "rel": [],
+            "target": "",
+            "text": "Blog"
+          },
+          {
+            "active": true,
+            "href": "/en/project/",
+            "rel": [],
+            "target": "",
+            "text": "Project"
+          },
+          {
+            "active": false,
+            "href": "https://status.example.com/",
+            "rel": [
+              "noopener",
+              "noreferrer"
+            ],
+            "target": "_blank",
+            "text": "Status"
+          }
+        ]
+      },
+      "runtime_patterns": {
+        "{\"dialog\": false, \"index_reference\": false, \"lunr\": true, \"opener\": false, \"palette_controller\": false}": [
+          "plain",
+          "print"
+        ],
+        "{\"dialog\": true, \"index_reference\": true, \"lunr\": true, \"opener\": true, \"palette_controller\": true}": [
+          "home",
+          "docs",
+          "blog"
+        ]
+      }
+    },
+    "profile_3": {
+      "indexes": [],
+      "navigation_en": {
+        "desktop": [
+          {
+            "active": false,
+            "href": "/preview/en/docs/",
+            "rel": [],
+            "target": "",
+            "text": "Docs"
+          },
+          {
+            "active": false,
+            "href": "/preview/en/blog/",
+            "rel": [],
+            "target": "",
+            "text": "Blog"
+          },
+          {
+            "active": true,
+            "href": "/preview/en/project/",
+            "rel": [],
+            "target": "",
+            "text": "Project"
+          },
+          {
+            "active": false,
+            "href": "https://status.example.com/",
+            "rel": [
+              "noopener",
+              "noreferrer"
+            ],
+            "target": "_blank",
+            "text": "Status"
+          }
+        ],
+        "mobile": [
+          {
+            "active": false,
+            "href": "/preview/en/docs/",
+            "rel": [],
+            "target": "",
+            "text": "Docs"
+          },
+          {
+            "active": false,
+            "href": "/preview/en/blog/",
+            "rel": [],
+            "target": "",
+            "text": "Blog"
+          },
+          {
+            "active": true,
+            "href": "/preview/en/project/",
+            "rel": [],
+            "target": "",
+            "text": "Project"
+          },
+          {
+            "active": false,
+            "href": "https://status.example.com/",
+            "rel": [
+              "noopener",
+              "noreferrer"
+            ],
+            "target": "_blank",
+            "text": "Status"
+          }
+        ]
+      },
+      "runtime_patterns": {
+        "{\"dialog\": false, \"index_reference\": false, \"lunr\": false, \"opener\": false, \"palette_controller\": false}": [
+          "home",
+          "plain",
+          "print"
+        ],
+        "{\"dialog\": false, \"index_reference\": false, \"lunr\": false, \"opener\": false, \"palette_controller\": true}": [
+          "docs",
+          "blog"
+        ]
+      }
+    },
+    "profile_4": {
+      "indexes": [
+        "en",
+        "zh"
+      ],
+      "navigation_en": {
+        "desktop": [
+          {
+            "active": false,
+            "href": "/preview/en/docs/",
+            "rel": [],
+            "target": "",
+            "text": "Docs"
+          },
+          {
+            "active": false,
+            "href": "/preview/en/blog/",
+            "rel": [],
+            "target": "",
+            "text": "Blog"
+          },
+          {
+            "active": true,
+            "href": "/preview/en/project/",
+            "rel": [],
+            "target": "",
+            "text": "Project"
+          },
+          {
+            "active": false,
+            "href": "https://status.example.com/",
+            "rel": [
+              "noopener",
+              "noreferrer"
+            ],
+            "target": "_blank",
+            "text": "Status"
+          }
+        ],
+        "mobile": [
+          {
+            "active": false,
+            "href": "/preview/en/docs/",
+            "rel": [],
+            "target": "",
+            "text": "Docs"
+          },
+          {
+            "active": false,
+            "href": "/preview/en/blog/",
+            "rel": [],
+            "target": "",
+            "text": "Blog"
+          },
+          {
+            "active": true,
+            "href": "/preview/en/project/",
+            "rel": [],
+            "target": "",
+            "text": "Project"
+          },
+          {
+            "active": false,
+            "href": "https://status.example.com/",
+            "rel": [
+              "noopener",
+              "noreferrer"
+            ],
+            "target": "_blank",
+            "text": "Status"
+          }
+        ]
+      },
+      "runtime_patterns": {
+        "{\"dialog\": false, \"index_reference\": false, \"lunr\": true, \"opener\": false, \"palette_controller\": false}": [
+          "plain",
+          "print"
+        ],
+        "{\"dialog\": true, \"index_reference\": true, \"lunr\": true, \"opener\": true, \"palette_controller\": true}": [
+          "home",
+          "docs",
+          "blog"
+        ]
+      }
+    }
+  },
+  "version": 1
+}

@@ -1,0 +1,164 @@
+# PRD 4 navigation and Command Palette contract
+
+Status: accepted implementation contract
+
+Contract version: 1
+
+Tracking issue: [pgsty/oink#11](https://github.com/pgsty/oink/issues/11)
+
+This document freezes the public decisions that later PRD 4 changes must
+preserve. The machine-readable companion is
+tests/fixtures/prd4/contract.json; CI checks that the two stay aligned.
+
+The contract deliberately separates the target behavior from the current
+characterization. scripts/check-prd4-contract.py records today's rendered
+behavior as observations, including known gaps. A feature PR moves an
+observation to its target only when it also updates the relevant assertions.
+
+## Authority boundaries
+
+PRD 4 does not add another information architecture:
+
+- Hugo Menu is the global-navigation authority.
+- The Hugo content tree and current docs navigation are the sidebar authority.
+- The existing root switcher owns product or documentation-domain switching.
+- The per-language local search index is the shared discovery and command
+  source.
+
+docs.json, navigation.yaml, or another parallel navigation tree is outside
+this contract.
+
+## Navigation contract
+
+Only one child level is interactive. A parent with children renders a
+navigable label and a separate disclosure button on desktop and mobile. No
+operation depends on hover.
+
+Desktop disclosure supports click, Enter, Space, and ArrowDown. ArrowDown opens
+the dropdown and focuses its first actionable item. Escape closes it and
+restores focus to the disclosure. Outside click closes it. The button owns
+aria-expanded and aria-controls.
+
+Mobile uses the same split link/button model as an accordion. Multiple sections
+may be open by default. params.ui.navbar_accordion_single_open may opt into
+single-open behavior.
+
+The parent is active when it or any descendant is current. External links have
+an explicit visual affordance and include noopener noreferrer when opened in a
+new browsing context.
+
+Deeper menu input emits a build warning and degrades to content under a group
+heading. It never creates a third-level flyout.
+
+## Sidebar icon contract
+
+params.ui.sidebar_icon_policy accepts:
+
+- all: every eligible item shows its resolved icon;
+- groups: roots and nodes with children show icons, ordinary leaves do not;
+- none: sidebar item icons are omitted.
+
+An absent setting remains all until a future major release. New starter sites
+explicitly choose groups. Invalid input warns and falls back to the
+compatibility default.
+
+## Search schema and ranking contract
+
+Canonical front matter:
+
+- search_keywords: additional query terms;
+- search_boost: a finite positive multiplier, default 1.0;
+- search_exclude: the canonical exclusion flag.
+
+exclude_search and excludeSearch remain compatibility aliases through the next
+major release. If any canonical or compatibility exclusion flag is true, the
+page is excluded. A false canonical value does not override a true legacy
+alias.
+
+Every indexed document keeps the existing fields and adds root, section, type,
+keywords, boost, breadcrumb, and icon. Missing metadata uses deterministic
+fallbacks derived from Hugo's page and section tree.
+
+The final score is text match score multiplied by search_boost. The multiplier
+and keywords apply to Lunr and the CJK substring fallback. Indexes remain
+separated by language and all references remain correct under subpath
+deployment. Each language index has a 2 MiB uncompressed and 512 KiB gzip
+budget. The search-metadata implementation issue may tighten these ceilings,
+but cannot remove the measured budget gate.
+
+## Command registry contract
+
+The built-in action IDs are copy_markdown, view_markdown, edit_page,
+create_issue, print, switch_theme, switch_language, switch_version, and
+open_github.
+
+Existing page-action controls and the Command Palette call the same internal
+registry entry. Availability, title, description, icon, keywords, execution
+kind, URL, and disabled reason are data rather than duplicated click handlers.
+
+Configured commands may reference a built-in action ID or a URL. Configuration
+cannot inject a JavaScript callback. Localized command titles and keywords live
+under languages.<lang>.params.ui.command_palette.commands, with the site's
+normal language fallback.
+
+## Palette modes
+
+The current local-search dialog becomes the Command Palette; PRD 4 does not add
+a second modal.
+
+- Empty query: quick links, context-aware page actions, theme, language,
+  version, and configured commands.
+- Text query: page fields, page keywords, and commands, grouped by content root
+  and Actions.
+- A greater-than prefix: commands only.
+
+The first version does not add @docs or @blog scopes.
+
+Cmd/Ctrl-K, keyboard result navigation, Escape, focus restoration, live-region
+announcements, reduced motion, and mobile interaction remain part of the
+existing dialog's accessibility contract.
+
+## Runtime contract
+
+The local Palette capability is true only when all of these conditions hold:
+
+1. params.offlineSearch is enabled;
+2. the page is home or uses a shell surface;
+3. the current output is not print.
+
+When the capability is false, the build omits the dialog, local index, Lunr,
+and Palette controller. Print follows the same omission rule.
+
+No default telemetry request is allowed.
+
+The current characterization intentionally exposes places where source assets
+are still gated by params.offlineSearch alone. Issue
+[pgsty/oink#13](https://github.com/pgsty/oink/issues/13) owns closing that gap.
+
+## Compatibility and non-goals
+
+Existing flat Hugo menus remain valid without configuration changes. PRD 4
+does not include AI or semantic search, a remote search replacement, browsing
+history, personalized recommendations, arbitrary-depth flyouts, a second
+navigation authority, or default query upload.
+
+## Characterization matrix
+
+scripts/check-prd4-contract.py builds temporary bilingual sites with local
+search off and on. It covers both root deployment and a /preview/ subpath. It normalizes the
+desktop and mobile menu into link records and records runtime markers for these
+surfaces:
+
+| Surface | Representative output |
+| --- | --- |
+| Home | /preview/en/ and /preview/zh/ |
+| Docs shell | localized tutorial page |
+| Blog shell | localized blog root |
+| Plain project | localized non-shell page |
+| Print | localized docs print output |
+
+The flat menu snapshot is a compatibility guard. The nested entries also
+characterize the pre-PRD 4 gap: Hugo recognizes the parent/child structure, but
+the current navbar renders only the top-level parent. The deep fixture exists
+so the navbar implementation can add and test its warning/degradation contract
+without inventing a new test site later.
