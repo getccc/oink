@@ -45,6 +45,9 @@ jobs:
       - name: Check sidebar icon density policies
         run: python3 scripts/check-sidebar-icons.py
 
+      - name: Check search metadata and ranking
+        run: python3 scripts/check-prd4-search.py
+
       - name: Build the example site without warnings
         working-directory: exampleSite
         run: hugo --printPathWarnings --panicOnWarning

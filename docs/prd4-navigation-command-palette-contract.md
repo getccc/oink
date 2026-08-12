@@ -77,7 +77,16 @@ alias.
 
 Every indexed document keeps the existing fields and adds root, section, type,
 keywords, boost, breadcrumb, and icon. Missing metadata uses deterministic
-fallbacks derived from Hugo's page and section tree.
+fallbacks derived from Hugo's page and section tree:
+
+- root is the lower-case first-section key;
+- section is the lower-case current-section key, falling back to root;
+- type is the lower-case Hugo page type, falling back to root;
+- breadcrumb is the localized LinkTitle/Title path from root through the page;
+- icon resolves from page, current section, root, then a stable type/root icon;
+- search_keywords accepts a scalar or array and is always emitted as an array;
+- search_boost resolves after Hugo cascade inheritance; a non-numeric,
+  non-finite, zero, or negative value warns and emits the default 1.0.
 
 The final score is text match score multiplied by search_boost. The multiplier
 and keywords apply to Lunr and the CJK substring fallback. Indexes remain

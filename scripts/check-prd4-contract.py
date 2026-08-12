@@ -678,16 +678,27 @@ def build_observation() -> dict[str, Any]:
                         workspace, variant, offline_search, subpath=subpath
                     )
                     warnings = [line for line in log.splitlines() if "WARN" in line]
+                    expected_warning_fragments = ["invalid search_boost"] if offline_search else []
                     if variant == "deep":
+                        expected_warning_fragments.append(
+                            "supports one interactive child level"
+                        )
+                    if expected_warning_fragments:
                         require(
                             warnings
                             and all(
-                                "supports one interactive child level" in warning
-                                and "rendered as a flat group heading" in warning
+                                any(
+                                    fragment in warning
+                                    for fragment in expected_warning_fragments
+                                )
                                 for warning in warnings
+                            )
+                            and all(
+                                any(fragment in warning for warning in warnings)
+                                for fragment in expected_warning_fragments
                             ),
                             f"current {deployment}/{variant}/{state} fixture "
-                            f"did not emit only the expected deep-menu warning:\n{log}",
+                            f"did not emit exactly the expected PRD 4 warning kinds:\n{log}",
                         )
                     else:
                         require(
@@ -955,6 +966,10 @@ def validate_runtime_source_contract() -> None:
     require(
         'resources.Get "js/command-palette.js"' in scripts,
         "Palette controller source marker changed",
+    )
+    require(
+        'resources.Get "js/search-engine.js"' in scripts,
+        "search engine source marker changed",
     )
     require(
         'resources.Get "js/offline-search.js"' not in scripts,

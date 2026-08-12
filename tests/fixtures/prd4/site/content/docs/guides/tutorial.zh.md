@@ -4,6 +4,7 @@ description: 用于活动路径与中文搜索检查的教程。
 tags: [数据库]
 outputs: [HTML, print]
 icon: fa-solid fa-rocket
+search_keywords: [数据库别名, 增强词]
 ---
 
 ## 安装 PostgreSQL

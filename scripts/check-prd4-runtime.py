@@ -44,7 +44,7 @@ def main() -> int:
             "Lunr is not gated by the canonical capability",
         )
         require(
-            '{{ if $localSearch }}{{ $jsArray = $jsArray | append $jsPalette }}'
+            '{{ if $localSearch }}{{ $jsArray = $jsArray | append $jsSearchEngine $jsPalette }}'
             in scripts,
             "Palette controller is not gated by the canonical capability",
         )
@@ -69,7 +69,8 @@ def main() -> int:
         )
         require(
             "function initSearch()" in palette
-            and "CJK =" in palette
+            and "OinkSearchEngine.create" in palette
+            and "OinkSearchEngine.group" in palette
             and "metaKey || e.ctrlKey" in palette
             and "tabTrap(panel, isOpen)" in palette,
             "extracted Palette lost search or keyboard behavior",

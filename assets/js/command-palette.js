@@ -49,10 +49,8 @@
     var status = root.querySelector('[data-td-shell-search-status]');
     if (!input || !list || !panel || !status) return;
 
-    var CJK = /[぀-ヿ㐀-䶿一-鿿豈-﫿]/;
-    var index = null;
+    var engine = null;
     var docs = null;
-    var docByRef = new Map();
     var loading = false;
     var results = [];
     var selected = 0;
@@ -138,7 +136,7 @@
     }
 
     function ensureIndex() {
-      if (index || loading) return;
+      if (engine || loading) return;
       loading = true;
       list.setAttribute('aria-busy', 'true');
       if (!docs) message(root.dataset.tLoading || '…');
@@ -148,21 +146,7 @@
         })
         .then(function (data) {
           docs = data;
-          data.forEach(function (d) {
-            docByRef.set(d.ref, d);
-          });
-          index = lunr(function () {
-            this.ref('ref');
-            this.field('title', { boost: 5 });
-            this.field('categories', { boost: 3 });
-            this.field('tags', { boost: 3 });
-            this.field('headings', { boost: 3 });
-            this.field('description', { boost: 2 });
-            this.field('body');
-            data.forEach(function (d) {
-              this.add(d);
-            }, this);
-          });
+          engine = window.OinkSearchEngine.create(data, lunr, maxResults);
           loading = false;
           list.removeAttribute('aria-busy');
           render(input.value);
@@ -172,62 +156,6 @@
           list.removeAttribute('aria-busy');
           message(root.dataset.tEmpty || 'No results');
         });
-    }
-
-    // lunr cannot tokenize CJK reliably, so scan the indexed text for substrings.
-    function queryCjk(q) {
-      var hits = [];
-      var needle = q.toLowerCase();
-      docs.forEach(function (d) {
-        var titleAt = (d.title || '').toLowerCase().indexOf(needle);
-        var headingAt = (d.headings || '').toLowerCase().indexOf(needle);
-        var descAt = (d.description || '').toLowerCase().indexOf(needle);
-        var bodyAt = (d.body || '').toLowerCase().indexOf(needle);
-        var score =
-          (titleAt >= 0 ? 100 : 0) +
-          (headingAt >= 0 ? 50 : 0) +
-          (descAt >= 0 ? 30 : 0) +
-          (bodyAt >= 0 ? 10 : 0);
-        if (!score) return;
-        var excerpt = d.excerpt || '';
-        if (bodyAt >= 0) {
-          var start = Math.max(0, bodyAt - 24);
-          excerpt =
-            (start > 0 ? '…' : '') + d.body.slice(start, bodyAt + 56) + '…';
-        } else if (descAt >= 0) {
-          excerpt = d.description;
-        }
-        hits.push({ doc: d, score: score, excerpt: excerpt });
-      });
-      hits.sort(function (a, b) {
-        return b.score - a.score;
-      });
-      return hits.slice(0, maxResults);
-    }
-
-    // Latin queries retain exact, wildcard, and edit-distance matching.
-    function queryLatin(q) {
-      var found = index.query(function (builder) {
-        lunr.tokenizer(q.toLowerCase()).forEach(function (token) {
-          var term = token.toString();
-          builder.term(term, { boost: 100 });
-          builder.term(term, {
-            wildcard:
-              lunr.Query.wildcard.LEADING | lunr.Query.wildcard.TRAILING,
-            boost: 10,
-          });
-          builder.term(term, { editDistance: 2 });
-        });
-      });
-      return found
-        .slice(0, maxResults)
-        .map(function (r) {
-          var doc = docByRef.get(r.ref);
-          return doc
-            ? { doc: doc, excerpt: doc.excerpt || doc.description || '' }
-            : null;
-        })
-        .filter(Boolean);
     }
 
     function highlight(text, q) {
@@ -264,7 +192,7 @@
 
     function render(q) {
       q = (q || '').trim();
-      if (!docs || !index) return;
+      if (!docs || !engine) return;
       list.textContent = '';
       results = [];
       selected = 0;
@@ -275,7 +203,7 @@
       }
 
       try {
-        results = CJK.test(q) ? queryCjk(q) : queryLatin(q);
+        results = engine.query(q);
       } catch (e) {
         results = [];
       }
@@ -283,36 +211,53 @@
         message(root.dataset.tEmpty || 'No results');
         return;
       }
-      results.forEach(function (r, i) {
-        var row = document.createElement('a');
-        row.className = 'td-shell-search__item';
-        row.id = 'td-shell-search-option-' + i;
-        row.setAttribute('role', 'option');
-        row.setAttribute('aria-selected', 'false');
-        row.setAttribute('tabindex', '-1');
-        row.href = r.doc.ref;
+      var groups = window.OinkSearchEngine.group(results);
+      results = [];
+      groups.forEach(function (group) {
+        var section = document.createElement('div');
+        section.className = 'td-shell-search__group';
+        section.setAttribute('role', 'presentation');
 
-        var title = document.createElement('div');
-        title.className = 'td-shell-search__item-title';
-        title.appendChild(highlight(r.doc.title || r.doc.ref, q));
-        row.appendChild(title);
+        var heading = document.createElement('div');
+        heading.className = 'td-shell-search__group-label';
+        heading.setAttribute('role', 'presentation');
+        heading.textContent = group.label;
+        section.appendChild(heading);
 
-        var ref = document.createElement('div');
-        ref.className = 'td-shell-search__item-ref';
-        ref.textContent = r.doc.ref;
-        row.appendChild(ref);
+        group.results.forEach(function (r) {
+          var i = results.length;
+          results.push(r);
+          var row = document.createElement('a');
+          row.className = 'td-shell-search__item';
+          row.id = 'td-shell-search-option-' + i;
+          row.setAttribute('role', 'option');
+          row.setAttribute('aria-selected', 'false');
+          row.setAttribute('tabindex', '-1');
+          row.href = r.doc.ref;
 
-        if (r.excerpt) {
-          var excerpt = document.createElement('div');
-          excerpt.className = 'td-shell-search__item-excerpt';
-          excerpt.appendChild(highlight(r.excerpt, q));
-          row.appendChild(excerpt);
-        }
+          var title = document.createElement('div');
+          title.className = 'td-shell-search__item-title';
+          title.appendChild(highlight(r.doc.title || r.doc.ref, q));
+          row.appendChild(title);
 
-        row.addEventListener('pointermove', function () {
-          if (selected !== i) select(i);
+          var ref = document.createElement('div');
+          ref.className = 'td-shell-search__item-ref';
+          ref.textContent = r.doc.ref;
+          row.appendChild(ref);
+
+          if (r.excerpt) {
+            var excerpt = document.createElement('div');
+            excerpt.className = 'td-shell-search__item-excerpt';
+            excerpt.appendChild(highlight(r.excerpt, q));
+            row.appendChild(excerpt);
+          }
+
+          row.addEventListener('pointermove', function () {
+            if (selected !== i) select(i);
+          });
+          section.appendChild(row);
         });
-        list.appendChild(row);
+        list.appendChild(section);
       });
       select(0);
       announce(

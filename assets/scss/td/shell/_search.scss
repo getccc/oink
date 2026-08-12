@@ -159,6 +159,20 @@
   }
 }
 
+.td-shell-search__group + .td-shell-search__group {
+  margin-top: 6px;
+}
+
+.td-shell-search__group-label {
+  padding: 6px 10px 4px;
+  color: var(--td-shell-muted-fg);
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 16px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
 .td-shell-search__item-title {
   font-size: 14px;
   font-weight: 500;
