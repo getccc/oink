@@ -239,6 +239,10 @@ def validate_manifest(
     )
     require(commands["status"]["kind"] == "url", f"{lang} URL command kind changed")
     require(commands["status"]["url"] == "https://status.example.com/", f"{lang} status URL fallback changed")
+    require(
+        commands["escaped"]["url"] == f"{prefix}{lang}/safe/",
+        f"{lang} internal command URL is not language/subpath safe: {commands['escaped']['url']}",
+    )
     require(commands["print_now"]["action"] == "print", f"{lang} built-in command changed")
     require(
         commands["theme_now"]["action"] == "switch_theme"

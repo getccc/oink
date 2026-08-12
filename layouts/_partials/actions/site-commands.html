@@ -66,6 +66,13 @@
     {{- if or (ne $rawURL $url) (findRE `[\x00-\x20\x7f]` $url) (strings.HasPrefix $url "//") (findRE `\\` $url) (and $scheme (not (in (slice "http" "https") $scheme))) -}}
       {{- errorf "command %q uses unsafe URL %q" $id $url -}}
     {{- end -}}
+    {{- if not (or $parsed.Scheme $parsed.Host) -}}
+      {{- if strings.HasPrefix $url "#" -}}
+        {{- /* A fragment remains relative to the current page. */ -}}
+      {{- else -}}
+        {{- $url = strings.TrimPrefix "/" $url | relLangURL -}}
+      {{- end -}}
+    {{- end -}}
   {{- end -}}
   {{- $keywords := $record.keywords | default (slice) -}}
   {{- $normalizedKeywords := slice -}}
