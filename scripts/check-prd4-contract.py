@@ -582,6 +582,36 @@ def normalize_navigation(html: str) -> dict[str, Any]:
     return normalized
 
 
+class RootMenuParser(HTMLParser):
+    def __init__(self) -> None:
+        super().__init__(convert_charrefs=True)
+        self.current = ""
+        self._inside_current = False
+
+    def handle_starttag(
+        self, tag: str, attrs: list[tuple[str, str | None]]
+    ) -> None:
+        attributes = {name: value or "" for name, value in attrs}
+        if tag == "span" and "td-shell-root__title" in attributes.get(
+            "class", ""
+        ).split():
+            self._inside_current = True
+
+    def handle_data(self, data: str) -> None:
+        if self._inside_current:
+            self.current += data
+
+    def handle_endtag(self, tag: str) -> None:
+        if tag == "span" and self._inside_current:
+            self._inside_current = False
+
+
+def current_root(html: str) -> str:
+    parser = RootMenuParser()
+    parser.feed(html)
+    return " ".join(parser.current.split())
+
+
 def runtime_markers(html: str, palette_controller_in_bundle: bool) -> dict[str, bool]:
     script_sources = re.findall(r'<script\b[^>]*\bsrc="([^"]+)"', html)
     return {
@@ -642,6 +672,14 @@ def observe_variant(
         observation["navigation"][lang]["docs_active"] = normalize_navigation(
             docs_html
         )
+        docs_root_html = read_output(output, SURFACES["docs"], lang)
+        product_root_html = read_output(
+            output, "{lang}/product/index.html", lang
+        )
+        observation["navigation"][lang]["current_roots"] = {
+            "docs": current_root(docs_root_html),
+            "product": current_root(product_root_html),
+        }
         observation["runtime"][lang] = {}
         observation["indexes"][lang] = any(
             output.glob(f"offline-search-index.{lang}*.json")
@@ -871,6 +909,15 @@ def validate_observation(
                         f"{deployment}/{variant}/{state}/{lang} disclosure "
                         "ARIA relationship changed",
                     )
+                    require(
+                        navigation["current_roots"]
+                        == {
+                            "docs": "文档" if lang == "zh" else "Docs",
+                            "product": "Product",
+                        },
+                        f"{deployment}/{variant}/{state}/{lang} root switcher "
+                        "confused product roots sharing one layout type",
+                    )
                     if variant == "deep":
                         for region in ("desktop", "mobile"):
                             links = navigation[region]
@@ -1023,6 +1070,8 @@ def compact_snapshot(observation: dict[str, Any]) -> dict[str, Any]:
                 navigation = build["navigation"][LANGUAGES[0]]
                 for lang in LANGUAGES[1:]:
                     normalized = json.loads(format_json(build["navigation"][lang]))
+                    if "current_roots" in normalized:
+                        normalized["current_roots"] = navigation["current_roots"]
                     navigation_regions = [normalized]
                     if "docs_active" in normalized:
                         navigation_regions.append(normalized["docs_active"])

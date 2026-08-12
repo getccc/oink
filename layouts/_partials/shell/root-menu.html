@@ -13,8 +13,12 @@
   {{- end -}}
   {{- $current := $docsRoot -}}
   {{- range $roots -}}
-    {{- /* Same-type fallback keeps taxonomy pages in the blog context. */ -}}
-    {{- if or (eq $ .) ($.IsDescendant .) (eq $.Type .Type) }}{{ $current = . }}{{ end -}}
+    {{- /* Ancestor identity is authoritative when multiple product roots share
+         one layout type (for example Docs and Project both use `docs`). The
+         same-type fallback exists only for taxonomy/term pages, which are not
+         descendants of their owning Blog section. */ -}}
+    {{- $taxonomyFallback := and (in (slice "taxonomy" "term") $.Kind) (eq $.Type .Type) -}}
+    {{- if or (eq $ .) ($.IsDescendant .) $taxonomyFallback }}{{ $current = . }}{{ end -}}
   {{- end -}}
   {{- with $current -}}
 <div class="td-shell-root">
