@@ -1,0 +1,39 @@
+{{- /* Mirror the runtime's conservative standalone-image eligibility test. */ -}}
+{{- $html := printf "%s" (.html | default "") -}}
+{{- $candidate := false -}}
+{{- if strings.Contains $html "<img" -}}
+  {{- $blocks := findRE `(?is)<p(?:\s[^>]*)?>.*?</p>` $html -}}
+  {{- $blocks = $blocks | append (findRE `(?is)<figure(?:\s[^>]*)?>.*?</figure>` $html) -}}
+  {{- $blocks = $blocks | append (findRE `(?is)<img\b[^>]*\sdata-td-image-zoom(?:\s|=|/?>)[^>]*>` $html) -}}
+
+  {{- range $block := $blocks -}}
+    {{- if not $candidate -}}
+      {{- $standaloneParagraph := gt (len (findRE `(?is)^<p(?:\s[^>]*)?>\s*<img\b[^>]*?/?>\s*</p>$` $block 1)) 0 -}}
+      {{- $standaloneFigure := gt (len (findRE `(?is)^<figure(?:\s[^>]*)?>\s*<img\b[^>]*?/?>` $block 1)) 0 -}}
+      {{- $explicit := gt (len (findRE `(?is)^<img\b[^>]*\sdata-td-image-zoom(?:\s|=|/?>)[^>]*>$` $block 1)) 0 -}}
+      {{- if or $standaloneParagraph $standaloneFigure $explicit -}}
+        {{- $images := findRE `(?is)<img\b[^>]*>` $block 1 -}}
+        {{- with index $images 0 -}}
+          {{- $containers := findRE `(?is)^<(?:p|figure)(?:\s[^>]*)?>` $block 1 -}}
+          {{- $container := "" -}}
+          {{- if gt (len $containers) 0 }}{{ $container = index $containers 0 }}{{ end -}}
+          {{- $hasNoZoom := or
+            (gt (len (findRE `(?is)\sdata-no-zoom(?:\s|=|/?>)` . 1)) 0)
+            (gt (len (findRE `(?is)\sdata-no-zoom(?:\s|=|>)` $container 1)) 0)
+          -}}
+          {{- $hidden := or
+            (gt (len (findRE `(?is)\saria-hidden\s*=\s*(?:"true"|'true'|true)(?:\s|/?>)` . 1)) 0)
+            (gt (len (findRE `(?is)\srole\s*=\s*(?:"(?:presentation|none)"|'(?:presentation|none)'|(?:presentation|none))(?:\s|/?>)` . 1)) 0)
+          -}}
+          {{- $hasSource := gt (len (findRE `(?is)\ssrc\s*=\s*(?:"[^"]+"|'[^']+'|[^\s>]+)` . 1)) 0 -}}
+          {{- $hasMeaningfulAlt := gt (len (findRE `(?is)\salt\s*=\s*(?:"[^"]+"|'[^']+'|[^\s>"']+)` . 1)) 0 -}}
+          {{- if and (not $hasNoZoom) (not $hidden) $hasSource $hasMeaningfulAlt -}}
+            {{- $candidate = true -}}
+          {{- end -}}
+        {{- end -}}
+      {{- end -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+
+{{- return $candidate -}}

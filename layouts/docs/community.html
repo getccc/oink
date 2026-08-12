@@ -3,6 +3,6 @@
   <h1>{{ T "community_join" . }}</h1>
   <p class="lead">{{ T "community_introduce" . }}</p>
   {{ partial "community_links.html" . -}}
-  {{ with .Content }}{{ . }}{{ end -}}
+  {{ with partial "content/render.html" . }}{{ . }}{{ end -}}
 </div>
 {{ end -}}

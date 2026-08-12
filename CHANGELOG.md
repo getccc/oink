@@ -7,6 +7,12 @@ All notable changes to OINK are documented here. The project follows
 
 ### Added
 
+- Add validated `badge`, `icon`, `kbd`, `fields`, and `filetree` content
+  primitives with semantic HTML, responsive presentation, and dedicated print
+  and Markdown fallbacks.
+- Add opt-in native-dialog Image Zoom plus the shared `gallery` primitive,
+  with page-level overrides, lazy media metadata, keyboard and focus handling,
+  and page-store-driven runtime loading.
 - Add validated `technical` and `system` typography presets plus public
   `--td-*-font-family` roles for UI, body, headings, code, display text,
   metadata, and print output. Existing Docsy and Bootstrap Sass font variables

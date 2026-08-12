@@ -33,12 +33,27 @@ jobs:
       - name: Check typography token boundaries
         run: python3 scripts/check-font-tokens.py
 
+      - name: Check content primitive contract
+        run: python3 scripts/check-content-primitives-contract.py
+
       - name: Build the example site without warnings
         working-directory: exampleSite
         run: hugo --printPathWarnings --panicOnWarning
 
       - name: Check enhanced code-block contracts
         run: python3 scripts/check-code-blocks.py
+
+      - name: Check everyday content primitives
+        run: python3 scripts/check-content-primitives.py
+
+      - name: Check shared media primitives
+        run: python3 scripts/check-media-primitives.py
+
+      - name: Check opt-in Image Zoom
+        run: python3 scripts/check-image-zoom.py
+
+      - name: Check Gallery output and Zoom reuse
+        run: python3 scripts/check-gallery.py
 
       - name: Build the system typography preset
         working-directory: exampleSite

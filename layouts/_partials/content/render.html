@@ -1,0 +1,12 @@
+{{- /* Render page content once, then register an enabled, usable Zoom candidate. */ -}}
+{{- $content := .Content -}}
+{{- $outputFormat := lower (.Store.Get "tdOutputFormat" | default "html") -}}
+{{- if eq $outputFormat "html" -}}
+  {{- $config := partial "content/image-zoom-config.html" . -}}
+  {{- if and $config.enable (not (.Store.Get "hasImageZoom" | default false)) -}}
+    {{- if partial "content/image-zoom-candidate.html" (dict "html" $content) -}}
+      {{- .Store.Set "hasImageZoom" true -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+{{- return $content -}}

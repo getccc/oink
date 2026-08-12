@@ -28,6 +28,8 @@ params:
       darkTheme: dark
       loading: lazy
   ui:
+    image_zoom:
+      enable: false
     typography:
       preset: technical
     shell_types: [docs, blog, swagger]

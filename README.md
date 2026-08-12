@@ -62,11 +62,15 @@ params:
   offlineSearch: true
   ui:
     showLightDarkModeMenu: true
+    image_zoom:
+      enable: true
 ```
 
 `markdown` enables Copy Markdown, `LLMS` emits `llms.txt`, and `print` enables
-section print views. Offline search and the theme menu are also opt-in; the
-theme supplies their implementation but does not silently enable site policy.
+section print views. Offline search, the theme menu, and native image previews
+are opt-in; the theme supplies their implementation but does not silently
+enable site policy. A page can override Image Zoom with the same nested
+`params.ui.image_zoom.enable` front matter key.
 
 Then preview the site:
 
@@ -118,11 +122,16 @@ Sites can locally host their own faces and override the documented
 [Deployment](https://oink.pgsty.com/docs/deploy/) ·
 [Contributing](https://oink.pgsty.com/docs/about/contributing/)
 
+Theme implementation contracts:
+[Content primitives](docs/content-primitives.md) ·
+[Enhanced code blocks](docs/enhanced-code-blocks.md) ·
+[Typography tokens](docs/typography-tokens.md)
+
 ## Localization status
 
 English, Simplified Chinese (`zh-cn` and generic `zh`), and Traditional Chinese
 (`zh-tw`) have complete reviewed OINK interface text. Every other bundled locale
-has the same 96-key schema and keeps its inherited Docsy translations; new
+has the same key schema and keeps its inherited Docsy translations; new
 OINK-only labels currently use explicit English fallback text pending community
 translation.
 

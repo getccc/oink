@@ -57,8 +57,11 @@
     </ul>
 {{ end }}
 
+{{- .Store.Set "tdOutputFormat" "print" -}}
+{{- $content := .RenderString (dict "display" "block") .RawContent -}}
+{{- $content = partial "content/static-image-output.html" $content -}}
 <div class="content">
-      {{ .Content }}
+      {{ $content }}
 </div>
 </div>
 

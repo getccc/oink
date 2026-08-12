@@ -3,11 +3,14 @@
 {{ if templates.Exists (printf "_partials/%s" $tpl) }}
   {{ partial $tpl . }}
 {{ else -}}
+{{- .Page.Store.Set "tdOutputFormat" "print" -}}
+{{- $content := .Page.RenderString (dict "display" "block") .Page.RawContent -}}
+{{- $content = partial "content/static-image-output.html" $content -}}
 {{ $break := cond .DoPageBreak "page-break-before: always" "" -}}
 <div class="td-content" style="{{ $break }}">
     {{ $break := cond .DoPageBreak "page-break-before: always" "" }}
 	<h1 id="pg-{{ .Page.File.UniqueID }}">{{ .PageNum }} - {{ .Page.Title }}</h1>
     {{ with .Page.Params.description }}<div class="lead">{{ . | markdownify }}</div>{{ end }}
-	{{ .Page.Content }}
+	{{ $content }}
 </div>
 {{ end }}

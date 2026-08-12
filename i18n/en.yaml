@@ -54,6 +54,12 @@ ui_code_copy_error: Copy failed
 ui_code_show_all: Show all {{ .Count }} lines
 ui_code_collapse: Collapse code
 ui_code_group_label: Code examples
+ui_kbd_with: with
+ui_field_required: required
+ui_field_default: default
+ui_image_zoom_dialog: Image preview
+ui_image_zoom_open: Open image preview
+ui_image_zoom_close: Close image preview
 ui_print_page: Print this page
 ui_sidebar_expand_section: Expand section
 ui_sidebar_collapse_section: Collapse section

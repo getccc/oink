@@ -1,0 +1,122 @@
+{{- /* Resolve image metadata without fetching remote sources. */ -}}
+{{- $name := .name | default "image" -}}
+{{- $position := .position | default "unknown position" -}}
+{{- $page := .page -}}
+{{- $sourceValue := .src -}}
+{{- if ne (printf "%T" $sourceValue) "string" -}}
+  {{- errorf "shortcode %q: src must be a string at %s" $name $position -}}
+{{- end -}}
+{{- $source := strings.TrimSpace $sourceValue -}}
+{{- if not $source -}}
+  {{- errorf "shortcode %q: src must not be empty at %s" $name $position -}}
+{{- end -}}
+{{- $validated := partial "content/url.html" (dict
+  "name" $name "parameter" "src" "position" $position "value" $source "kind" "image"
+) -}}
+{{- $parsedResult := try (urls.Parse $source) -}}
+{{- with $parsedResult.Err -}}
+  {{- errorf "shortcode %q: invalid src %q at %s: %s" $name $source $position . -}}
+{{- end -}}
+{{- $parsed := $parsedResult.Value -}}
+{{- $scheme := lower $parsed.Scheme -}}
+
+{{- $kind := "static" -}}
+{{- $resource := false -}}
+{{- $lookup := strings.TrimPrefix "/" $source -}}
+{{- if not $scheme -}}
+  {{- if eq (.matchMode | default "exact") "legacy" -}}
+    {{- $resource = $page.Resources.GetMatch (printf "**%s*" $lookup) -}}
+  {{- else -}}
+    {{- $resource = $page.Resources.Get $lookup -}}
+  {{- end -}}
+  {{- if $resource -}}
+    {{- $kind = "page" -}}
+  {{- else -}}
+    {{- $resource = resources.Get $lookup -}}
+    {{- if $resource }}{{ $kind = "global" }}{{ end -}}
+  {{- end -}}
+{{- else -}}
+  {{- $kind = "remote" -}}
+{{- end -}}
+
+{{- $src := $validated.href -}}
+{{- $fullSrc := $src -}}
+{{- $mediaType := "" -}}
+{{- $width := 0 -}}
+{{- $height := 0 -}}
+{{- $processable := false -}}
+{{- $resourceAlt := "" -}}
+{{- $byline := "" -}}
+{{- if $resource -}}
+  {{- if not (reflect.IsImageResource $resource) -}}
+    {{- errorf "shortcode %q: src %q resolved to a non-image %s resource at %s" $name $source $kind $position -}}
+  {{- end -}}
+  {{- $src = $resource.RelPermalink -}}
+  {{- $fullSrc = $resource.RelPermalink -}}
+  {{- $mediaType = $resource.MediaType.Type -}}
+  {{- $processable = reflect.IsImageResourceProcessable $resource -}}
+  {{- if reflect.IsImageResourceWithMeta $resource -}}
+    {{- $width = $resource.Width -}}
+    {{- $height = $resource.Height -}}
+  {{- end -}}
+  {{- with $resource.Params -}}
+    {{- if isset . "alt" -}}
+      {{- $metadataAlt := index . "alt" -}}
+      {{- if ne (printf "%T" $metadataAlt) "string" -}}
+        {{- errorf "shortcode %q: image resource alt metadata must be a string at %s" $name $position -}}
+      {{- end -}}
+      {{- $resourceAlt = strings.TrimSpace $metadataAlt -}}
+    {{- end -}}
+    {{- with index . "byline" }}{{ $byline = strings.TrimSpace (printf "%v" .) }}{{ end -}}
+  {{- end -}}
+{{- else -}}
+  {{- $extension := lower (strings.TrimPrefix "." (path.Ext $parsed.Path)) -}}
+  {{- $mediaTypes := dict
+    "avif" "image/avif" "bmp" "image/bmp" "gif" "image/gif"
+    "heic" "image/heic" "heif" "image/heif" "ico" "image/x-icon"
+    "jpeg" "image/jpeg" "jpg" "image/jpeg" "png" "image/png"
+    "svg" "image/svg+xml" "tif" "image/tiff" "tiff" "image/tiff"
+    "webp" "image/webp"
+  -}}
+  {{- with index $mediaTypes $extension }}{{ $mediaType = . }}{{ end -}}
+{{- end -}}
+
+{{- $hasAlt := .hasAlt | default false -}}
+{{- $alt := $resourceAlt -}}
+{{- if $hasAlt -}}
+  {{- $altValue := .alt -}}
+  {{- if ne (printf "%T" $altValue) "string" -}}
+    {{- errorf "shortcode %q: alt must be a string at %s" $name $position -}}
+  {{- end -}}
+  {{- $alt = strings.TrimSpace $altValue -}}
+{{- end -}}
+{{- $decorative := .decorative | default false -}}
+{{- if ne (printf "%T" $decorative) "bool" -}}
+  {{- errorf "shortcode %q: decorative must be boolean at %s" $name $position -}}
+{{- end -}}
+{{- if and $decorative $hasAlt $alt -}}
+  {{- errorf "shortcode %q: decorative images must not define alt text at %s" $name $position -}}
+{{- end -}}
+{{- if $decorative }}{{ $alt = "" }}{{ end -}}
+{{- if and (.requireAlt | default false) (not $decorative) (not $alt) -}}
+  {{- errorf "shortcode %q requires meaningful alt text or decorative=true at %s" $name $position -}}
+{{- end -}}
+
+{{- return (dict
+  "src" $src
+  "fullSrc" $fullSrc
+  "markdownSrc" (partial "content/markdown-url.html" $src)
+  "source" $source
+  "kind" $kind
+  "mediaType" $mediaType
+  "width" $width
+  "height" $height
+  "processable" $processable
+  "processed" false
+  "resource" $resource
+  "renderedResource" $resource
+  "alt" $alt
+  "decorative" $decorative
+  "caption" (.caption | default "")
+  "byline" $byline
+) -}}

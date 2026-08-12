@@ -9,7 +9,7 @@
 		{{ end -}}
 	</header>
 	{{ .Render "_td-content-after-header" -}}
-	{{ .Content }}
+	{{ partial "content/render.html" . }}
 	{{ partial "feedback.html" . -}}
 	{{ partial "comments.html" . -}}
 	{{ if and (.Site.Config.Services.Disqus.Shortname) (not $commentsState.suppressDisqus) -}}

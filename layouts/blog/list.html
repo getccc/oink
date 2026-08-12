@@ -2,7 +2,7 @@
 
 <div class="td-content">
 {{ partial "page-title.html" . }}
-{{ with .Content }}{{ . }}{{ end -}}
+{{ with partial "content/render.html" . }}{{ . }}{{ end -}}
 </div>
 {{ if (and .Parent .Parent.IsHome) -}}
   {{ $.Scratch.Set "blog-pages" (where .Site.RegularPages "Section" .Section) -}}

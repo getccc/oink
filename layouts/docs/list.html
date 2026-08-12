@@ -10,7 +10,7 @@
 		{{ end -}}
 	</header>
 	{{ .Render "_td-content-after-header" -}}
-	{{ .Content }}
+	{{ partial "content/render.html" . }}
 	{{ partial "section-index.html" . -}}
 	{{ partial "page-meta-lastmod.html" . -}}
 	{{ partial "feedback.html" . -}}

@@ -77,7 +77,7 @@ document.addEventListener('DOMContentLoaded', function () {
   for (const el of document.getElementsByTagName('img')) {
     const img = el;
     const src = img.getAttribute('src');
-    if (!src.endsWith('.svg') && !src.endsWith('.png')) {
+    if (!src || (!src.endsWith('.svg') && !src.endsWith('.png'))) {
       continue;
     }
 

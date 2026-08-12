@@ -1,0 +1,102 @@
+{{- /* Render ordered field definitions collected by field children. */ -}}
+{{- $hasParams := false -}}
+{{- with .Params }}{{ $hasParams = true }}{{ end -}}
+{{- if and $hasParams (not .IsNamedParams) -}}
+  {{- errorf "shortcode %q accepts named parameters only at %s" .Name .Position -}}
+{{- end -}}
+{{- $allowed := slice "label" -}}
+{{- range $name, $_ := .Params -}}
+  {{- if not (in $allowed $name) -}}
+    {{- errorf "shortcode %q: unsupported parameter %q at %s" $.Name $name $.Position -}}
+  {{- end -}}
+{{- end -}}
+
+{{- $label := "" -}}
+{{- if and $hasParams (isset .Params "label") -}}
+  {{- $labelParam := .Get "label" -}}
+  {{- if ne (printf "%T" $labelParam) "string" -}}
+    {{- errorf "shortcode %q: label must be a string at %s" .Name .Position -}}
+  {{- end -}}
+  {{- $label = strings.TrimSpace $labelParam -}}
+  {{- if not $label -}}
+    {{- errorf "shortcode %q: label must not be empty at %s" .Name .Position -}}
+  {{- end -}}
+{{- end -}}
+
+{{- $innerOutput := strings.TrimSpace (printf "%s" .Inner) -}}
+{{- if $innerOutput -}}
+  {{- errorf "shortcode %q accepts field children only at %s" .Name .Position -}}
+{{- end -}}
+{{- $entries := .Scratch.Get "fieldEntries" | default (dict) -}}
+{{- if eq (len $entries) 0 -}}
+  {{- errorf "shortcode %q requires at least one field child at %s" .Name .Position -}}
+{{- end -}}
+{{- $outputFormat := lower (.Page.Store.Get "tdOutputFormat" | default "html") -}}
+
+{{- if eq $outputFormat "markdown" -}}
+  {{- $chunks := slice -}}
+  {{- range $entries -}}
+    {{- $fieldName := partial "content/markdown-code-span.html" .name -}}
+    {{- $metadata := slice -}}
+    {{- with .type -}}
+      {{- $metadata = $metadata | append (partial "content/markdown-code-span.html" .) -}}
+    {{- end -}}
+    {{- if .required -}}
+      {{- $requiredLabel := partial "content/markdown-escape.html" (T "ui_field_required") -}}
+      {{- $metadata = $metadata | append $requiredLabel -}}
+    {{- end -}}
+    {{- if .hasDefault -}}
+      {{- $defaultLabel := partial "content/markdown-escape.html" (T "ui_field_default") -}}
+      {{- $defaultValue := partial "content/markdown-code-span.html" .default -}}
+      {{- $metadata = $metadata | append (printf "%s: %s" $defaultLabel $defaultValue) -}}
+    {{- end -}}
+    {{- $heading := printf "- %s" $fieldName -}}
+    {{- if gt (len $metadata) 0 -}}
+      {{- $heading = printf "%s — %s" $heading (delimit $metadata "; ") -}}
+    {{- end -}}
+    {{- $description := partial "content/markdown-indent.html" .description -}}
+    {{- $chunks = $chunks | append (printf "%s\n\n%s" $heading $description) -}}
+  {{- end -}}
+  {{- $markdown := delimit $chunks "\n\n" -}}
+  {{- if $label -}}
+    {{- $markdownLabel := partial "content/markdown-escape.html" $label -}}
+    {{- $markdown = printf "**%s**\n\n%s" $markdownLabel $markdown -}}
+  {{- end -}}
+  {{- $markdown | safeHTML -}}
+{{- else -}}
+  {{- $labelID := printf "td-fields-%s-%d-label" (md5 .Page.RelPermalink) .Ordinal -}}
+<div class="td-fields">
+  {{- if $label }}
+  <p class="td-fields__label" id="{{ $labelID }}">{{ $label }}</p>
+  {{- end }}
+  <dl class="td-fields__list"{{ if $label }} aria-labelledby="{{ $labelID }}"{{ end }}>
+    {{- range $entries }}
+    <div class="td-field">
+      <dt class="td-field__name"><code>{{ .name }}</code></dt>
+      <dd class="td-field__value">
+        {{- if or .type .required .hasDefault }}
+        <div class="td-field__meta">
+          {{- $hasPrevious := false -}}
+          {{- with .type -}}
+            {{- if $hasPrevious }}<span class="td-field__separator" aria-hidden="true">·</span><span class="visually-hidden">, </span>{{ end -}}
+          <span class="td-field__type"><code>{{ . }}</code></span>
+            {{- $hasPrevious = true -}}
+          {{- end -}}
+          {{- if .required -}}
+            {{- if $hasPrevious }}<span class="td-field__separator" aria-hidden="true">·</span><span class="visually-hidden">, </span>{{ end -}}
+          <span class="td-field__required">{{ T "ui_field_required" }}</span>
+            {{- $hasPrevious = true -}}
+          {{- end -}}
+          {{- if .hasDefault -}}
+            {{- if $hasPrevious }}<span class="td-field__separator" aria-hidden="true">·</span><span class="visually-hidden">, </span>{{ end -}}
+          <span class="td-field__default"><span>{{ T "ui_field_default" }}:</span> <code>{{ .default }}</code></span>
+          {{- end }}
+        </div>
+        {{- end }}
+        <div class="td-field__description">{{ $.Page.RenderString (dict "display" "block") .description }}</div>
+      </dd>
+    </div>
+    {{- end }}
+  </dl>
+</div>
+{{- end -}}

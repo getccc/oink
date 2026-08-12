@@ -45,14 +45,7 @@
     {{ end }}
     {{ range $pages }}
       {{- .Store.Set "tdOutputFormat" "rss" -}}
-      {{- $description := .Summary -}}
-      {{- if or
-        (strings.Contains .RawContent "{{< code-group")
-        (strings.Contains (printf "%s" $description) "data-td-code")
-      -}}
-        {{- $shortcodes := .RenderShortcodes -}}
-        {{- $description = .RenderString (dict "display" "block") $shortcodes -}}
-      {{- end -}}
+      {{- $description := partial "content/rss-description.html" . -}}
       <item>
         <title>{{ .Title }}</title>
         <link>{{ .Permalink }}</link>

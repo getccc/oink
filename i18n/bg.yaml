@@ -133,9 +133,18 @@ ui_code_copy_error: Copy failed
 ui_code_show_all: Show all {{ .Count }} lines
 ui_code_collapse: Collapse code
 ui_code_group_label: Code examples
+ui_kbd_with: with
+ui_field_required: required
+ui_field_default: default
 
 # Explicit English fallbacks for untranslated OINK UI strings.
 # Replace these values with reviewed translations when available.
 ui_open_in_chatgpt: Open in ChatGPT
 ui_open_in_claude: Open in Claude
 ui_open_in_prompt: Read from %s so I can ask questions about it.
+
+# Explicit English fallbacks for untranslated OINK UI strings.
+# Replace these values with reviewed translations when available.
+ui_image_zoom_dialog: Image preview
+ui_image_zoom_open: Open image preview
+ui_image_zoom_close: Close image preview

@@ -9,7 +9,7 @@
 			{{ partial "reading-time.html" . -}}
 		{{ end -}}
 	</header>
-	{{ .Content }}
+	{{ partial "content/render.html" . }}
 	{{ partial "page-meta-lastmod.html" . -}}
   {{ partial "section-index.html" . -}}
 	{{ partial "feedback.html" . -}}

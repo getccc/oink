@@ -15,7 +15,7 @@
 </section>
 {{ partial "community_links.html" . -}}
 
-{{ with .Content -}}
+{{ with partial "content/render.html" . -}}
 <div class="td-content">
 {{ . }}
 </div>

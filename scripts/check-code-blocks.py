@@ -84,7 +84,7 @@ def check_outputs(public: Path) -> list[str]:
         require("data-td-code-copy" not in source, f"{name} loaded Copy runtime", errors)
         require("td-code-group:v1" not in source, f"{name} loaded tab runtime", errors)
 
-    require("td-code-group__print-title" in print_html, "print lost group titles", errors)
+    require("td-code-group__static-title" in print_html, "print lost group titles", errors)
     require("npm install @example/client" in print_html, "print lost grouped code", errors)
     return errors
 
@@ -131,6 +131,88 @@ def check_template_contracts() -> list[str]:
             f"{relative} loads scripts before content sets Page Store flags",
             errors,
         )
+    return errors
+
+
+def check_generic_rss_output(hugo: str) -> list[str]:
+    """Keep escaped shortcode examples literal after live groups render in RSS."""
+    errors: list[str] = []
+    with tempfile.TemporaryDirectory(prefix="oink-code-generic-rss-") as temp:
+        site = Path(temp)
+        content = site / "content/docs"
+        content.mkdir(parents=True)
+        (content / "_index.md").write_text("---\ntitle: Docs\n---\n")
+        (content / "rss.md").write_text(
+            "---\ntitle: RSS code\ndate: 2026-08-11\n---\n\n"
+            "Live group.\n\n"
+            '{{< code-group id="rss-live" >}}\n'
+            '{{< code-tab title="Shell" value="shell" lang="sh" >}}\n'
+            "echo rss-static\n"
+            "{{< /code-tab >}}\n"
+            "{{< /code-group >}}\n\n"
+            "Literal example.\n\n"
+            "```go-html-template\n"
+            '{{</* code-group id="sample" */>}}\n'
+            "{{</* /code-group */>}}\n"
+            "```\n"
+        )
+        (site / "hugo.yaml").write_text(
+            "baseURL: https://example.org/\n"
+            "title: RSS code fixture\n"
+            f"theme: {ROOT.name}\n"
+            "disableKinds: [sitemap, taxonomy, term]\n"
+            "outputs:\n"
+            "  home: [HTML, RSS]\n"
+            "  section: [HTML, RSS]\n"
+            "  page: [HTML]\n"
+            "markup:\n"
+            "  goldmark:\n"
+            "    renderer:\n"
+            "      unsafe: true\n"
+        )
+        destination = site / "public"
+        result = subprocess.run(
+            [
+                hugo,
+                "--source",
+                str(site),
+                "--themesDir",
+                str(ROOT.parent),
+                "--destination",
+                str(destination),
+                "--logLevel",
+                "warn",
+            ],
+            cwd=ROOT,
+            capture_output=True,
+            text=True,
+            check=False,
+        )
+        if result.returncode != 0:
+            errors.append(
+                "generic RSS code fixture failed to build: "
+                f"{result.stdout}{result.stderr}"
+            )
+            return errors
+        output = destination / "docs/index.xml"
+        if not output.exists():
+            errors.append("generic RSS code fixture did not produce docs/index.xml")
+            return errors
+        source = output.read_text()
+        for marker in (
+            "td-code-group--static",
+            "rss-static",
+            "Literal example.",
+            "sample",
+        ):
+            require(marker in source, f"generic RSS code fixture missing {marker}", errors)
+        for marker in (
+            "data-bs-toggle",
+            "data-td-code-group-tab",
+            "data-td-code-copy",
+            '<button class="nav-link',
+        ):
+            require(marker not in source, f"generic RSS code fixture contains {marker}", errors)
     return errors
 
 
@@ -320,6 +402,7 @@ def main() -> int:
     errors = (
         check_outputs(args.public)
         + check_template_contracts()
+        + check_generic_rss_output(args.hugo)
         + check_invalid_cases(args.hugo)
     )
     if errors:
