@@ -145,3 +145,13 @@ ui_print_page: 列印此頁
 ui_sidebar_expand_section: 展開章節
 ui_sidebar_collapse_section: 收合章節
 ui_asciinema_timer: 播放時間
+
+# Version banner
+version_banner_archived: >-
+  說明文件 {{ .Version }} 版本已不再積極維護，您目前瀏覽的是一份封存快照。
+version_banner_latest: 最新說明文件請參閱 {{ .Link }}。
+version_banner_latest_link: 最新版本
+
+# Comments
+comments_noscript: 載入留言需要啟用 JavaScript。
+comments_noscript_link: 在 GitHub 上檢視討論。

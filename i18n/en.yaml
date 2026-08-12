@@ -145,3 +145,14 @@ error_404_title: Page not found
 error_404_body: >-
   Sorry, this page does not exist. Try starting again from the home page.
 error_404_home: Go to the home page
+
+# Version banner
+version_banner_archived: >-
+  Version {{ .Version }} of the documentation is no longer actively maintained.
+  The site that you are currently viewing is an archived snapshot.
+version_banner_latest: For up-to-date documentation, see the {{ .Link }}.
+version_banner_latest_link: latest version
+
+# Comments
+comments_noscript: JavaScript is required to load comments.
+comments_noscript_link: View discussions on GitHub.

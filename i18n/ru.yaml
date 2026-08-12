@@ -158,3 +158,15 @@ ui_open_in_prompt: Read from %s so I can ask questions about it.
 ui_image_zoom_dialog: Image preview
 ui_image_zoom_open: Open image preview
 ui_image_zoom_close: Close image preview
+
+# Explicit English fallbacks for untranslated OINK UI strings.
+# Replace these values with reviewed translations when available.
+version_banner_archived: >-
+  Version {{ .Version }} of the documentation is no longer actively maintained.
+  The site that you are currently viewing is an archived snapshot.
+version_banner_latest: For up-to-date documentation, see the {{ .Link }}.
+version_banner_latest_link: latest version
+
+# Comments
+comments_noscript: JavaScript is required to load comments.
+comments_noscript_link: View discussions on GitHub.

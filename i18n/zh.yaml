@@ -143,3 +143,13 @@ error_404_title: 页面不存在
 error_404_body: >-
   抱歉，该页面不存在。可以从首页重新开始。
 error_404_home: 返回首页
+
+# Version banner
+version_banner_archived: >-
+  文档 {{ .Version }} 版本已不再积极维护，你当前浏览的是一份归档快照。
+version_banner_latest: 最新文档请参阅 {{ .Link }}。
+version_banner_latest_link: 最新版本
+
+# Comments
+comments_noscript: 加载评论需要启用 JavaScript。
+comments_noscript_link: 在 GitHub 上查看讨论。
