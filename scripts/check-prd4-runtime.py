@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import re
+import subprocess
 import sys
 from pathlib import Path
 
@@ -53,7 +54,8 @@ def main() -> int:
         )
         require(
             'partial "shell/search-enabled.html"' in search_input
-            and "data-td-shell-search-open" in search_input,
+            and "data-td-shell-search-open" in search_input
+            and "data-offline-search" not in search_input,
             "legacy search-input partial does not delegate to the Palette",
         )
         require(
@@ -75,7 +77,7 @@ def main() -> int:
         require(
             all(
                 token in coordinator
-                for token in ("register", "closeOthers", "closeAll")
+                for token in ("register", "closeOthers", "closeAll", "keepNames")
             ),
             "surface coordinator API is incomplete",
         )
@@ -94,6 +96,23 @@ def main() -> int:
         require(
             not re.search(r"\x1b|\r", palette + coordinator),
             "runtime source contains terminal/control characters",
+        )
+        require(
+            "closest('#td-shell-sidebar')" in palette
+            and "data-td-shell-drawer-open" in palette,
+            "Palette does not promote a hidden drawer opener",
+        )
+        behavior = subprocess.run(
+            ["node", str(ROOT / "tests/js/prd4-surfaces.test.js")],
+            cwd=ROOT,
+            capture_output=True,
+            check=False,
+            text=True,
+        )
+        require(
+            behavior.returncode == 0,
+            "surface behavior test failed:\n"
+            + (behavior.stdout + behavior.stderr).strip(),
         )
     except (OSError, RuntimeError) as exc:
         print(f"PRD 4 runtime check failed: {exc}", file=sys.stderr)
