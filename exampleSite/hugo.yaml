@@ -11,6 +11,7 @@ params:
   description: A complete example of OINK's composable landing page.
   offlineSearch: false
   ui:
+    sidebar_icon_policy: groups
     image_zoom:
       enable: true
     feedback:

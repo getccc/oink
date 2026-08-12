@@ -42,6 +42,9 @@ jobs:
       - name: Check PRD 4 runtime isolation
         run: python3 scripts/check-prd4-runtime.py
 
+      - name: Check sidebar icon density policies
+        run: python3 scripts/check-sidebar-icons.py
+
       - name: Build the example site without warnings
         working-directory: exampleSite
         run: hugo --printPathWarnings --panicOnWarning
