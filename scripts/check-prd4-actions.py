@@ -19,9 +19,14 @@ from typing import Any
 
 ROOT = Path(__file__).resolve().parents[1]
 CONTRACT_SCRIPT = ROOT / "scripts" / "check-prd4-contract.py"
+# Order is part of the contract: the page rail renders these in sequence, so
+# this list is also the reading order a visitor sees.
 BUILTINS = [
     "copy_markdown",
+    "open_chatgpt",
+    "open_claude",
     "view_markdown",
+    "view_history",
     "edit_page",
     "create_issue",
     "print",

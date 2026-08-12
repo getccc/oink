@@ -75,7 +75,7 @@ post_last_mod: 最後更新於
 post_upstream_attribution: 上游文件原文與署名
 post_downstream_modified: 本頁包含{{ .Site.Title }}所作的下游修改。
 post_edit_this: 編輯此頁面
-post_view_markdown: 檢視 Markdown
+post_view_markdown: 檢視原始碼
 post_view_this: 檢視頁面原始碼
 post_create_child_page: 建立子頁面
 post_create_issue: 建立文件議題
@@ -124,7 +124,7 @@ error_404_home: 返回首頁
 # OINK UI additions.
 ui_search_results: '找到 {count} 筆結果'
 ui_skip_to_content: 跳至主要內容
-ui_copy_markdown: 複製 Markdown
+ui_copy_markdown: 複製文字
 ui_copy_success: 已複製 Markdown
 ui_copy_error: 無法複製 Markdown
 ui_code_copy: 複製
@@ -155,3 +155,7 @@ version_banner_latest_link: 最新版本
 # Comments
 comments_noscript: 載入留言需要啟用 JavaScript。
 comments_noscript_link: 在 GitHub 上檢視討論。
+
+# LLM 頁面操作
+ui_open_in_prompt_label: 就本頁提問
+ui_view_history: 檢視編輯歷史

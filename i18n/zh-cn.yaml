@@ -55,7 +55,7 @@ ui_page_actions: 操作
 ui_open_in_chatgpt: 在 ChatGPT 中打开
 ui_open_in_claude: 在 Claude 中打开
 ui_open_in_prompt: 请阅读 %s 的内容，以便我就此向你提问。
-ui_copy_markdown: 复制 Markdown
+ui_copy_markdown: 复制文本
 ui_copy_success: 已复制 Markdown
 ui_copy_error: 无法复制 Markdown
 ui_code_copy: 复制
@@ -98,7 +98,7 @@ post_last_mod: 最后修改
 post_upstream_attribution: 上游文档原文与署名
 post_downstream_modified: 本页包含{{ .Site.Title }}所作的下游修改。
 post_edit_this: 编辑此页面
-post_view_markdown: 查看 Markdown
+post_view_markdown: 查阅源码
 post_view_this: 查看页面源码
 post_create_child_page: 添加子页面
 post_create_issue: 提交文档问题
@@ -152,3 +152,7 @@ version_banner_latest_link: 最新版本
 # Comments
 comments_noscript: 加载评论需要启用 JavaScript。
 comments_noscript_link: 在 GitHub 上查看讨论。
+
+# LLM 页面操作
+ui_open_in_prompt_label: 就本页提问
+ui_view_history: 查阅编辑历史

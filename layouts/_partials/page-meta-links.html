@@ -11,13 +11,13 @@
 {{ if $enabled -}}
 {{ $actionURLs := $actionContext.urls -}}
 {{ $markdownURL := $actionURLs.markdown -}}
-{{ $isDocs := eq $p.Section ($p.Site.Params.ui.docs_section | default "docs") -}}
 {{ $llmPromptTemplate := T "ui_open_in_prompt" -}}
-{{ $llmPrompt := printf $llmPromptTemplate $p.Permalink -}}
-{{ $chatgptURL := printf "https://chatgpt.com/?%s" (querify "hints" "search" "prompt" $llmPrompt) -}}
-{{ $claudeURL := printf "https://claude.ai/new?%s" (querify "q" $llmPrompt) -}}
+{{ $byID := $actionContext.byId -}}
+{{ $chatgptURL := $byID.open_chatgpt.url -}}
+{{ $claudeURL := $byID.open_claude.url -}}
 {{ $printURL := $actionURLs.printSection -}}
 {{ $editURL := $actionURLs.edit -}}
+{{ $historyURL := $actionURLs.history -}}
 {{ $childURL := $actionURLs.createChild -}}
 {{ $issueURL := $actionURLs.createIssue -}}
 {{ $projectIssueURL := $actionURLs.createProjectIssue -}}
@@ -27,22 +27,27 @@
 
 <div class="td-page-meta" data-td-page-context data-td-page-open-in-prompt="{{ $llmPromptTemplate }}"
   data-t-copied="{{ T "ui_copy_success" }}" data-t-copy-error="{{ T "ui_copy_error" }}">
-  {{- if $isDocs }}
-  <a class="td-page-meta__action" href="{{ $chatgptURL | safeURL }}" data-td-page-open-in="chatgpt" target="_blank" rel="noopener noreferrer">
-    {{ partialCached "shell/icon.html" "chatgpt" "chatgpt" }}<span>{{ T "ui_open_in_chatgpt" }}</span>
-  </a>
-  <a class="td-page-meta__action" href="{{ $claudeURL | safeURL }}" data-td-page-open-in="claude" target="_blank" rel="noopener noreferrer">
-    {{ partialCached "shell/icon.html" "claude" "claude" }}<span>{{ T "ui_open_in_claude" }}</span>
-  </a>
-  {{- end }}
   {{- with $markdownURL }}
   <button type="button" class="td-page-meta__action" data-oink-action="copy_markdown" data-url="{{ . }}">
     <span class="td-page-meta__icon">{{ partialCached "shell/icon.html" "copy" "copy" }}</span>
     <span class="td-page-meta__icon td-page-meta__icon--done">{{ partialCached "shell/icon.html" "check" "check" }}</span>
     <span data-td-page-copy-label>{{ T "ui_copy_markdown" }}</span>
   </button>
+  {{- end }}
+  <a class="td-page-meta__action" data-oink-action="open_chatgpt" href="{{ $chatgptURL | safeURL }}" data-td-page-open-in="chatgpt" target="_blank" rel="noopener noreferrer">
+    {{ partialCached "shell/icon.html" "chatgpt" "chatgpt" }}<span>{{ T "ui_open_in_chatgpt" }}</span>
+  </a>
+  <a class="td-page-meta__action" data-oink-action="open_claude" href="{{ $claudeURL | safeURL }}" data-td-page-open-in="claude" target="_blank" rel="noopener noreferrer">
+    {{ partialCached "shell/icon.html" "claude" "claude" }}<span>{{ T "ui_open_in_claude" }}</span>
+  </a>
+  {{- with $markdownURL }}
   <a class="td-page-meta__action td-page-meta__markdown" data-oink-action="view_markdown" href="{{ . }}" target="_blank" rel="noopener">
     {{ partialCached "shell/icon.html" "markdown" "markdown" }}<span>{{ T "post_view_markdown" }}</span>
+  </a>
+  {{- end }}
+  {{- with $historyURL }}
+  <a class="td-page-meta__action td-page-meta__history" data-oink-action="view_history" href="{{ . }}" target="_blank" rel="noopener">
+    {{ partialCached "shell/icon.html" "history" "history" }}<span>{{ T "ui_view_history" }}</span>
   </a>
   {{- end }}
   {{- with $editURL }}

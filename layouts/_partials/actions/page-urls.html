@@ -7,6 +7,7 @@
   {{- with .AlternativeOutputFormats.Get "print" }}{{ $printURL = .RelPermalink }}{{ end -}}
 {{- end -}}
 {{- $editURL := "" -}}
+{{- $historyURL := "" -}}
 {{- $childURL := "" -}}
 {{- $issueURL := "" -}}
 {{- $projectIssueURL := "" -}}
@@ -30,6 +31,11 @@
   {{- with $pathBase }}{{ $sourcePath = replaceRE . $pathRename $sourcePath }}{{ end -}}
   {{- $repoPath = printf "%s/%s/%s" $branch $subdir $sourcePath | replaceRE "//+" "/" -}}
   {{- $editURL = printf "%s/edit/%s" $repo $repoPath -}}
+  {{- /* Same derivation as the edit link, so a repository that supports one
+         supports the other. A site using the legacy `github_url` escape hatch
+         supplies an opaque URL we cannot turn into a history view, and the
+         action reports itself unavailable rather than guessing. */ -}}
+  {{- $historyURL = printf "%s/commits/%s" $repo $repoPath -}}
   {{- $issueURL = printf "%s/issues/new?%s" $repo (querify "title" $p.Title) -}}
   {{- $stub := resources.Get "stubs/new-page-template.md" -}}
   {{- $childQS := querify "value" $stub.Content "filename" "change-me.md" -}}
@@ -38,7 +44,7 @@
 {{- end -}}
 {{- return (dict
   "markdown" $markdownURL "printSection" $printURL
-  "edit" $editURL "createChild" $childURL "createIssue" $issueURL
+  "edit" $editURL "history" $historyURL "createChild" $childURL "createIssue" $issueURL
   "createProjectIssue" $projectIssueURL "projectRepo" $projectRepo
   "repoPath" $repoPath
 ) -}}

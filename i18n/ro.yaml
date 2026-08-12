@@ -170,3 +170,8 @@ version_banner_latest_link: latest version
 # Comments
 comments_noscript: JavaScript is required to load comments.
 comments_noscript_link: View discussions on GitHub.
+
+# Explicit English fallbacks for untranslated OINK UI strings.
+# Replace these values with reviewed translations when available.
+ui_open_in_prompt_label: Ask about this page
+ui_view_history: View edit history
