@@ -2,7 +2,8 @@
 title: 把成长从愿望变成反馈回路
 description: 用更小的行动、更快的反馈和更稳定的复盘，让改变真正发生。
 date: 2026-08-10
-categories: [人生成长]
+aliases: [/blog/life-growth/growth-feedback-loop/]
+categories: [人生成长, 习惯与行动]
 tags: [习惯, 复盘, 行动]
 ---
 

@@ -78,6 +78,30 @@ menus:
       params:
         icon: fa-solid fa-microchip
         description: 追踪技术演进，理解智能时代
+    - identifier: ai-models-and-technology
+      parent: ai-development
+      name: 模型与技术
+      pageRef: /blog/ai-development/models-and-technology
+      weight: 11
+      params:
+        icon: fa-solid fa-brain
+        description: 模型能力、技术原理与工程进展
+    - identifier: ai-tools-and-practice
+      parent: ai-development
+      name: 工具与实践
+      pageRef: /blog/ai-development/tools-and-practice
+      weight: 12
+      params:
+        icon: fa-solid fa-wand-magic-sparkles
+        description: AI 工作流、工具方法与真实应用
+    - identifier: ai-industry-and-trends
+      parent: ai-development
+      name: 产业与趋势
+      pageRef: /blog/ai-development/industry-and-trends
+      weight: 13
+      params:
+        icon: fa-solid fa-industry
+        description: 产品变化、商业模式与长期趋势
     - identifier: wealth-growth
       name: 财富增长
       pageRef: /blog/wealth-growth
@@ -85,6 +109,30 @@ menus:
       params:
         icon: fa-solid fa-chart-line
         description: 构建长期、稳健的财富系统
+    - identifier: wealth-system
+      parent: wealth-growth
+      name: 财富系统
+      pageRef: /blog/wealth-growth/wealth-system
+      weight: 21
+      params:
+        icon: fa-solid fa-diagram-project
+        description: 现金流、收入结构与个人财务系统
+    - identifier: investment-and-allocation
+      parent: wealth-growth
+      name: 投资与配置
+      pageRef: /blog/wealth-growth/investment-and-allocation
+      weight: 22
+      params:
+        icon: fa-solid fa-chart-pie
+        description: 长期投资、资产配置与周期观察
+    - identifier: risk-and-protection
+      parent: wealth-growth
+      name: 风险与保障
+      pageRef: /blog/wealth-growth/risk-and-protection
+      weight: 23
+      params:
+        icon: fa-solid fa-shield-halved
+        description: 风险识别、安全边际与保障体系
     - identifier: life-growth
       name: 人生成长
       pageRef: /blog/life-growth
@@ -92,6 +140,30 @@ menus:
       params:
         icon: fa-solid fa-seedling
         description: 让认知、行动与生活一起生长
+    - identifier: cognition-and-learning
+      parent: life-growth
+      name: 认知与学习
+      pageRef: /blog/life-growth/cognition-and-learning
+      weight: 31
+      params:
+        icon: fa-solid fa-book-open-reader
+        description: 思维模型、学习方法与认知升级
+    - identifier: habits-and-action
+      parent: life-growth
+      name: 习惯与行动
+      pageRef: /blog/life-growth/habits-and-action
+      weight: 32
+      params:
+        icon: fa-solid fa-arrows-rotate
+        description: 行动系统、习惯设计与持续复盘
+    - identifier: relationships-and-life
+      parent: life-growth
+      name: 关系与生活
+      pageRef: /blog/life-growth/relationships-and-life
+      weight: 33
+      params:
+        icon: fa-solid fa-people-roof
+        description: 关系、健康、选择与生活方式
     - identifier: archive
       name: 全部文章
       pageRef: /blog

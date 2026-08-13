@@ -2,7 +2,8 @@
 title: AI 时代，个人应该建立什么能力栈？
 description: 搭建不会被一次模型升级清零的 AI 原生能力组合。
 date: 2026-08-12
-categories: [AI 发展]
+aliases: [/blog/ai-development/ai-native-skill-stack/]
+categories: [AI 发展, 工具与实践]
 tags: [人工智能, 能力栈, 生产力]
 ---
 

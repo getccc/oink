@@ -79,17 +79,17 @@ featured:
       icon: fa-solid fa-layer-group
       meta: AI 发展 · 8 分钟
       desc: 从工具使用、问题定义到领域判断，搭建不会被一次模型升级清零的能力组合。
-      url: /blog/ai-development/ai-native-skill-stack/
+      url: /blog/ai-development/tools-and-practice/ai-native-skill-stack/
     - name: 财富增长的第一原则：先建立系统
       icon: fa-solid fa-scale-balanced
       meta: 财富增长 · 7 分钟
       desc: 用现金流、防守层和增长层，把模糊的“多赚钱”变成可执行的个人系统。
-      url: /blog/wealth-growth/build-a-wealth-system/
+      url: /blog/wealth-growth/wealth-system/build-a-wealth-system/
     - name: 把成长从愿望变成反馈回路
       icon: fa-solid fa-arrows-rotate
       meta: 人生成长 · 6 分钟
       desc: 通过更小的行动、更快的反馈和更稳定的复盘，让改变真正发生。
-      url: /blog/life-growth/growth-feedback-loop/
+      url: /blog/life-growth/habits-and-action/growth-feedback-loop/
 
 principles:
   eyebrow: 写作原则

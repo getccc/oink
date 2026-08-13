@@ -2,7 +2,8 @@
 title: 财富增长的第一原则：先建立系统
 description: 用三层结构把模糊的财富目标变成可持续执行的个人系统。
 date: 2026-08-11
-categories: [财富增长]
+aliases: [/blog/wealth-growth/build-a-wealth-system/]
+categories: [财富增长, 财富系统]
 tags: [现金流, 资产配置, 风险管理]
 ---
 
