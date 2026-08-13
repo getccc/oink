@@ -3,6 +3,8 @@ title: AI 发展
 description: 追踪技术演进，理解模型、产品与产业变化，寻找智能时代的个人机会。
 type: blog
 weight: 10
+icon: fa-solid fa-microchip
+sidebar_root_for: self
 cascade:
   type: blog
 ---
