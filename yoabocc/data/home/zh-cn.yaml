@@ -1,0 +1,148 @@
+sections:
+  - hero
+  - metrics
+  - type: cards
+    key: topics
+  - type: cards
+    key: featured
+  - principles
+  - faq
+  - cta
+
+hero:
+  eyebrow: THINK · BUILD · COMPOUND
+  title: 在变化中，积累**确定性**。
+  desc: 这里记录我对 **AI 发展、财富增长、人生成长** 的观察与实践。把复杂问题想清楚，把有效方法做成长期系统。
+  note: 独立思考，持续行动，让时间成为朋友。
+  image:
+    src: /images/growth-orbit.svg
+    alt: 三条相互连接的成长轨道，代表技术、财富与人生
+  actions:
+    - label: 开始阅读
+      url: blog/
+      icon: fa-solid fa-arrow-right
+      style: primary
+    - label: GitHub
+      url: https://github.com/getccc/oink
+      icon: fa-brands fa-github
+      style: ghost
+      external: true
+  detail:
+    label: 从《欢迎来到 yoabocc》开始
+    url: blog/welcome/
+    icon: fa-regular fa-compass
+
+metrics:
+  eyebrow: 三条长期主线
+  title: 一个面向未来的个人知识库
+  desc: 不追求信息数量，专注于能被理解、执行并产生复利的内容。
+  columns: 3
+  items:
+    - { value: AI, label: 看见技术变化, icon: fa-solid fa-microchip }
+    - { value: 财富, label: 构建增长系统, icon: fa-solid fa-chart-line }
+    - { value: 人生, label: 提升选择质量, icon: fa-solid fa-seedling }
+
+topics:
+  eyebrow: 探索主题
+  title: 沿着三条主线持续生长
+  desc: 每个主题都关注原理、方法和真实实践，而不止是结论。
+  columns: 3
+  link_label: 进入专栏
+  items:
+    - name: AI 发展
+      icon: fa-solid fa-microchip
+      meta: INTELLIGENCE
+      class: topic-ai
+      desc: 理解模型、产品与产业如何演进，寻找普通人在智能时代的有效位置。
+      url: /blog/ai-development/
+    - name: 财富增长
+      icon: fa-solid fa-chart-line
+      meta: COMPOUNDING
+      class: topic-wealth
+      desc: 从现金流、资产配置到风险管理，建立能够穿越周期的个人财富系统。
+      url: /blog/wealth-growth/
+    - name: 人生成长
+      icon: fa-solid fa-seedling
+      meta: BECOMING
+      class: topic-life
+      desc: 研究认知、习惯、关系与选择，让成长落到每天可以重复的行动里。
+      url: /blog/life-growth/
+
+featured:
+  eyebrow: 从这里开始
+  title: 三篇示例文章
+  desc: 这些内容也展示了以后新增 Markdown 文章时可直接复用的结构。
+  columns: 3
+  link_label: 阅读文章
+  items:
+    - name: AI 时代，个人应该建立什么能力栈？
+      icon: fa-solid fa-layer-group
+      meta: AI 发展 · 8 分钟
+      desc: 从工具使用、问题定义到领域判断，搭建不会被一次模型升级清零的能力组合。
+      url: /blog/ai-development/ai-native-skill-stack/
+    - name: 财富增长的第一原则：先建立系统
+      icon: fa-solid fa-scale-balanced
+      meta: 财富增长 · 7 分钟
+      desc: 用现金流、防守层和增长层，把模糊的“多赚钱”变成可执行的个人系统。
+      url: /blog/wealth-growth/build-a-wealth-system/
+    - name: 把成长从愿望变成反馈回路
+      icon: fa-solid fa-arrows-rotate
+      meta: 人生成长 · 6 分钟
+      desc: 通过更小的行动、更快的反馈和更稳定的复盘，让改变真正发生。
+      url: /blog/life-growth/growth-feedback-loop/
+
+principles:
+  eyebrow: 写作原则
+  title: 慢一点，但更扎实
+  columns: 3
+  items:
+    - icon: fa-solid fa-magnifying-glass
+      title: 追问原理
+      desc: 不只收集答案，也理解答案成立的边界。
+    - icon: fa-solid fa-hammer
+      title: 回到实践
+      desc: 能被行动验证的认知，才有机会成为能力。
+    - icon: fa-solid fa-infinity
+      title: 相信复利
+      desc: 选择值得长期积累的主题、资产与关系。
+
+faq:
+  eyebrow: 关于本站
+  title: 你可能想知道
+  items:
+    - question: 这个博客会更新什么？
+      answer: 主要围绕 AI 发展、财富增长和人生成长，记录研究笔记、方法框架与实践复盘。
+      open: true
+    - question: 文章多久更新一次？
+      answer: 不设追热点式的频率目标。优先保证每篇内容值得未来的自己再次阅读。
+    - question: 如何订阅？
+      answer: 可通过站点的 RSS 订阅全部文章，也可以在 GitHub 关注仓库更新。
+
+cta:
+  title: 和时间站在一起。
+  desc: 从一个问题、一篇笔记、一次行动开始，让知识与人生共同复利。
+  label: 浏览全部文章
+  url: blog/
+  style: primary
+
+footer:
+  brand:
+    name: yoabocc
+    logo: icons/yoabocc.svg
+    tagline: 在变化中积累确定性。
+    slogan: THINK · BUILD · COMPOUND
+  columns:
+    - title: 主题
+      links:
+        - { label: AI 发展, url: /blog/ai-development/ }
+        - { label: 财富增长, url: /blog/wealth-growth/ }
+        - { label: 人生成长, url: /blog/life-growth/ }
+    - title: 浏览
+      links:
+        - { label: 全部文章, url: /blog/ }
+        - { label: 分类, url: /categories/ }
+        - { label: 标签, url: /tags/ }
+    - title: 连接
+      links:
+        - { label: GitHub, url: https://github.com/getccc/oink, external: true }
+        - { label: RSS, url: /blog/index.xml }
