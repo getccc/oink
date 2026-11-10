@@ -26,7 +26,7 @@ markup:
     noClasses: false
 
 params:
-  description: 记录 AI 发展、财富增长与人生成长的长期主义个人博客。
+  description: 记录 AI 发展、财富增长、人生成长和实用工具的个人博客。
   author: yoabocc
   logo: icons/yoabocc.svg
   github_repo: https://github.com/getccc/oink
@@ -67,7 +67,7 @@ languages:
     label: 简体中文
     weight: 1
     params:
-      description: 记录 AI 发展、财富增长与人生成长的长期主义个人博客。
+      description: 记录 AI 发展、财富增长、人生成长和实用工具的个人博客。
 
 menus:
   main:
@@ -172,10 +172,33 @@ menus:
       params:
         icon: fa-solid fa-people-roof
         description: 关系、健康、选择与生活方式
+    - identifier: tools
+      name: 工具
+      pageRef: /blog/tools
+      weight: 40
+      params:
+        icon: fa-solid fa-toolbox
+        description: 优惠活动、免费资源和 VPS 使用笔记
+    - identifier: deals
+      parent: tools
+      name: 薅羊毛
+      pageRef: /blog/tools/deals
+      weight: 41
+      params:
+        icon: fa-solid fa-tags
+        description: 整理优惠活动、免费资源和领取方式
+    - identifier: vps
+      parent: tools
+      name: VPS
+      pageRef: /blog/tools/vps
+      weight: 42
+      params:
+        icon: fa-solid fa-server
+        description: 记录 VPS 的选购、配置与日常维护
     - identifier: archive
       name: 全部文章
       pageRef: /blog
-      weight: 40
+      weight: 50
       params:
         icon: fa-solid fa-box-archive
 

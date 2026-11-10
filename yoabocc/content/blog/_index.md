@@ -1,6 +1,6 @@
 ---
 title: 全部文章
-description: 围绕 AI 发展、财富增长与人生成长，持续记录值得复利的思考与实践。
+description: 收录 AI 发展、财富增长、人生成长和实用工具相关的文章。
 type: blog
 cascade:
   type: blog

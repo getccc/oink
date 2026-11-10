@@ -12,7 +12,7 @@ sections:
 hero:
   eyebrow: THINK · BUILD · COMPOUND
   title: 破茧成蝶
-  desc: 这里记录我对 **AI 发展、财富增长、人生成长** 的观察与实践。把复杂问题想清楚，把有效方法做成长期系统。
+  desc: 这里记录我对 **AI 发展、财富增长、人生成长** 的观察与实践，也整理 **实用工具**。把复杂问题想清楚，把有效方法做成长期系统。
   note: 独立思考，持续行动，让时间成为朋友。
   image:
     src: /images/growth-orbit.svg
@@ -33,20 +33,21 @@ hero:
     icon: fa-regular fa-compass
 
 metrics:
-  eyebrow: 三条长期主线
+  eyebrow: 博客栏目
   title: 一个面向未来的个人知识库
   desc: 不追求信息数量，专注于能被理解、执行并产生复利的内容。
-  columns: 3
+  columns: 4
   items:
     - { value: AI, label: 看见技术变化, icon: fa-solid fa-microchip }
     - { value: 财富, label: 构建增长系统, icon: fa-solid fa-chart-line }
     - { value: 人生, label: 提升选择质量, icon: fa-solid fa-seedling }
+    - { value: 工具, label: 查找优惠与 VPS 指南, icon: fa-solid fa-toolbox }
 
 topics:
   eyebrow: 探索主题
-  title: 沿着三条主线持续生长
+  title: 按栏目阅读
   desc: 每个主题都关注原理、方法和真实实践，而不止是结论。
-  columns: 3
+  columns: 4
   link_label: 进入专栏
   items:
     - name: AI 发展
@@ -67,6 +68,11 @@ topics:
       class: topic-life
       desc: 研究认知、习惯、关系与选择，让成长落到每天可以重复的行动里。
       url: /blog/life-growth/
+    - name: 工具
+      icon: fa-solid fa-toolbox
+      meta: TOOLS
+      desc: 整理优惠活动与免费资源，记录 VPS 的选购、配置和使用经验。
+      url: /blog/tools/
 
 featured:
   eyebrow: 从这里开始
@@ -111,7 +117,7 @@ faq:
   title: 你可能想知道
   items:
     - question: 这个博客会更新什么？
-      answer: 主要围绕 AI 发展、财富增长和人生成长，记录研究笔记、方法框架与实践复盘。
+      answer: 记录 AI 发展、财富增长和人生成长相关的研究笔记与实践复盘，也整理优惠、免费资源和 VPS 笔记。
       open: true
     - question: 文章多久更新一次？
       answer: 不设追热点式的频率目标。优先保证每篇内容值得未来的自己再次阅读。
@@ -137,6 +143,7 @@ footer:
         - { label: AI 发展, url: /blog/ai-development/ }
         - { label: 财富增长, url: /blog/wealth-growth/ }
         - { label: 人生成长, url: /blog/life-growth/ }
+        - { label: 工具, url: /blog/tools/ }
     - title: 浏览
       links:
         - { label: 全部文章, url: /blog/ }
