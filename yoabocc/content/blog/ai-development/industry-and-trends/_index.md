@@ -1,5 +1,5 @@
 ---
-title: 产业与趋势
+title: 产业趋势
 description: 观察 AI 产品、商业模式、组织方式与长期产业变化。
 type: blog
 weight: 30

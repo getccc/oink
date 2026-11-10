@@ -80,7 +80,7 @@ menus:
         description: 追踪技术演进，理解智能时代
     - identifier: ai-models-and-technology
       parent: ai-development
-      name: 模型与技术
+      name: 模型动态
       pageRef: /blog/ai-development/models-and-technology
       weight: 11
       params:
@@ -88,7 +88,7 @@ menus:
         description: 模型能力、技术原理与工程进展
     - identifier: ai-tools-and-practice
       parent: ai-development
-      name: 工具与实践
+      name: AI应用
       pageRef: /blog/ai-development/tools-and-practice
       weight: 12
       params:
@@ -96,7 +96,7 @@ menus:
         description: AI 工作流、工具方法与真实应用
     - identifier: ai-industry-and-trends
       parent: ai-development
-      name: 产业与趋势
+      name: 产业趋势
       pageRef: /blog/ai-development/industry-and-trends
       weight: 13
       params:
@@ -109,30 +109,38 @@ menus:
       params:
         icon: fa-solid fa-chart-line
         description: 构建长期、稳健的财富系统
-    - identifier: wealth-system
+    - identifier: us-economic-data
       parent: wealth-growth
-      name: 财富系统
-      pageRef: /blog/wealth-growth/wealth-system
+      name: 美国财经数据
+      pageRef: /blog/wealth-growth/us-economic-data
       weight: 21
       params:
-        icon: fa-solid fa-diagram-project
-        description: 现金流、收入结构与个人财务系统
-    - identifier: investment-and-allocation
+        icon: fa-solid fa-chart-column
+        description: 跟踪美国通胀、就业和经济增长等数据
+    - identifier: a-share-daily
       parent: wealth-growth
-      name: 投资与配置
-      pageRef: /blog/wealth-growth/investment-and-allocation
+      name: A股日报
+      pageRef: /blog/wealth-growth/a-share-daily
       weight: 22
       params:
-        icon: fa-solid fa-chart-pie
-        description: 长期投资、资产配置与周期观察
-    - identifier: risk-and-protection
+        icon: fa-solid fa-chart-line
+        description: 记录 A 股市场走势、板块表现和重要消息
+    - identifier: us-stock-daily
       parent: wealth-growth
-      name: 风险与保障
-      pageRef: /blog/wealth-growth/risk-and-protection
+      name: 美股日报
+      pageRef: /blog/wealth-growth/us-stock-daily
       weight: 23
       params:
-        icon: fa-solid fa-shield-halved
-        description: 风险识别、安全边际与保障体系
+        icon: fa-solid fa-chart-line
+        description: 记录美股主要指数、个股表现和重要消息
+    - identifier: crypto-daily
+      parent: wealth-growth
+      name: crypto日报
+      pageRef: /blog/wealth-growth/crypto-daily
+      weight: 24
+      params:
+        icon: fa-solid fa-coins
+        description: 记录加密市场走势和重要动态
     - identifier: life-growth
       name: 人生成长
       pageRef: /blog/life-growth

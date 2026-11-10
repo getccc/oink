@@ -1,5 +1,5 @@
 ---
-title: 模型与技术
+title: 模型动态
 description: 记录模型能力、技术原理、训练推理与工程进展。
 type: blog
 weight: 10

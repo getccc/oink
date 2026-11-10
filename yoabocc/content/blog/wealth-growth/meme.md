@@ -2,9 +2,11 @@
 title: meme文化
 description: meme还能不能行？
 date: 2026-08-24
+url: /blog/wealth-growth/wealth-system/meme/
 aliases: [/blog/wealth-growth/meme/]
-categories: [财富增长, 财富系统]
+categories: [财富增长]
 tags: [原始积累]
+toc_hide: true
 ---
 
 很多人的财富积累来源于meme狂潮，meme曾经有过非常波澜壮阔的时代，从名人喊单、到阴谋集团名牌攒局、到交易所全面拥抱高速上币、名人明星甚至总统亲自发币。

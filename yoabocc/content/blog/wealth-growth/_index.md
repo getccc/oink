@@ -5,6 +5,10 @@ type: blog
 weight: 20
 icon: fa-solid fa-chart-line
 sidebar_root_for: self
+aliases:
+  - /blog/wealth-growth/wealth-system/
+  - /blog/wealth-growth/investment-and-allocation/
+  - /blog/wealth-growth/risk-and-protection/
 cascade:
   type: blog
 ---

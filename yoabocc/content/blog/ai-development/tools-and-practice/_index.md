@@ -1,5 +1,5 @@
 ---
-title: 工具与实践
+title: AI应用
 description: 记录 AI 工作流、工具方法和真实应用中的经验。
 type: blog
 weight: 20
